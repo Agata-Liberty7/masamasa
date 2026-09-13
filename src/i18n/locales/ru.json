@@ -1,0 +1,158 @@
+{
+  "common": {
+    "back": "← Назад",
+    "calculate": "Рассчитать рецепт",
+    "restart": "Начать заново",
+    "save": "Сохранить как рецепт",
+    "techcard": "Техкарта"
+  },
+  "start": {
+    "conditions": "Условия производства",
+    "roomTemp": "Температура помещения (°C)",
+    "warmHours": "Тёплая ферментация (часы)",
+    "coldHours": "Холодная ферментация (часы)",
+    "climate": "Климат",
+    "mixing": "Способ замеса",
+    "techMode": "Режим технологии",
+    "home": "Домашний",
+    "professional": "Производственный",
+    "searchProfiles": "Поиск профилей",
+    "searchPlaceholder": "Введите название профиля...",
+    "recentProfiles": "Недавние профили",
+    "favorites": "Избранное",
+    "categories": "Категории теста",
+    "myRecipes": "Мои рецепты"
+  },
+  "input": {
+    "title": "Параметры теста",
+    "calcMode": "Режим расчёта",
+    "byFlour": "По муке",
+    "byDough": "По весу теста",
+    "waterAndYeast": "Вода и дрожжи",
+    "hydration": "Гидратация (%)",
+    "yeastPct": "Дрожжи (% от муки)",
+    "yeastRecommended": "Рекомендуется: {{value}}%",
+    "flourTypes": "Типы муки",
+    "mainFlour": "Основная мука",
+    "extraFlour1": "Дополнительная мука 1",
+    "extraFlour2": "Дополнительная мука 2",
+    "extraPct1": "Процент доп. муки 1 (% от общей муки)",
+    "extraPct2": "Процент доп. муки 2 (% от общей муки)",
+    "ingredients": "Основные ингредиенты",
+    "flour": "Мука (г)",
+    "targetDough": "Целевой вес теста (г)",
+    "salt": "Соль (% от муки)",
+    "sugar": "Сахар (% от муки)",
+    "fat": "Жиры (% от муки)",
+    "eggs": "Яйца (шт)",
+    "ingredientTypes": "Типы ингредиентов",
+    "liquid": "Жидкость",
+    "fatType": "Жир",
+    "eggType": "Тип яйца",
+    "sugarType": "Тип сахара",
+    "yeastType": "Тип дрожжей",
+    "preferment": "Предфермент",
+    "prefermentType": "Тип",
+    "prefermentFlourPct": "Мука в предферменте (% от общей муки)",
+    "prefermentHydration": "Гидратация предфермента (%)",
+    "prefermentYeastPct": "Дрожжи в предферменте (% от общей нормы)"
+  },
+  "output": {
+    "title": "Итоговый рецепт",
+    "profile": "Профиль",
+    "flourComposition": "Состав муки",
+    "mainFlour": "Основная мука",
+    "extraFlour1": "Дополнительная мука 1",
+    "extraFlour2": "Дополнительная мука 2",
+    "totalFlour": "Общая мука",
+    "ingredientTypes": "Типы ингредиентов",
+    "liquid": "Жидкость",
+    "fat": "Жир",
+    "eggType": "Тип яйца",
+    "sugarType": "Тип сахара",
+    "yeastType": "Тип дрожжей",
+    "preferment": "Предфермент",
+    "prefType": "Тип",
+    "prefFlour": "Мука",
+    "prefLiquid": "Жидкость",
+    "prefWater": "Реальная вода",
+    "prefYeast": "Дрожжи",
+    "prefTotal": "Масса предфермента",
+    "mainDough": "Основной замес",
+    "flour": "Мука",
+    "water": "Реальная вода",
+    "salt": "Соль",
+    "sugar": "Сахар",
+    "fatLabel": "Жиры",
+    "eggsLabel": "Яйца",
+    "yeast": "Дрожжи",
+    "totals": "Итоговое тесто",
+    "totalLiquid": "Общая жидкость",
+    "totalWater": "Общая реальная вода",
+    "totalYeast": "Дрожжи всего",
+    "targetHydration": "Заданная гидратация",
+    "trueHydration": "Истинная гидратация",
+    "mainDoughWeight": "Масса основного замеса",
+    "totalDough": "Итого тесто"
+  },
+  "ingredients": {
+    "liquid": {
+      "water": "вода",
+      "milk": "молоко",
+      "kefir": "кефир",
+      "whey": "сыворотка",
+      "plant_milk": "растительное молоко"
+    },
+    "fat": {
+      "butter": "сливочное масло",
+      "oil": "растительное масло",
+      "ghee": "топлёное масло",
+      "margarine": "маргарин"
+    },
+    "egg": {
+      "whole": "целое яйцо",
+      "yolk": "желток",
+      "white": "белок",
+      "powder": "яичный порошок"
+    },
+    "sugar": {
+      "white": "белый сахар",
+      "brown": "коричневый сахар",
+      "panela": "панела"
+    },
+    "yeast": {
+      "instant": "инстантные",
+      "fresh": "свежие",
+      "active": "активные"
+    },
+    "preferment": {
+      "none": "без предфермента",
+      "poolish": "пулиш",
+      "biga": "бига",
+      "levain": "левен",
+      "yeasted_sponge": "дрожжевой спонж",
+      "enriched": "обогащённый предфермент"
+    },
+    "flour": {
+      "normal": "обычная",
+      "strong": "сильная",
+      "integral": "цельнозерновая",
+      "rye": "ржаная",
+      "buckwheat": "гречневая",
+      "corn": "кукурузная",
+      "rice": "рисовая",
+      "oat": "овсяная",
+      "flax": "льняная"
+    },
+    "climate": {
+      "dry": "Сухой",
+      "moderate": "Умеренный",
+      "humid": "Влажный"
+    },
+    "mixing": {
+      "spiral": "Спиральный",
+      "planetary": "Планетарный",
+      "manual": "Ручной"
+    }
+  }
+}

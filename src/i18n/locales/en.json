@@ -1,0 +1,158 @@
+{
+  "common": {
+    "back": "← Back",
+    "calculate": "Calculate Recipe",
+    "restart": "Start Over",
+    "save": "Save as Recipe",
+    "techcard": "Tech Card"
+  },
+  "start": {
+    "conditions": "Production Conditions",
+    "roomTemp": "Room Temperature (°C)",
+    "warmHours": "Warm Fermentation (hours)",
+    "coldHours": "Cold Fermentation (hours)",
+    "climate": "Climate",
+    "mixing": "Mixing Method",
+    "techMode": "Technology Mode",
+    "home": "Home",
+    "professional": "Professional",
+    "searchProfiles": "Search Profiles",
+    "searchPlaceholder": "Enter profile name...",
+    "recentProfiles": "Recent Profiles",
+    "favorites": "Favorites",
+    "categories": "Dough Categories",
+    "myRecipes": "My Recipes"
+  },
+  "input": {
+    "title": "Dough Parameters",
+    "calcMode": "Calculation Mode",
+    "byFlour": "By Flour",
+    "byDough": "By Dough Weight",
+    "waterAndYeast": "Water & Yeast",
+    "hydration": "Hydration (%)",
+    "yeastPct": "Yeast (% of flour)",
+    "yeastRecommended": "Recommended: {{value}}%",
+    "flourTypes": "Flour Types",
+    "mainFlour": "Main Flour",
+    "extraFlour1": "Additional Flour 1",
+    "extraFlour2": "Additional Flour 2",
+    "extraPct1": "Additional flour 1 (% of total flour)",
+    "extraPct2": "Additional flour 2 (% of total flour)",
+    "ingredients": "Main Ingredients",
+    "flour": "Flour (g)",
+    "targetDough": "Target Dough Weight (g)",
+    "salt": "Salt (% of flour)",
+    "sugar": "Sugar (% of flour)",
+    "fat": "Fat (% of flour)",
+    "eggs": "Eggs (pcs)",
+    "ingredientTypes": "Ingredient Types",
+    "liquid": "Liquid",
+    "fatType": "Fat",
+    "eggType": "Egg Type",
+    "sugarType": "Sugar Type",
+    "yeastType": "Yeast Type",
+    "preferment": "Preferment",
+    "prefermentType": "Type",
+    "prefermentFlourPct": "Flour in preferment (% of total flour)",
+    "prefermentHydration": "Preferment Hydration (%)",
+    "prefermentYeastPct": "Yeast in preferment (% of total yeast)"
+  },
+  "output": {
+    "title": "Final Recipe",
+    "profile": "Profile",
+    "flourComposition": "Flour Composition",
+    "mainFlour": "Main Flour",
+    "extraFlour1": "Additional Flour 1",
+    "extraFlour2": "Additional Flour 2",
+    "totalFlour": "Total Flour",
+    "ingredientTypes": "Ingredient Types",
+    "liquid": "Liquid",
+    "fat": "Fat",
+    "eggType": "Egg Type",
+    "sugarType": "Sugar Type",
+    "yeastType": "Yeast Type",
+    "preferment": "Preferment",
+    "prefType": "Type",
+    "prefFlour": "Flour",
+    "prefLiquid": "Liquid",
+    "prefWater": "Real Water",
+    "prefYeast": "Yeast",
+    "prefTotal": "Preferment Weight",
+    "mainDough": "Main Dough",
+    "flour": "Flour",
+    "water": "Real Water",
+    "salt": "Salt",
+    "sugar": "Sugar",
+    "fatLabel": "Fat",
+    "eggsLabel": "Eggs",
+    "yeast": "Yeast",
+    "totals": "Final Dough",
+    "totalLiquid": "Total Liquid",
+    "totalWater": "Total Real Water",
+    "totalYeast": "Total Yeast",
+    "targetHydration": "Target Hydration",
+    "trueHydration": "True Hydration",
+    "mainDoughWeight": "Main Dough Weight",
+    "totalDough": "Total Dough"
+  },
+  "ingredients": {
+    "liquid": {
+      "water": "water",
+      "milk": "milk",
+      "kefir": "kefir",
+      "whey": "whey",
+      "plant_milk": "plant milk"
+    },
+    "fat": {
+      "butter": "butter",
+      "oil": "vegetable oil",
+      "ghee": "ghee",
+      "margarine": "margarine"
+    },
+    "egg": {
+      "whole": "whole egg",
+      "yolk": "yolk",
+      "white": "egg white",
+      "powder": "egg powder"
+    },
+    "sugar": {
+      "white": "white sugar",
+      "brown": "brown sugar",
+      "panela": "panela"
+    },
+    "yeast": {
+      "instant": "instant",
+      "fresh": "fresh",
+      "active": "active dry"
+    },
+    "preferment": {
+      "none": "no preferment",
+      "poolish": "poolish",
+      "biga": "biga",
+      "levain": "levain",
+      "yeasted_sponge": "yeasted sponge",
+      "enriched": "enriched preferment"
+    },
+    "flour": {
+      "normal": "all-purpose",
+      "strong": "bread flour",
+      "integral": "whole wheat",
+      "rye": "rye",
+      "buckwheat": "buckwheat",
+      "corn": "corn",
+      "rice": "rice",
+      "oat": "oat",
+      "flax": "flax"
+    },
+    "climate": {
+      "dry": "Dry",
+      "moderate": "Moderate",
+      "humid": "Humid"
+    },
+    "mixing": {
+      "spiral": "Spiral",
+      "planetary": "Planetary",
+      "manual": "Manual"
+    }
+  }
+}
