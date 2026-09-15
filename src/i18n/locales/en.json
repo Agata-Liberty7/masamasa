@@ -154,5 +154,6 @@
       "planetary": "Planetary",
       "manual": "Manual"
     }
-  }
+  },
+  "eggs": "Eggs (% of flour)"
 }

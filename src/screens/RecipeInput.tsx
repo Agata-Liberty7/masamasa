@@ -1,7 +1,6 @@
 import React from "react";
 import NumberInput from "../components/NumberInput";
 import type { PrefermentType } from "../logic/preferment";
-import { EGG_WEIGHTS } from "../logic/eggWeights";
 
 import type {
   FlourType,
@@ -98,8 +97,8 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     initialValues.fat ?? base.fat ?? 0
   );
 
-  const [eggs, setEggs] = React.useState(
-    initialValues.eggs ?? base.eggs ?? 0
+  const [eggsPct, setEggsPct] = React.useState(
+    initialValues.eggsPct ?? base.eggs ?? 0
   );
 
   const [yeastPct, setYeastPct] = React.useState(
@@ -178,7 +177,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setSalt(initialValues.salt ?? nextBase.salt ?? 2);
     setSugar(initialValues.sugar ?? nextBase.sugar ?? 0);
     setFat(initialValues.fat ?? nextBase.fat ?? 0);
-    setEggs(initialValues.eggs ?? nextBase.eggs ?? 0);
+    setEggsPct(initialValues.eggsPct ?? nextBase.eggs ?? 0);
     setYeastPct(initialValues.yeastPct ?? nextBase.yeast?.percent ?? 1);
 
     setMainFlour(initialValues.mainFlour ?? "normal");
@@ -227,7 +226,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     const saltSafe = n(salt, 0);
     const sugarSafe = n(sugar, 0);
     const fatSafe = n(fat, 0);
-    const eggsSafe = n(eggs, 0);
+    const eggsPctSafe = n(eggsPct, 0);
     const yeastPctSafe = n(yeastPct, 0);
     const targetDoughWeightSafe = n(targetDoughWeight, 0);
 
@@ -238,7 +237,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       const saltGr = (flourSafe * saltSafe) / 100;
       const sugarGr = (flourSafe * sugarSafe) / 100;
       const fatGr = (flourSafe * fatSafe) / 100;
-      const eggsGr = eggsSafe * (EGG_WEIGHTS[eggType] ?? 50);
+      const eggsGr = (flourSafe * eggsPctSafe) / 100;
       const yeastGr = (flourSafe * yeastPctSafe) / 100;
 
       const totalNow =
@@ -259,7 +258,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       salt: saltSafe,
       sugar: sugarSafe,
       fat: fatSafe,
-      eggs: eggsSafe,
+      eggsPct: eggsPctSafe,
       yeastPct: yeastPctSafe,
 
       mainFlour,
@@ -401,7 +400,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           <NumberInput label="Соль (% от муки)" value={salt} onChange={setSalt} />
           <NumberInput label="Сахар (% от муки)" value={sugar} onChange={setSugar} />
           <NumberInput label="Жиры (% от муки)" value={fat} onChange={setFat} />
-          <NumberInput label="Яйца (шт)" value={eggs} onChange={setEggs} />
+          <NumberInput label="Яйца (% от муки)" value={eggsPct} onChange={setEggsPct} />
         </div>
       </Section>
 

@@ -128,8 +128,9 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
   const salt = safeNum(data?.salt);
   const sugar = safeNum(data?.sugar);
   const fat = safeNum(data?.fat);
-  const eggs = safeNum(data?.eggs);
+  const eggsPct = safeNum(data?.eggsPct);
   const eggsGr = safeNum(data?.eggsGr);
+  const approxEggCount = safeNum(data?.approxEggCount);
   const yeast = safeNum(data?.yeast);
 
   const hydration = safeNum(data?.hydration);
@@ -226,7 +227,14 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
         <Row label="Соль" value={formatGr(salt)} />
         <Row label="Сахар" value={formatGr(sugar)} />
         <Row label="Жиры" value={formatGr(fat)} />
-        <Row label="Яйца" value={`${eggsGr} г (${eggs} шт, ${prettify(eggType, "egg")})`} />
+        <Row
+          label="Яйца"
+          value={
+            eggType === "none" || eggsGr <= 0
+              ? "—"
+              : `${eggsGr} г (${eggsPct}% от муки, ≈ ${approxEggCount} шт., ${prettify(eggType, "egg")})`
+          }
+        />
         <Row label="Дрожжи" value={formatGr(finalYeast)} />
       </Section>
 

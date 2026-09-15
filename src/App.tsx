@@ -8,7 +8,7 @@ import TechCard from "./screens/TechCard";
 import CustomRecipeView from "./screens/CustomRecipeView";
 
 import { loadProfile } from "./logic/profileLoader";
-import {LIQUID_WATER_CONTENT} from "./logic/liquidWaterContent";
+import { calculateRecipe } from "./logic/calculateRecipe";
 
 function App() {
   const {
@@ -90,7 +90,7 @@ function App() {
       salt: loaded?.base?.salt ?? 2,
       sugar: loaded?.base?.sugar ?? 0,
       fat: loaded?.base?.fat ?? 0,
-      eggs: loaded?.base?.eggs ?? 0,
+      eggsPct: loaded?.base?.eggs ?? 0,
 
       yeastPct: loaded?.base?.yeast?.percent ?? 1,
       yeastForm: loaded?.base?.yeast?.type ?? "instant",
@@ -152,6 +152,17 @@ function App() {
   // ------------------------------------------------------------
   const handleBackToInput = () => {
     if (!recipeData) return;
+
+    const inputData = recipeData._input;
+
+    if (inputData) {
+      setRecipeData({
+        ...inputData,
+        _calculated: false,
+      });
+      return;
+    }
+
     setRecipeData({ ...recipeData, _calculated: false });
   };
 
@@ -184,163 +195,64 @@ function App() {
   const handleCalculate = (data: any) => {
     if (!profileData) return;
 
-    const flour = n(data.flour, 0);
-    const hydration = n(data.hydration, 0);
-    const salt = n(data.salt, 0);
-    const sugar = n(data.sugar, 0);
-    const fat = n(data.fat, 0);
-    const eggs = n(data.eggs, 0);
-    const yeastPct = n(data.yeastPct, 0);
+    const calculated = calculateRecipe({
+      flour: n(data.flour, 0),
 
-    const extraPct1 = n(data.extraPct1, 0);
-    const extraPct2 = n(data.extraPct2, 0);
+      mainFlour: data.mainFlour || "normal",
+      extraFlour1: data.extraFlour1 || "normal",
+      extraPct1: n(data.extraPct1, 0),
+      extraFlour2: data.extraFlour2 || "normal",
+      extraPct2: n(data.extraPct2, 0),
 
-    const prefermentFlourPct = n(data.prefermentFlourPct, 0);
-    const prefermentHydrationPct = n(data.prefermentHydrationPct, 100);
-    const prefermentYeastPct = n(data.prefermentYeastPct, 0);
+      hydration: n(data.hydration, 0),
+      liquidType: data.liquidType || "water",
 
-const fatType = data.fatType || "butter";
-const eggType = data.eggType || "whole";
-const sugarType = data.sugarType || "white";
-const yeastForm = data.yeastForm || "instant";
-const liquidType = (data.liquidType || "water") as keyof typeof LIQUID_WATER_CONTENT;
+      salt: n(data.salt, 0),
+      sugar: n(data.sugar, 0),
+      fat: n(data.fat, 0),
 
-const mainFlour = data.mainFlour || "normal";
-const extraFlour1 = data.extraFlour1 || "normal";
-const extraFlour2 = data.extraFlour2 || "normal";
+      // Новый стандарт: яйца — % от массы муки.
+      eggsPct: n(data.eggsPct, 0),
 
-const prefermentType = data.prefermentType || "none";
+      fatType: data.fatType || "butter",
+      eggType: data.eggType || "whole",
+      sugarType: data.sugarType || "white",
+      yeastForm: data.yeastForm || "instant",
 
-const EGG_UNIT_WEIGHTS: Record<string, number> = {
-  whole: 50,
-  yolk: 18,
-  white: 32,
-  powder: 50,
-};
+      yeastPct: n(data.yeastPct, 0),
 
-const YEAST_MULTIPLIER: Record<string, number> = {
-  instant: 1,
-  fresh: 3,
-  active: 1.25,
-};
+      prefermentType: data.prefermentType || "none",
+      prefermentFlourPct: n(data.prefermentFlourPct, 0),
+      prefermentHydrationPct: n(data.prefermentHydrationPct, 100),
+      prefermentYeastPct: n(data.prefermentYeastPct, 0),
 
-const liquidWaterRatio = LIQUID_WATER_CONTENT[liquidType] ?? 1.0;
-const eggUnitWeight = EGG_UNIT_WEIGHTS[eggType] ?? 50;
-const yeastMultiplier = YEAST_MULTIPLIER[yeastForm] ?? 1;
+      roomTemp,
+      warmFermentationHours,
+      coldFermentationHours,
+      productionMode,
 
-const targetWater = (flour * hydration) / 100;
-const liquid = Math.round(targetWater / liquidWaterRatio);
-const liquidWater = Math.round(liquid * liquidWaterRatio);
+      doughType: profileData.isEnriched ? "enriched" : "lean",
+    });
 
-    const mainFlourGr = Math.round(
-      flour * (100 - extraPct1 - extraPct2) / 100
-    );
-    const extraFlour1Gr = Math.round(flour * extraPct1 / 100);
-    const extraFlour2Gr = Math.round(flour * extraPct2 / 100);
+    setRecipeData({
+      ...calculated,
 
-    const saltGr = Math.round((flour * salt) / 100);
-    const sugarGr = Math.round((flour * sugar) / 100);
-    const fatGr = Math.round((flour * fat) / 100);
-    const eggsGr = Math.round(eggs * eggUnitWeight);
-    const yeast = Math.round((flour * yeastPct) / 100 * yeastMultiplier);
+      // Сохраняем исходные значения формы отдельно от результата в граммах.
+      // Они нужны для корректного возврата в RecipeInput.
+      _input: { ...data },
 
-    let prefFlour = 0;
-    let prefLiquid = 0;
-    let prefWater = 0;
-    let prefYeast = 0;
-    let prefermentTotal = 0;
-
-    if (prefermentType !== "none") {
-      prefFlour = Math.round((flour * prefermentFlourPct) / 100);
-      prefWater = Math.round((prefFlour * prefermentHydrationPct) / 100);
-      prefLiquid = Math.round(prefWater / liquidWaterRatio);
-      prefYeast = Math.round((yeast * prefermentYeastPct) / 100);
-      prefermentTotal = prefFlour + prefLiquid + prefYeast;
-    }
-
-    const finalFlour = flour - prefFlour;
-    const finalLiquid = liquid - prefLiquid;
-    const finalWater = liquidWater - prefWater;
-    const finalYeast = yeast - prefYeast;
-
-    const finalDough =
-      finalFlour +
-      finalLiquid +
-      saltGr +
-      sugarGr +
-      fatGr +
-      eggsGr +
-      finalYeast;
-
-    const totalDough = finalDough + prefermentTotal;
-
-    const trueHydration =
-      flour > 0 ? Math.round((liquidWater / flour) * 100) : 0;
-
-    const calculated = {
+      // UI-state, не часть расчётного ядра
       mode: data.mode ?? "flour",
       targetDoughWeight: n(data.targetDoughWeight, 0),
 
-      flour,
-      hydration,
-      trueHydration,
+      prefFlour: calculated.preferment.flour,
+      prefLiquid: calculated.preferment.liquid,
+      prefWater: calculated.preferment.water,
+      prefYeast: calculated.preferment.yeast,
+      prefermentTotal: calculated.preferment.total,
 
-      liquid,
-      liquidWater,
-      liquidType,
-
-      salt: saltGr,
-      sugar: sugarGr,
-      fat: fatGr,
-      eggs,
-      eggsGr,
-      yeast,
-
-      mainFlour,
-      extraFlour1,
-      extraPct1,
-      extraFlour2,
-      extraPct2,
-
-      mainFlourGr,
-      extraFlour1Gr,
-      extraFlour2Gr,
-
-      fatType,
-      eggType,
-      sugarType,
-      yeastForm,
-
-      prefermentType,
-      prefermentFlourPct,
-      prefermentHydrationPct,
-      prefermentYeastPct,
-
-      preferment: {
-        type: prefermentType,
-        flour: prefFlour,
-        liquid: prefLiquid,
-        water: prefWater,
-        yeast: prefYeast,
-        total: prefermentTotal,
-      },
-
-      prefFlour,
-      prefLiquid,
-      prefWater,
-      prefYeast,
-      prefermentTotal,
-
-      finalFlour,
-      finalLiquid,
-      finalWater,
-      finalYeast,
-
-      finalDough,
-      totalDough,
-    };
-
-    setRecipeData({ ...calculated, _calculated: true });
+      _calculated: true,
+    });
   };
 
   // ------------------------------------------------------------
