@@ -4,10 +4,10 @@
 
 import { computeYeastPercent } from "./fermentationModel";
 import {
-  calculateLiquidFromTargetWater,
   calculateLiquidWater,
 } from "./liquidWaterContent";
 import { EGG_WEIGHTS } from "./eggWeights";
+import { calculateFatWater } from "./fatWaterContent";
 
 import type {
   FlourType,
@@ -188,12 +188,8 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
   //  2. Жидкость
   // ----------------------------------------------------------
 
-  const targetWater =
-    (input.flour * input.hydration) / 100;
-
-  const liquid = calculateLiquidFromTargetWater(
-    targetWater,
-    input.liquidType
+  const liquid = Math.round(
+    (input.flour * input.hydration) / 100
   );
 
   const liquidWater = calculateLiquidWater(
@@ -296,13 +292,8 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
       (input.flour * input.prefermentFlourPct) / 100
     );
 
-    const prefTargetWater = Math.round(
+    const prefLiquid = Math.round(
       (prefFlour * input.prefermentHydrationPct) / 100
-    );
-
-    const prefLiquid = calculateLiquidFromTargetWater(
-      prefTargetWater,
-      input.liquidType
     );
 
     const prefWater = calculateLiquidWater(
@@ -363,10 +354,15 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
       (EGG_WATER_FRACTION[input.eggType] ?? 0)
   );
 
+  const waterFromFat = calculateFatWater(
+    fatGr,
+    input.fatType
+  );
+
   const trueHydration =
     input.flour > 0
       ? Math.round(
-          ((liquidWater + waterFromEggs) /
+          ((liquidWater + waterFromEggs + waterFromFat) /
             input.flour) *
             100
         )
