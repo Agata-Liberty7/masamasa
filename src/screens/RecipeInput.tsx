@@ -69,6 +69,9 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   const base = profile?.base ?? {};
   const pref = profile?.preferment ?? {};
 
+  const usesRecipeComposition =
+    typeof base.liquidPct === "number";
+
   const [mode, setMode] = React.useState<"flour" | "dough">(
     initialValues.mode ?? "flour"
   );
@@ -82,7 +85,15 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   );
 
   const [hydration, setHydration] = React.useState(
-    initialValues.hydration ?? base.hydration ?? 60
+    initialValues.hydration ??
+      base.hydration ??
+      60
+  );
+
+  const [liquidPct, setLiquidPct] = React.useState(
+    initialValues.liquidPct ??
+      base.liquidPct ??
+      0
   );
 
   const [salt, setSalt] = React.useState(
@@ -173,7 +184,17 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setFlour(initialValues.flour ?? nextBase.flour ?? 1000);
     setTargetDoughWeight(initialValues.targetDoughWeight ?? 0);
 
-    setHydration(initialValues.hydration ?? nextBase.hydration ?? 60);
+    setHydration(
+      initialValues.hydration ??
+        nextBase.hydration ??
+        60
+    );
+
+    setLiquidPct(
+      initialValues.liquidPct ??
+        nextBase.liquidPct ??
+        0
+    );
     setSalt(initialValues.salt ?? nextBase.salt ?? 2);
     setSugar(initialValues.sugar ?? nextBase.sugar ?? 0);
     setFat(initialValues.fat ?? nextBase.fat ?? 0);
@@ -186,10 +207,18 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setExtraFlour2(initialValues.extraFlour2 ?? "normal");
     setExtraPct2(initialValues.extraPct2 ?? 0);
 
-    setLiquidType(initialValues.liquidType ?? "water");
-    setFatType(initialValues.fatType ?? "butter");
-    setEggType(initialValues.eggType ?? "whole");
-    setSugarType(initialValues.sugarType ?? "white");
+    setLiquidType(
+      initialValues.liquidType ?? nextBase.liquidType ?? "water"
+    );
+    setFatType(
+      initialValues.fatType ?? nextBase.fatType ?? "butter"
+    );
+    setEggType(
+      initialValues.eggType ?? nextBase.eggType ?? "whole"
+    );
+    setSugarType(
+      initialValues.sugarType ?? nextBase.sugarType ?? "white"
+    );
     setYeastForm(initialValues.yeastForm ?? nextBase.yeast?.type ?? "instant");
 
     setPrefermentType(
@@ -223,6 +252,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   const handleSubmit = () => {
     const flourSafe = n(flour, 0);
     const hydrationSafe = n(hydration, 0);
+    const liquidPctSafe = n(liquidPct, 0);
     const saltSafe = n(salt, 0);
     const sugarSafe = n(sugar, 0);
     const fatSafe = n(fat, 0);
@@ -233,7 +263,11 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     let finalFlour = flourSafe;
 
     if (mode === "dough" && targetDoughWeightSafe > 0) {
-      const water = (flourSafe * hydrationSafe) / 100;
+      const liquidPercent = usesRecipeComposition
+        ? liquidPctSafe
+        : hydrationSafe;
+
+      const liquidGr = (flourSafe * liquidPercent) / 100;
       const saltGr = (flourSafe * saltSafe) / 100;
       const sugarGr = (flourSafe * sugarSafe) / 100;
       const fatGr = (flourSafe * fatSafe) / 100;
@@ -241,7 +275,13 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       const yeastGr = (flourSafe * yeastPctSafe) / 100;
 
       const totalNow =
-        flourSafe + water + saltGr + sugarGr + fatGr + eggsGr + yeastGr;
+        flourSafe +
+        liquidGr +
+        saltGr +
+        sugarGr +
+        fatGr +
+        eggsGr +
+        yeastGr;
 
       if (totalNow > 0) {
         const ratio = targetDoughWeightSafe / totalNow;
@@ -254,7 +294,17 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       targetDoughWeight: targetDoughWeightSafe,
 
       flour: finalFlour,
-      hydration: hydrationSafe,
+
+      // Legacy hydration остаётся только для старых профилей.
+      hydration: usesRecipeComposition
+        ? undefined
+        : hydrationSafe,
+
+      // Новый composition input.
+      liquidPct: usesRecipeComposition
+        ? liquidPctSafe
+        : undefined,
+
       salt: saltSafe,
       sugar: sugarSafe,
       fat: fatSafe,
@@ -311,11 +361,19 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       </Section>
 
       <Section title="Вода и дрожжи">
-        <NumberInput
-          label="Гидратация (%)"
-          value={hydration}
-          onChange={setHydration}
-        />
+        {usesRecipeComposition ? (
+          <NumberInput
+            label="Основная жидкость (% от муки)"
+            value={liquidPct}
+            onChange={setLiquidPct}
+          />
+        ) : (
+          <NumberInput
+            label="Гидратация (%)"
+            value={hydration}
+            onChange={setHydration}
+          />
+        )}
 
         <NumberInput
           label="Дрожжи (% от муки)"

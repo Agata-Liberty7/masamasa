@@ -86,7 +86,19 @@ function App() {
       targetDoughWeight: 0,
 
       flour: loaded?.base?.flour ?? 1000,
-      hydration: loaded?.base?.hydration ?? 60,
+
+      // Новый composition-профиль хранит основную жидкость отдельно.
+      liquidPct:
+        typeof loaded?.base?.liquidPct === "number"
+          ? loaded.base.liquidPct
+          : undefined,
+
+      // hydration остаётся временно только для legacy-профилей.
+      hydration:
+        typeof loaded?.base?.liquidPct === "number"
+          ? undefined
+          : loaded?.base?.hydration ?? 60,
+
       salt: loaded?.base?.salt ?? 2,
       sugar: loaded?.base?.sugar ?? 0,
       fat: loaded?.base?.fat ?? 0,
@@ -204,7 +216,16 @@ function App() {
       extraFlour2: data.extraFlour2 || "normal",
       extraPct2: n(data.extraPct2, 0),
 
-      hydration: n(data.hydration, 0),
+      hydration:
+        data.hydration === undefined
+          ? undefined
+          : n(data.hydration, 0),
+
+      liquidPct:
+        data.liquidPct === undefined
+          ? undefined
+          : n(data.liquidPct, 0),
+
       liquidType: data.liquidType || "water",
 
       salt: n(data.salt, 0),

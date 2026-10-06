@@ -34,8 +34,13 @@ export type RecipeInput = {
   extraFlour2: FlourType;
   extraPct2: number;
 
-  // Гидратация
-  hydration: number;
+  // Legacy: старые профили
+  hydration?: number;
+
+  // Новый composition-профиль:
+  // количество основной жидкости как baker's percentage.
+  liquidPct?: number;
+
   liquidType: LiquidType;
 
   // Ингредиенты (% от муки)
@@ -112,9 +117,10 @@ export type RecipeResult = {
   sugarType: SugarType;
   yeastForm: YeastForm;
 
-  // Гидратация
-  hydration: number;
-  trueHydration: number;
+  // Аналитика воды
+  liquidPct: number;
+  effectiveWaterGr: number;
+  effectiveWaterPct: number;
 
   // Рекомендация дрожжей от движка
   yeastRecommendedPct: number;
@@ -188,8 +194,16 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
   //  2. Жидкость
   // ----------------------------------------------------------
 
+  // Для новых профилей источником количества основной жидкости
+  // является liquidPct.
+  // hydration здесь используется только как fallback для legacy-профилей.
+  const primaryLiquidPct =
+    typeof input.liquidPct === "number"
+      ? input.liquidPct
+      : input.hydration ?? 0;
+
   const liquid = Math.round(
-    (input.flour * input.hydration) / 100
+    (input.flour * primaryLiquidPct) / 100
   );
 
   const liquidWater = calculateLiquidWater(
@@ -359,12 +373,13 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
     input.fatType
   );
 
-  const trueHydration =
+  const effectiveWaterGr =
+    liquidWater + waterFromEggs + waterFromFat;
+
+  const effectiveWaterPct =
     input.flour > 0
       ? Math.round(
-          ((liquidWater + waterFromEggs + waterFromFat) /
-            input.flour) *
-            100
+          (effectiveWaterGr / input.flour) * 100
         )
       : 0;
 
@@ -428,9 +443,10 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
     sugarType: input.sugarType,
     yeastForm: input.yeastForm,
 
-    // Гидратация
-    hydration: input.hydration,
-    trueHydration,
+    // Аналитика воды
+    liquidPct: primaryLiquidPct,
+    effectiveWaterGr,
+    effectiveWaterPct,
 
     // Дрожжи — рекомендация модели
     yeastRecommendedPct,

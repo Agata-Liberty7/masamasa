@@ -42,7 +42,6 @@ const safeText = (v: any, fallback = "—") => {
 };
 
 const formatGr = (v: any) => `${safeNum(v)} г`;
-const formatPct = (v: any) => `${safeNum(v)}%`;
 
 const prettify = (value: string, group?: "liquid" | "fat" | "egg" | "sugar" | "yeast" | "preferment" | "flour") => {
   const liquidNames: Record<string, string> = {
@@ -133,8 +132,18 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
   const approxEggCount = safeNum(data?.approxEggCount);
   const yeast = safeNum(data?.yeast);
 
-  const hydration = safeNum(data?.hydration);
-  const trueHydration = safeNum(data?.trueHydration);
+  const liquidPct = safeNum(
+    data?.liquidPct ?? data?.hydration
+  );
+
+  const effectiveWaterPct = safeNum(
+    data?.effectiveWaterPct ?? data?.trueHydration
+  );
+
+  const effectiveWaterGr = safeNum(
+    data?.effectiveWaterGr ??
+      (flour > 0 ? (flour * effectiveWaterPct) / 100 : 0)
+  );
 
   const mainFlour = safeText(data?.mainFlour, "normal");
   const extraFlour1 = safeText(data?.extraFlour1, "normal");
@@ -243,8 +252,14 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
         <Row label="Общая жидкость" value={`${liquid} г (${prettify(liquidType, "liquid")})`} />
         <Row label="Общая реальная вода" value={formatGr(liquidWater)} />
         <Row label="Дрожжи всего" value={formatGr(yeast)} />
-        <Row label="Заданная гидратация" value={formatPct(hydration)} />
-        <Row label="Истинная гидратация" value={formatPct(trueHydration)} />
+        <Row
+          label="Основная жидкость"
+          value={`${liquidPct}% от муки`}
+        />
+        <Row
+          label="Эффективная вода"
+          value={`${Math.round(effectiveWaterGr)} г (${effectiveWaterPct}% от муки)`}
+        />
         <Row label="Масса основного замеса" value={formatGr(finalDough)} />
         <Row label="Итого тесто" value={formatGr(totalDough)} />
       </Section>

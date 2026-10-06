@@ -119,12 +119,20 @@ export function loadProfile(
 
   const flags = detectType(profile);
 
+  // Новый формат профиля: состав рецепта определяет расчётные показатели.
+  // Старый hydration остаётся временно только для legacy-профилей.
+  const usesRecipeComposition =
+    typeof base.liquidPct === "number";
+
   // -----------------------------
   // 1. Климатические поправки
   // -----------------------------
   const climateAdj = profile.climateAdjustments?.[climate];
   if (climateAdj) {
-    base.hydration = (base.hydration ?? 0) + (climateAdj.hydrationDelta || 0);
+    if (!usesRecipeComposition) {
+      base.hydration =
+        (base.hydration ?? 0) + (climateAdj.hydrationDelta || 0);
+    }
 
     if (base.yeast) {
       base.yeast.percent =
@@ -137,7 +145,10 @@ export function loadProfile(
   // -----------------------------
   const mixingAdj = profile.mixingAdjustments?.[mixing];
   if (mixingAdj) {
-    base.hydration = (base.hydration ?? 0) + (mixingAdj.hydrationDelta || 0);
+    if (!usesRecipeComposition) {
+      base.hydration =
+        (base.hydration ?? 0) + (mixingAdj.hydrationDelta || 0);
+    }
 
     if (base.yeast) {
       base.yeast.percent =
@@ -189,7 +200,11 @@ export function loadProfile(
   // -----------------------------
   // 4. Ограничения профиля
   // -----------------------------
-  if (limits.hydration) {
+  if (
+    !usesRecipeComposition &&
+    limits.hydration &&
+    typeof base.hydration === "number"
+  ) {
     base.hydration = clamp(
       base.hydration,
       limits.hydration.min,

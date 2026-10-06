@@ -133,8 +133,31 @@ const CustomRecipeView: React.FC<Props> = ({
             { label: "Общая мука", value: `${recipe.flour ?? 0} г` },
             { label: "Общая жидкость", value: `${recipe.liquid ?? 0} г` },
             { label: "Общая реальная вода", value: `${recipe.liquidWater ?? 0} г` },
-            { label: "Заданная гидратация", value: `${recipe.hydration ?? 0}%` },
-            { label: "Истинная гидратация", value: `${recipe.trueHydration ?? 0}%` },
+            {
+              label: "Основная жидкость",
+              value: `${
+                recipe.liquidPct ??
+                recipe.hydration ??
+                0
+              }% от муки`,
+            },
+            {
+              label: "Эффективная вода",
+              value: `${
+                recipe.effectiveWaterGr ??
+                Math.round(
+                  ((recipe.flour ?? 0) *
+                    (recipe.effectiveWaterPct ??
+                      recipe.trueHydration ??
+                      0)) /
+                    100
+                )
+              } г (${
+                recipe.effectiveWaterPct ??
+                recipe.trueHydration ??
+                0
+              }% от муки)`,
+            },
             { label: "Масса основного замеса", value: `${recipe.finalDough ?? 0} г` },
             { label: "Итого тесто", value: `${recipe.totalDough ?? 0} г` },
           ]}
