@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import "./RecipeInput.css";
 import NumberInput from "../components/NumberInput";
 import type { PrefermentType } from "../logic/preferment";
 
@@ -18,16 +20,6 @@ type RecipeInputProps = {
   onBack: () => void;
   onCalculate: (data: any) => void;
 };
-
-const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
-  <section style={{ marginBottom: "32px" }}>
-    <h2 style={{ marginBottom: "12px" }}>{title}</h2>
-    {children}
-  </section>
-);
 
 const FLOUR_TYPES: FlourType[] = [
   "normal",
@@ -66,6 +58,8 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   onBack,
   onCalculate,
 }) => {
+  const { t, i18n } = useTranslation();
+
   const base = profile?.base ?? {};
   const pref = profile?.preferment ?? {};
 
@@ -331,271 +325,406 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
-      <button onClick={onBack} style={{ marginBottom: "16px" }}>
-        ← Назад
-      </button>
+    <div className="recipe-input-page">
+      <div className="recipe-input-shell">
+        <button onClick={onBack} className="recipe-back">
+          {t("common.back")}
+        </button>
 
-      <h1 style={{ marginBottom: "24px" }}>Параметры теста: {profileId}</h1>
+        <div className="recipe-language">
+          <button
+            type="button"
+            className={i18n.language.startsWith("ru") ? "active" : ""}
+            onClick={() => i18n.changeLanguage("ru")}
+          >
+            RU
+          </button>
 
-      <Section title="Режим расчёта">
-        <div style={{ display: "flex", gap: "24px" }}>
-          <label>
-            <input
-              type="radio"
-              checked={mode === "flour"}
-              onChange={() => setMode("flour")}
-            />{" "}
-            По муке
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              checked={mode === "dough"}
-              onChange={() => setMode("dough")}
-            />{" "}
-            По весу теста
-          </label>
+          <button
+            type="button"
+            className={i18n.language.startsWith("en") ? "active" : ""}
+            onClick={() => i18n.changeLanguage("en")}
+          >
+            EN
+          </button>
         </div>
-      </Section>
 
-      <Section title="Вода и дрожжи">
-        {usesRecipeComposition ? (
-          <NumberInput
-            label="Основная жидкость (% от муки)"
-            value={liquidPct}
-            onChange={setLiquidPct}
-          />
-        ) : (
-          <NumberInput
-            label="Гидратация (%)"
-            value={hydration}
-            onChange={setHydration}
-          />
-        )}
+        <header className="recipe-header">
+          <h1 className="recipe-title">
+            {t(`profiles.${profileId}`, {
+              defaultValue: profile?.name ?? profileId,
+            })}
+          </h1>
+          <p className="recipe-subtitle">
+            {t("recipeInput.subtitle")}
+          </p>
+        </header>
 
-        <NumberInput
-          label="Дрожжи (% от муки)"
-          value={yeastPct}
-          onChange={setYeastPct}
-        />
-      </Section>
+        <section className="recipe-card">
+          <h2 className="recipe-card-title">{t("recipeInput.calculation")}</h2>
 
-      <Section title="Типы муки">
-        <div style={{ display: "grid", gap: "16px" }}>
-          <label>
-            Основная мука:
-            <select
-              value={mainFlour}
-              onChange={(e) => setMainFlour(e.target.value as FlourType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
+          <div className="recipe-mode">
+            <button
+              type="button"
+              className={mode === "flour" ? "active" : ""}
+              onClick={() => setMode("flour")}
             >
-              {FLOUR_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
+              {t("recipeInput.byFlour")}
+            </button>
 
-          <label>
-            Дополнительная мука 1:
-            <select
-              value={extraFlour1}
-              onChange={(e) => setExtraFlour1(e.target.value as FlourType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
+            <button
+              type="button"
+              className={mode === "dough" ? "active" : ""}
+              onClick={() => setMode("dough")}
             >
-              {FLOUR_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
+              {t("recipeInput.byDough")}
+            </button>
+          </div>
 
-          <NumberInput
-            label="Процент доп. муки 1 (% от общей муки)"
-            value={extraPct1}
-            onChange={setExtraPct1}
-          />
-
-          <label>
-            Дополнительная мука 2:
-            <select
-              value={extraFlour2}
-              onChange={(e) => setExtraFlour2(e.target.value as FlourType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
-            >
-              {FLOUR_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <NumberInput
-            label="Процент доп. муки 2 (% от общей муки)"
-            value={extraPct2}
-            onChange={setExtraPct2}
-          />
-        </div>
-      </Section>
-
-      <Section title="Основные ингредиенты">
-        <div style={{ display: "grid", gap: "16px" }}>
           {mode === "flour" ? (
-            <NumberInput label="Мука (г)" value={flour} onChange={setFlour} />
+            <div className="recipe-row simple">
+              <span className="recipe-label">{t("recipeInput.flourAmount")}</span>
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  value={flour}
+                  onChange={(e) => setFlour(e.target.value)}
+                />
+                <span className="recipe-unit">{t("units.g")}</span>
+              </div>
+            </div>
           ) : (
-            <NumberInput
-              label="Целевой вес теста (г)"
-              value={targetDoughWeight}
-              onChange={setTargetDoughWeight}
-            />
+            <div className="recipe-row simple">
+              <span className="recipe-label">{t("recipeInput.doughWeight")}</span>
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  value={targetDoughWeight}
+                  onChange={(e) => setTargetDoughWeight(e.target.value)}
+                />
+                <span className="recipe-unit">{t("units.g")}</span>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="recipe-card">
+          <h2 className="recipe-card-title">{t("recipeInput.composition")}</h2>
+
+          {usesRecipeComposition ? (
+            <div className="recipe-row">
+              <span className="recipe-label">{t("recipeInput.primaryLiquid")}</span>
+              <select
+                className="recipe-select"
+                value={liquidType}
+                onChange={(e) =>
+                  setLiquidType(e.target.value as LiquidType)
+                }
+              >
+                {LIQUID_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {t(`ingredients.liquid.${type}`)}
+                  </option>
+                ))}
+              </select>
+
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  value={liquidPct}
+                  onChange={(e) => setLiquidPct(e.target.value)}
+                />
+                <span className="recipe-unit">%</span>
+              </div>
+            </div>
+          ) : (
+            <div className="recipe-row simple">
+              <span className="recipe-label">{t("recipeInput.hydration")}</span>
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  value={hydration}
+                  onChange={(e) => setHydration(e.target.value)}
+                />
+                <span className="recipe-unit">%</span>
+              </div>
+            </div>
           )}
 
-          <NumberInput label="Соль (% от муки)" value={salt} onChange={setSalt} />
-          <NumberInput label="Сахар (% от муки)" value={sugar} onChange={setSugar} />
-          <NumberInput label="Жиры (% от муки)" value={fat} onChange={setFat} />
-          <NumberInput label="Яйца (% от муки)" value={eggsPct} onChange={setEggsPct} />
-        </div>
-      </Section>
-
-      <Section title="Типы ингредиентов">
-        <div style={{ display: "grid", gap: "16px" }}>
-          <label>
-            Жидкость:
+          <div className="recipe-row">
+            <span className="recipe-label">{t("recipeInput.eggs")}</span>
             <select
-              value={liquidType}
-              onChange={(e) => setLiquidType(e.target.value as LiquidType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
-            >
-              {LIQUID_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            Жир:
-            <select
-              value={fatType}
-              onChange={(e) => setFatType(e.target.value as FatType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
-            >
-              {FAT_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            Тип яйца:
-            <select
+              className="recipe-select"
               value={eggType}
-              onChange={(e) => setEggType(e.target.value as EggType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
+              onChange={(e) =>
+                setEggType(e.target.value as EggType)
+              }
             >
-              {EGG_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {EGG_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t(`ingredients.egg.${type}`)}
                 </option>
               ))}
             </select>
-          </label>
 
-          <label>
-            Тип сахара:
+            <div className="recipe-percent-wrap">
+              <input
+                className="recipe-number"
+                type="number"
+                value={eggsPct}
+                onChange={(e) => setEggsPct(e.target.value)}
+              />
+              <span className="recipe-unit">%</span>
+            </div>
+          </div>
+
+          <div className="recipe-row">
+            <span className="recipe-label">{t("recipeInput.fat")}</span>
             <select
+              className="recipe-select"
+              value={fatType}
+              onChange={(e) =>
+                setFatType(e.target.value as FatType)
+              }
+            >
+              {FAT_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t(`ingredients.fat.${type}`)}
+                </option>
+              ))}
+            </select>
+
+            <div className="recipe-percent-wrap">
+              <input
+                className="recipe-number"
+                type="number"
+                value={fat}
+                onChange={(e) => setFat(e.target.value)}
+              />
+              <span className="recipe-unit">%</span>
+            </div>
+          </div>
+
+          <div className="recipe-row">
+            <span className="recipe-label">{t("recipeInput.sugar")}</span>
+            <select
+              className="recipe-select"
               value={sugarType}
-              onChange={(e) => setSugarType(e.target.value as SugarType)}
-              style={{ marginLeft: "8px", padding: "6px" }}
+              onChange={(e) =>
+                setSugarType(e.target.value as SugarType)
+              }
             >
-              {SUGAR_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {SUGAR_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t(`ingredients.sugar.${type}`)}
                 </option>
               ))}
             </select>
-          </label>
 
-          <label>
-            Тип дрожжей:
+            <div className="recipe-percent-wrap">
+              <input
+                className="recipe-number"
+                type="number"
+                value={sugar}
+                onChange={(e) => setSugar(e.target.value)}
+              />
+              <span className="recipe-unit">%</span>
+            </div>
+          </div>
+
+          <div className="recipe-row simple">
+            <span className="recipe-label">{t("recipeInput.salt")}</span>
+            <div className="recipe-percent-wrap">
+              <input
+                className="recipe-number"
+                type="number"
+                value={salt}
+                onChange={(e) => setSalt(e.target.value)}
+              />
+              <span className="recipe-unit">%</span>
+            </div>
+          </div>
+
+          <div className="recipe-row">
+            <span className="recipe-label">{t("recipeInput.yeast")}</span>
             <select
+              className="recipe-select"
               value={yeastForm}
-              onChange={(e) => setYeastForm(e.target.value as YeastForm)}
-              style={{ marginLeft: "8px", padding: "6px" }}
+              onChange={(e) =>
+                setYeastForm(e.target.value as YeastForm)
+              }
             >
-              {YEAST_FORMS.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {YEAST_FORMS.map((type) => (
+                <option key={type} value={type}>
+                  {t(`ingredients.yeast.${type}`)}
                 </option>
               ))}
             </select>
-          </label>
-        </div>
-      </Section>
 
-      <Section title="Предфермент">
-        <label style={{ display: "block", marginBottom: "12px" }}>
-          Тип:
+            <div className="recipe-percent-wrap">
+              <input
+                className="recipe-number"
+                type="number"
+                value={yeastPct}
+                onChange={(e) => setYeastPct(e.target.value)}
+              />
+              <span className="recipe-unit">%</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="recipe-card">
+          <h2 className="recipe-card-title">{t("recipeInput.flourSection")}</h2>
+
+          <div className="recipe-row simple">
+            <span className="recipe-label">{t("recipeInput.mainFlour")}</span>
+            <select
+              className="recipe-select"
+              value={mainFlour}
+              onChange={(e) =>
+                setMainFlour(e.target.value as FlourType)
+              }
+            >
+              {FLOUR_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t(`ingredients.flour.${type}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {n(extraPct1, 0) > 0 && (
+            <div className="recipe-row">
+              <span className="recipe-label">{t("recipeInput.extraFlour")}</span>
+              <select
+                className="recipe-select"
+                value={extraFlour1}
+                onChange={(e) =>
+                  setExtraFlour1(e.target.value as FlourType)
+                }
+              >
+                {FLOUR_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {t(`ingredients.flour.${type}`)}
+                  </option>
+                ))}
+              </select>
+
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  value={extraPct1}
+                  onChange={(e) => setExtraPct1(e.target.value)}
+                />
+                <span className="recipe-unit">%</span>
+              </div>
+            </div>
+          )}
+
+          {n(extraPct2, 0) > 0 && (
+            <div className="recipe-row">
+              <span className="recipe-label">{t("recipeInput.extraFlour2")}</span>
+              <select
+                className="recipe-select"
+                value={extraFlour2}
+                onChange={(e) =>
+                  setExtraFlour2(e.target.value as FlourType)
+                }
+              >
+                {FLOUR_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {t(`ingredients.flour.${type}`)}
+                  </option>
+                ))}
+              </select>
+
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  value={extraPct2}
+                  onChange={(e) => setExtraPct2(e.target.value)}
+                />
+                <span className="recipe-unit">%</span>
+              </div>
+            </div>
+          )}
+
+          {n(extraPct1, 0) === 0 && (
+            <button
+              type="button"
+              className="recipe-add"
+              onClick={() => setExtraPct1(10)}
+            >
+              + {t("recipeInput.addFlour")}
+            </button>
+          )}
+
+          {n(extraPct1, 0) > 0 && n(extraPct2, 0) === 0 && (
+            <button
+              type="button"
+              className="recipe-add"
+              onClick={() => setExtraPct2(10)}
+            >
+              + {t("recipeInput.addAnotherFlour")}
+            </button>
+          )}
+        </section>
+
+        <section className="recipe-card">
+          <h2 className="recipe-card-title">{t("recipeInput.preferment")}</h2>
+
           <select
+            className="recipe-select"
             value={prefermentType}
             onChange={(e) =>
               setPrefermentType(e.target.value as PrefermentType)
             }
-            style={{ marginLeft: "8px", padding: "6px" }}
           >
-            <option value="none">Без предфермента</option>
-            <option value="poolish">Пулеш</option>
-            <option value="biga">Бига</option>
-            <option value="levain">Левен</option>
-            <option value="yeasted_sponge">Спонж (дрожжевой)</option>
-            <option value="enriched">Обогащённый предфермент</option>
+            <option value="none">{t("ingredients.preferment.none")}</option>
+            <option value="poolish">{t("ingredients.preferment.poolish")}</option>
+            <option value="biga">{t("ingredients.preferment.biga")}</option>
+            <option value="levain">{t("ingredients.preferment.levain")}</option>
+            <option value="yeasted_sponge">{t("ingredients.preferment.yeasted_sponge")}</option>
+            <option value="enriched">{t("ingredients.preferment.enriched")}</option>
           </select>
-        </label>
 
-        {prefermentType !== "none" && (
-          <div style={{ display: "grid", gap: "16px" }}>
-            <NumberInput
-              label="Мука в предферменте (% от общей муки)"
-              value={prefermentFlourPct}
-              onChange={setPrefermentFlourPct}
-            />
+          {prefermentType !== "none" && (
+            <div className="recipe-preferment-details">
+              <NumberInput
+                label={t("input.prefermentFlourPct")}
+                value={prefermentFlourPct}
+                onChange={setPrefermentFlourPct}
+              />
 
-            <NumberInput
-              label="Гидратация предфермента (%)"
-              value={prefermentHydrationPct}
-              onChange={setPrefermentHydrationPct}
-            />
+              <NumberInput
+                label={t("input.prefermentHydration")}
+                value={prefermentHydrationPct}
+                onChange={setPrefermentHydrationPct}
+              />
 
-            <NumberInput
-              label="Дрожжи в предферменте (% от общей нормы)"
-              value={prefermentYeastPct}
-              onChange={setPrefermentYeastPct}
-            />
-          </div>
-        )}
-      </Section>
+              <NumberInput
+                label={t("input.prefermentYeastPct")}
+                value={prefermentYeastPct}
+                onChange={setPrefermentYeastPct}
+              />
+            </div>
+          )}
+        </section>
 
-      <button
-        onClick={handleSubmit}
-        style={{
-          marginTop: "16px",
-          padding: "12px 16px",
-          borderRadius: "6px",
-          border: "1px solid #000",
-          cursor: "pointer",
-          fontSize: "16px",
-        }}
-      >
-        Рассчитать рецепт
-      </button>
+        <button
+          type="button"
+          className="recipe-submit"
+          onClick={handleSubmit}
+        >
+          {t("common.calculate")}
+        </button>
+      </div>
     </div>
   );
 };

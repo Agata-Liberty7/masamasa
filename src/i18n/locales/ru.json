@@ -155,5 +155,61 @@
       "manual": "Ручной"
     }
   },
-  "eggs": "Яйца (% от муки)"
+  "eggs": "Яйца (% от муки)",
+  "recipeInput": {
+    "subtitle": "Базовая формула. Изменяйте состав и рассчитывайте рецепт.",
+    "calculation": "Расчёт",
+    "byFlour": "По муке",
+    "byDough": "По весу теста",
+    "flourAmount": "Количество муки",
+    "doughWeight": "Вес готового теста",
+    "composition": "Состав теста",
+    "primaryLiquid": "Основная жидкость",
+    "eggs": "Яйца",
+    "fat": "Жир",
+    "sugar": "Сахар",
+    "salt": "Соль",
+    "yeast": "Дрожжи",
+    "flourSection": "Мука",
+    "mainFlour": "Основная мука",
+    "extraFlour": "Дополнительная мука",
+    "extraFlour2": "Дополнительная мука 2",
+    "addFlour": "Добавить дополнительную муку",
+    "addAnotherFlour": "Добавить ещё одну муку",
+    "preferment": "Предфермент",
+    "hydration": "Гидратация"
+  },
+  "units": {
+    "g": "г"
+  },
+  "profiles": {
+    "brioche": "Бриошь"
+  },
+  "recipeOutput": {
+    "title": "Итоговый рецепт",
+    "composition": "Состав",
+    "analytics": "Расчётные показатели",
+    "flour": "Мука",
+    "preferment": "Предфермент",
+    "flourTotal": "Мука",
+    "primaryLiquid": "Основная жидкость",
+    "eggs": "Яйца",
+    "fat": "Жир",
+    "sugar": "Сахар",
+    "salt": "Соль",
+    "yeast": "Дрожжи",
+    "effectiveWater": "Эффективная вода",
+    "doughWeight": "Масса теста",
+    "mainFlour": "Основная мука",
+    "extraFlour": "Дополнительная мука",
+    "extraFlour2": "Дополнительная мука 2",
+    "prefermentFlour": "Мука",
+    "prefermentLiquid": "Жидкость",
+    "prefermentWater": "Вода",
+    "prefermentYeast": "Дрожжи",
+    "prefermentWeight": "Масса предфермента",
+    "ofFlour": "от муки",
+    "approx": "примерно",
+    "pcs": "шт."
+  }
 }

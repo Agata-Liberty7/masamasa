@@ -155,5 +155,61 @@
       "manual": "Manual"
     }
   },
-  "eggs": "Eggs (% of flour)"
+  "eggs": "Eggs (% of flour)",
+  "recipeInput": {
+    "subtitle": "Base formula. Adjust the composition and calculate the recipe.",
+    "calculation": "Calculation",
+    "byFlour": "By flour",
+    "byDough": "By dough weight",
+    "flourAmount": "Flour amount",
+    "doughWeight": "Dough weight",
+    "composition": "Dough composition",
+    "primaryLiquid": "Primary liquid",
+    "eggs": "Eggs",
+    "fat": "Fat",
+    "sugar": "Sugar",
+    "salt": "Salt",
+    "yeast": "Yeast",
+    "flourSection": "Flour",
+    "mainFlour": "Main flour",
+    "extraFlour": "Additional flour",
+    "extraFlour2": "Additional flour 2",
+    "addFlour": "Add another flour",
+    "addAnotherFlour": "Add one more flour",
+    "preferment": "Preferment",
+    "hydration": "Hydration"
+  },
+  "units": {
+    "g": "g"
+  },
+  "profiles": {
+    "brioche": "Brioche"
+  },
+  "recipeOutput": {
+    "title": "Final recipe",
+    "composition": "Composition",
+    "analytics": "Calculated values",
+    "flour": "Flour",
+    "preferment": "Preferment",
+    "flourTotal": "Flour",
+    "primaryLiquid": "Primary liquid",
+    "eggs": "Eggs",
+    "fat": "Fat",
+    "sugar": "Sugar",
+    "salt": "Salt",
+    "yeast": "Yeast",
+    "effectiveWater": "Effective water",
+    "doughWeight": "Dough weight",
+    "mainFlour": "Main flour",
+    "extraFlour": "Additional flour",
+    "extraFlour2": "Additional flour 2",
+    "prefermentFlour": "Flour",
+    "prefermentLiquid": "Liquid",
+    "prefermentWater": "Water",
+    "prefermentYeast": "Yeast",
+    "prefermentWeight": "Preferment weight",
+    "ofFlour": "of flour",
+    "approx": "approx.",
+    "pcs": "pcs"
+  }
 }
