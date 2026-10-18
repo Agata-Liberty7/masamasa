@@ -16,12 +16,21 @@
     "techMode": "Режим технологии",
     "home": "Домашний",
     "professional": "Производственный",
-    "searchProfiles": "Поиск профилей",
-    "searchPlaceholder": "Введите название профиля...",
-    "recentProfiles": "Недавние профили",
+    "searchProfiles": "Найти рецепт",
+    "searchPlaceholder": "Например: бриошь, багет, пирожки...",
+    "recentProfiles": "Недавние",
     "favorites": "Избранное",
     "categories": "Категории теста",
-    "myRecipes": "Мои рецепты"
+    "myRecipes": "Мои рецепты",
+    "title": "MasaMasa",
+    "subtitle": "Выберите базовый тип теста и настройте рецепт под свои условия.",
+    "roomTempShort": "Температура",
+    "warmHoursShort": "Тёплая ферментация",
+    "coldHoursShort": "Холодная ферментация",
+    "noResults": "Ничего не найдено",
+    "addFavorite": "Добавить в избранное",
+    "removeFavorite": "Удалить из избранного",
+    "deleteRecipe": "Удалить рецепт"
   },
   "input": {
     "title": "Параметры теста",
@@ -211,5 +220,16 @@
     "ofFlour": "от муки",
     "approx": "примерно",
     "pcs": "шт."
+  },
+  "categories": {
+    "bread": "Хлеб",
+    "enriched": "Сдобное",
+    "fried_enriched": "Сдобное жареное",
+    "baked_filled": "Пирожки печёные",
+    "fried_filled": "Пирожки жареные",
+    "pastry": "Песочное",
+    "choux": "Заварное",
+    "cake": "Кексы и торты",
+    "other": "Другое"
   }
 }

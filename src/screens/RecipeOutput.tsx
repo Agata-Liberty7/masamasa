@@ -114,7 +114,11 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
     });
 
   const numberFormatter = new Intl.NumberFormat(
-    i18n.language.startsWith("en") ? "en" : "ru",
+    i18n.language.startsWith("es")
+      ? "es-ES"
+      : i18n.language.startsWith("en")
+        ? "en-GB"
+        : "ru-RU",
     {
       maximumFractionDigits: 1,
     }
@@ -165,6 +169,18 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
               onClick={() => i18n.changeLanguage("en")}
             >
               EN
+            </button>
+
+            <button
+              type="button"
+              className={
+                i18n.language.startsWith("es")
+                  ? "active"
+                  : ""
+              }
+              onClick={() => i18n.changeLanguage("es")}
+            >
+              ES
             </button>
           </div>
         </div>

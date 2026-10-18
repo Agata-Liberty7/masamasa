@@ -347,6 +347,14 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           >
             EN
           </button>
+
+          <button
+            type="button"
+            className={i18n.language.startsWith("es") ? "active" : ""}
+            onClick={() => i18n.changeLanguage("es")}
+          >
+            ES
+          </button>
         </div>
 
         <header className="recipe-header">

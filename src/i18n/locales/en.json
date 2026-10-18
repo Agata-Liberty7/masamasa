@@ -7,7 +7,7 @@
     "techcard": "Tech Card"
   },
   "start": {
-    "conditions": "Production Conditions",
+    "conditions": "Production conditions",
     "roomTemp": "Room Temperature (°C)",
     "warmHours": "Warm Fermentation (hours)",
     "coldHours": "Cold Fermentation (hours)",
@@ -16,12 +16,21 @@
     "techMode": "Technology Mode",
     "home": "Home",
     "professional": "Professional",
-    "searchProfiles": "Search Profiles",
-    "searchPlaceholder": "Enter profile name...",
-    "recentProfiles": "Recent Profiles",
+    "searchProfiles": "Find a recipe",
+    "searchPlaceholder": "For example: brioche, baguette, buns...",
+    "recentProfiles": "Recent",
     "favorites": "Favorites",
-    "categories": "Dough Categories",
-    "myRecipes": "My Recipes"
+    "categories": "Dough categories",
+    "myRecipes": "My recipes",
+    "title": "MasaMasa",
+    "subtitle": "Choose a base dough type and adapt the recipe to your conditions.",
+    "roomTempShort": "Temperature",
+    "warmHoursShort": "Warm fermentation",
+    "coldHoursShort": "Cold fermentation",
+    "noResults": "Nothing found",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites",
+    "deleteRecipe": "Delete recipe"
   },
   "input": {
     "title": "Dough Parameters",
@@ -211,5 +220,16 @@
     "ofFlour": "of flour",
     "approx": "approx.",
     "pcs": "pcs"
+  },
+  "categories": {
+    "bread": "Bread",
+    "enriched": "Enriched dough",
+    "fried_enriched": "Fried enriched dough",
+    "baked_filled": "Baked filled dough",
+    "fried_filled": "Fried filled dough",
+    "pastry": "Pastry",
+    "choux": "Choux",
+    "cake": "Cakes",
+    "other": "Other"
   }
 }

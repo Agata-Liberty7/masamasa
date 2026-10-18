@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from "react";
-import NumberInput from "../components/NumberInput";
+import { useTranslation } from "react-i18next";
+import "./StartScreen.css";
 
 export type ProductionMode = "home" | "professional";
 export type Climate = "dry" | "moderate" | "humid";
 export type MixingMethod = "manual" | "planetary" | "spiral";
-
-console.log("StartScreen МОНТИРУЕТСЯ");
 
 type StartScreenProps = {
   climate: Climate;
@@ -31,73 +30,6 @@ type StartScreenProps = {
   onDeleteCustomRecipe: (id: string) => void;
 };
 
-const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
-  <section style={{ marginBottom: "40px" }}>
-    <h2 style={{ fontSize: "22px", marginBottom: "16px" }}>{title}</h2>
-    {children}
-  </section>
-);
-
-const CustomRecipeCard: React.FC<{
-  recipe: any;
-  onOpen: (id: string) => void;
-  onDelete: (id: string) => void;
-}> = ({ recipe, onOpen, onDelete }) => (
-  <div
-    style={{
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      padding: "12px 16px",
-      background: "#fff",
-      minWidth: "240px",
-      position: "relative",
-    }}
-  >
-    <div
-      style={{ fontWeight: 600, cursor: "pointer" }}
-      onClick={() => onOpen(recipe.id)}
-    >
-      {recipe.name}
-    </div>
-
-    <div style={{ fontSize: "12px", color: "#777", marginTop: "4px" }}>
-      {new Date(recipe.timestamp).toLocaleString()}
-    </div>
-
-    <button
-      type="button"
-      title="Удалить"
-      onClick={() => onDelete(recipe.id)}
-      style={{
-        position: "absolute",
-        top: "6px",
-        right: "6px",
-        background: "transparent",
-        border: "none",
-        cursor: "pointer",
-        fontSize: "14px",
-      }}
-    >
-      🗑️
-    </button>
-  </div>
-);
-
-const CATEGORY_NAMES: Record<string, string> = {
-  bread: "Хлеб",
-  enriched: "Сдобное",
-  fried_enriched: "Сдобное жареное",
-  baked_filled: "Пирожки печёные",
-  fried_filled: "Пирожки жареные",
-  pastry: "Песочное",
-  choux: "Заварное",
-  cake: "Кексы и торты",
-  other: "Другое",
-};
-
 const StartScreen: React.FC<StartScreenProps> = ({
   climate,
   mixing,
@@ -116,10 +48,11 @@ const StartScreen: React.FC<StartScreenProps> = ({
   onOpenCustomRecipe,
   onDeleteCustomRecipe,
 }) => {
-  // -----------------------------
-  // АВТОМАТИЧЕСКАЯ ЗАГРУЗКА ПРОФИЛЕЙ
-  // -----------------------------
-  const modules = import.meta.glob("../profiles/*.json", { eager: true });
+  const { t, i18n } = useTranslation();
+
+  const modules = import.meta.glob("../profiles/*.json", {
+    eager: true,
+  });
 
   const indexData = useMemo(() => {
     const categories: Record<string, any> = {};
@@ -129,7 +62,6 @@ const StartScreen: React.FC<StartScreenProps> = ({
       const mod = modules[path] as any;
       const profile = mod?.default ?? mod;
 
-      // Удаляем служебные / неосновные профили без base
       if (!profile?.base) continue;
 
       const id = profile.id;
@@ -141,7 +73,6 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
       if (!categories[category]) {
         categories[category] = {
-          name: CATEGORY_NAMES[category] || category,
           subtypes: {},
         };
       }
@@ -152,451 +83,600 @@ const StartScreen: React.FC<StartScreenProps> = ({
       };
     }
 
-    return { categories, profileNamesById };
+    return {
+      categories,
+      profileNamesById,
+    };
   }, [modules]);
 
-  const getProfileNameById = (profileId: string) => {
-    return indexData.profileNamesById[profileId] ?? profileId;
-  };
+  const getProfileNameById = (profileId: string) =>
+    t(`profiles.${profileId}`, {
+      defaultValue:
+        indexData.profileNamesById[profileId] ?? profileId,
+    });
 
-  // -----------------------------
-  // SEARCH
-  // -----------------------------
+  const getCategoryName = (category: string) =>
+    t(`categories.${category}`, {
+      defaultValue: category,
+    });
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
 
-    const q = searchQuery.toLowerCase();
-    const results: any[] = [];
+    const query = searchQuery.trim().toLocaleLowerCase();
+    const results: {
+      category: string;
+      profile: string;
+      name: string;
+    }[] = [];
 
-    for (const [catKey, cat] of Object.entries(indexData.categories)) {
-      for (const [subKey, sub] of Object.entries(
-        (cat as any).subtypes as Record<string, { name: string; profile: string }>
-      )) {
-        if (sub.name.toLowerCase().includes(q)) {
+    for (const [category, data] of Object.entries(
+      indexData.categories
+    )) {
+      for (const item of Object.values(
+        (data as any).subtypes
+      ) as any[]) {
+        const localizedName = t(`profiles.${item.profile}`, {
+          defaultValue: item.name,
+        });
+
+        if (
+          localizedName
+            .toLocaleLowerCase()
+            .includes(query)
+        ) {
           results.push({
-            category: catKey,
-            subtype: subKey,
-            profile: sub.profile,
-            name: sub.name,
+            category,
+            profile: item.profile,
+            name: localizedName,
           });
         }
       }
     }
 
     return results;
-  }, [searchQuery, indexData]);
+  }, [searchQuery, indexData, i18n.language, t]);
 
-  // -----------------------------
-  // FAVORITES
-  // -----------------------------
   const [favorites, setFavorites] = useState<string[]>(() => {
-    return JSON.parse(localStorage.getItem("favorites") || "[]");
+    return JSON.parse(
+      localStorage.getItem("favorites") || "[]"
+    );
   });
 
   const toggleFavorite = (profileId: string) => {
-    setFavorites((prev) => {
-      const updated = prev.includes(profileId)
-        ? prev.filter((id) => id !== profileId)
-        : [...prev, profileId];
+    setFavorites((previous) => {
+      const updated = previous.includes(profileId)
+        ? previous.filter((id) => id !== profileId)
+        : [...previous, profileId];
 
-      localStorage.setItem("favorites", JSON.stringify(updated));
+      localStorage.setItem(
+        "favorites",
+        JSON.stringify(updated)
+      );
+
       return updated;
     });
   };
 
-  // -----------------------------
-  // RECENT
-  // -----------------------------
   const [recent, setRecent] = useState<string[]>(() => {
-    return JSON.parse(localStorage.getItem("recent") || "[]");
+    return JSON.parse(
+      localStorage.getItem("recent") || "[]"
+    );
   });
 
   const addRecent = (profileId: string) => {
-    setRecent((prev) => {
-      const updated = [profileId, ...prev.filter((id) => id !== profileId)].slice(
-        0,
-        5
+    setRecent((previous) => {
+      const updated = [
+        profileId,
+        ...previous.filter((id) => id !== profileId),
+      ].slice(0, 5);
+
+      localStorage.setItem(
+        "recent",
+        JSON.stringify(updated)
       );
-      localStorage.setItem("recent", JSON.stringify(updated));
+
       return updated;
     });
   };
 
-  // -----------------------------
-  // CATEGORY NAVIGATION
-  // -----------------------------
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubtype, setSelectedSubtype] = useState<string | null>(null);
+  const openProfile = (profileId: string) => {
+    addRecent(profileId);
+    onProfileSelect(profileId);
+  };
 
-  // -----------------------------
-  // RENDER
-  // -----------------------------
+  const [selectedCategory, setSelectedCategory] =
+    useState<string | null>(null);
+
+  const locale = i18n.language.startsWith("es")
+    ? "es-ES"
+    : i18n.language.startsWith("en")
+      ? "en-GB"
+      : "ru-RU";
+
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
-      <Section title="Условия производства">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "16px",
-          }}
-        >
-          <NumberInput
-            label="Температура помещения (°C)"
-            value={roomTemp}
-            onChange={onRoomTempChange}
-          />
-
-          <NumberInput
-            label="Тёплая ферментация (часы)"
-            value={warmFermentationHours}
-            onChange={onWarmFermentationChange}
-          />
-
-          <NumberInput
-            label="Холодная ферментация (часы)"
-            value={coldFermentationHours}
-            onChange={onColdFermentationChange}
-          />
-
+    <div className="start-page">
+      <div className="start-shell">
+        <div className="start-topbar">
           <div>
-            <label>Климат</label>
-            <select
-              value={climate}
-              onChange={(e) => onClimateChange(e.target.value as Climate)}
-              style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-            >
-              <option value="dry">Сухой</option>
-              <option value="moderate">Умеренный</option>
-              <option value="humid">Влажный</option>
-            </select>
+            <h1 className="start-title">
+              {t("start.title")}
+            </h1>
+            <p className="start-subtitle">
+              {t("start.subtitle")}
+            </p>
           </div>
 
-          <div>
-            <label>Способ замеса</label>
-            <select
-              value={mixing}
-              onChange={(e) => onMixingChange(e.target.value as MixingMethod)}
-              style={{ width: "100%", padding: "8px", marginTop: "4px" }}
+          <div className="start-language">
+            <button
+              type="button"
+              className={
+                i18n.language.startsWith("ru")
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                i18n.changeLanguage("ru")
+              }
             >
-              <option value="manual">Ручной</option>
-              <option value="planetary">Планетарный</option>
-              <option value="spiral">Спиральный</option>
-            </select>
-          </div>
+              RU
+            </button>
 
-          <div>
-            <label>Режим технологии</label>
-            <div style={{ marginTop: "4px", display: "flex", gap: "8px" }}>
-              <button
-                type="button"
-                onClick={() => onProductionModeChange("home")}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "4px",
-                  border:
-                    productionMode === "home"
-                      ? "2px solid #000"
-                      : "1px solid #ccc",
-                  background:
-                    productionMode === "home" ? "#f0f0f0" : "transparent",
-                  cursor: "pointer",
-                  flex: 1,
-                }}
-              >
-                Домашний
-              </button>
+            <button
+              type="button"
+              className={
+                i18n.language.startsWith("en")
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                i18n.changeLanguage("en")
+              }
+            >
+              EN
+            </button>
 
-              <button
-                type="button"
-                onClick={() => onProductionModeChange("professional")}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "4px",
-                  border:
-                    productionMode === "professional"
-                      ? "2px solid #000"
-                      : "1px solid #ccc",
-                  background:
-                    productionMode === "professional" ? "#f0f0f0" : "transparent",
-                  cursor: "pointer",
-                  flex: 1,
-                }}
-              >
-                Производственный
-              </button>
-            </div>
+            <button
+              type="button"
+              className={
+                i18n.language.startsWith("es")
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                i18n.changeLanguage("es")
+              }
+            >
+              ES
+            </button>
           </div>
         </div>
-      </Section>
 
-      <Section title="Поиск профилей">
-        <input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Введите название профиля..."
-          style={{
-            width: "100%",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            marginBottom: "16px",
-          }}
-        />
+        <section className="start-card">
+          <h2 className="start-card-title">
+            {t("start.conditions")}
+          </h2>
 
-        {searchQuery && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-              gap: "12px",
-            }}
-          >
-            {searchResults.map((item) => (
-              <button
-                key={item.profile}
-                onClick={() => {
-                  addRecent(item.profile);
-                  onProfileSelect(item.profile);
-                }}
-                style={{
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  background: "#fff",
-                  textAlign: "left",
-                }}
+          <div className="start-conditions-grid">
+            <label className="start-field">
+              <span>
+                {t("start.roomTempShort")}
+              </span>
+              <div className="start-number-unit">
+                <input
+                  type="number"
+                  value={roomTemp}
+                  onChange={(event) =>
+                    onRoomTempChange(
+                      Number(event.target.value)
+                    )
+                  }
+                />
+                <small>°C</small>
+              </div>
+            </label>
+
+            <label className="start-field">
+              <span>
+                {t("start.warmHoursShort")}
+              </span>
+              <div className="start-number-unit">
+                <input
+                  type="number"
+                  value={warmFermentationHours}
+                  onChange={(event) =>
+                    onWarmFermentationChange(
+                      Number(event.target.value)
+                    )
+                  }
+                />
+                <small>h</small>
+              </div>
+            </label>
+
+            <label className="start-field">
+              <span>
+                {t("start.coldHoursShort")}
+              </span>
+              <div className="start-number-unit">
+                <input
+                  type="number"
+                  value={coldFermentationHours}
+                  onChange={(event) =>
+                    onColdFermentationChange(
+                      Number(event.target.value)
+                    )
+                  }
+                />
+                <small>h</small>
+              </div>
+            </label>
+
+            <label className="start-field">
+              <span>{t("start.climate")}</span>
+              <select
+                value={climate}
+                onChange={(event) =>
+                  onClimateChange(
+                    event.target.value as Climate
+                  )
+                }
               >
-                {item.name}
-              </button>
-            ))}
+                <option value="dry">
+                  {t("ingredients.climate.dry")}
+                </option>
+                <option value="moderate">
+                  {t(
+                    "ingredients.climate.moderate"
+                  )}
+                </option>
+                <option value="humid">
+                  {t(
+                    "ingredients.climate.humid"
+                  )}
+                </option>
+              </select>
+            </label>
+
+            <label className="start-field">
+              <span>{t("start.mixing")}</span>
+              <select
+                value={mixing}
+                onChange={(event) =>
+                  onMixingChange(
+                    event.target
+                      .value as MixingMethod
+                  )
+                }
+              >
+                <option value="manual">
+                  {t(
+                    "ingredients.mixing.manual"
+                  )}
+                </option>
+                <option value="planetary">
+                  {t(
+                    "ingredients.mixing.planetary"
+                  )}
+                </option>
+                <option value="spiral">
+                  {t(
+                    "ingredients.mixing.spiral"
+                  )}
+                </option>
+              </select>
+            </label>
           </div>
+
+          <div className="start-mode">
+            <button
+              type="button"
+              className={
+                productionMode === "home"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                onProductionModeChange("home")
+              }
+            >
+              {t("start.home")}
+            </button>
+
+            <button
+              type="button"
+              className={
+                productionMode === "professional"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                onProductionModeChange(
+                  "professional"
+                )
+              }
+            >
+              {t("start.professional")}
+            </button>
+          </div>
+        </section>
+
+        <section className="start-search-section">
+          <h2 className="start-section-title">
+            {t("start.searchProfiles")}
+          </h2>
+
+          <input
+            className="start-search"
+            value={searchQuery}
+            onChange={(event) =>
+              setSearchQuery(event.target.value)
+            }
+            placeholder={t(
+              "start.searchPlaceholder"
+            )}
+          />
+
+          {searchQuery && (
+            <div className="start-profile-grid start-search-results">
+              {searchResults.length > 0 ? (
+                searchResults.map((item) => (
+                  <button
+                    type="button"
+                    className="start-profile-card"
+                    key={item.profile}
+                    onClick={() =>
+                      openProfile(item.profile)
+                    }
+                  >
+                    <strong>{item.name}</strong>
+                    <small>
+                      {getCategoryName(
+                        item.category
+                      )}
+                    </small>
+                  </button>
+                ))
+              ) : (
+                <div className="start-empty">
+                  {t("start.noResults")}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        {!searchQuery && (
+          <>
+            {recent.length > 0 && (
+              <section className="start-section">
+                <h2 className="start-section-title">
+                  {t("start.recentProfiles")}
+                </h2>
+
+                <div className="start-profile-grid">
+                  {recent.map((id) => (
+                    <button
+                      type="button"
+                      className="start-profile-card"
+                      key={id}
+                      onClick={() =>
+                        openProfile(id)
+                      }
+                    >
+                      <strong>
+                        {getProfileNameById(id)}
+                      </strong>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {favorites.length > 0 && (
+              <section className="start-section">
+                <h2 className="start-section-title">
+                  {t("start.favorites")}
+                </h2>
+
+                <div className="start-profile-grid">
+                  {favorites.map((id) => (
+                    <div
+                      className="start-profile-wrap"
+                      key={id}
+                    >
+                      <button
+                        type="button"
+                        className="start-profile-card"
+                        onClick={() =>
+                          openProfile(id)
+                        }
+                      >
+                        <strong>
+                          {getProfileNameById(id)}
+                        </strong>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="start-star active"
+                        title={t(
+                          "start.removeFavorite"
+                        )}
+                        onClick={() =>
+                          toggleFavorite(id)
+                        }
+                      >
+                        ★
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section className="start-section">
+              <div className="start-section-heading">
+                <h2 className="start-section-title">
+                  {selectedCategory
+                    ? getCategoryName(
+                        selectedCategory
+                      )
+                    : t("start.categories")}
+                </h2>
+
+                {selectedCategory && (
+                  <button
+                    type="button"
+                    className="start-inline-back"
+                    onClick={() =>
+                      setSelectedCategory(null)
+                    }
+                  >
+                    {t("common.back")}
+                  </button>
+                )}
+              </div>
+
+              {!selectedCategory ? (
+                <div className="start-category-grid">
+                  {Object.keys(
+                    indexData.categories
+                  ).map((category) => (
+                    <button
+                      type="button"
+                      className="start-category-card"
+                      key={category}
+                      onClick={() =>
+                        setSelectedCategory(
+                          category
+                        )
+                      }
+                    >
+                      {getCategoryName(category)}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="start-profile-grid">
+                  {Object.values(
+                    indexData.categories[
+                      selectedCategory
+                    ].subtypes
+                  ).map((item: any) => (
+                    <div
+                      className="start-profile-wrap"
+                      key={item.profile}
+                    >
+                      <button
+                        type="button"
+                        className="start-profile-card"
+                        onClick={() =>
+                          openProfile(item.profile)
+                        }
+                      >
+                        <strong>
+                          {getProfileNameById(
+                            item.profile
+                          )}
+                        </strong>
+                      </button>
+
+                      <button
+                        type="button"
+                        className={`start-star ${
+                          favorites.includes(
+                            item.profile
+                          )
+                            ? "active"
+                            : ""
+                        }`}
+                        title={
+                          favorites.includes(
+                            item.profile
+                          )
+                            ? t(
+                                "start.removeFavorite"
+                              )
+                            : t(
+                                "start.addFavorite"
+                              )
+                        }
+                        onClick={() =>
+                          toggleFavorite(
+                            item.profile
+                          )
+                        }
+                      >
+                        {favorites.includes(
+                          item.profile
+                        )
+                          ? "★"
+                          : "☆"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {customRecipes.length > 0 && (
+              <section className="start-section">
+                <h2 className="start-section-title">
+                  {t("start.myRecipes")}
+                </h2>
+
+                <div className="start-custom-grid">
+                  {customRecipes.map((recipe) => (
+                    <div
+                      className="start-custom-card"
+                      key={recipe.id}
+                    >
+                      <button
+                        type="button"
+                        className="start-custom-main"
+                        onClick={() =>
+                          onOpenCustomRecipe(
+                            recipe.id
+                          )
+                        }
+                      >
+                        <strong>
+                          {recipe.name}
+                        </strong>
+                        <small>
+                          {new Date(
+                            recipe.timestamp
+                          ).toLocaleString(
+                            locale
+                          )}
+                        </small>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="start-delete"
+                        title={t(
+                          "start.deleteRecipe"
+                        )}
+                        onClick={() =>
+                          onDeleteCustomRecipe(
+                            recipe.id
+                          )
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
-      </Section>
-
-      {!searchQuery && (
-        <>
-          {recent.length > 0 && (
-            <Section title="Недавние профили">
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                  gap: "12px",
-                }}
-              >
-                {recent.map((id) => (
-                  <button
-                    key={id}
-                    onClick={() => {
-                      addRecent(id);
-                      onProfileSelect(id);
-                    }}
-                    style={{
-                      padding: "12px",
-                      borderRadius: "8px",
-                      border: "1px solid #ccc",
-                      background: "#fff",
-                      textAlign: "left",
-                    }}
-                  >
-                    {getProfileNameById(id)}
-                  </button>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {favorites.length > 0 && (
-            <Section title="Избранное">
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                  gap: "12px",
-                }}
-              >
-                {favorites.map((id) => (
-                  <button
-                    key={id}
-                    onClick={() => {
-                      addRecent(id);
-                      onProfileSelect(id);
-                    }}
-                    style={{
-                      padding: "12px",
-                      borderRadius: "8px",
-                      border: "1px solid #ccc",
-                      background: "#fff",
-                      textAlign: "left",
-                    }}
-                  >
-                    {getProfileNameById(id)}
-                  </button>
-                ))}
-              </div>
-            </Section>
-          )}
-        </>
-      )}
-
-      {!searchQuery && !selectedCategory && (
-        <Section title="Категории теста">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-              gap: "12px",
-            }}
-          >
-            {Object.entries(indexData.categories).map(([key, value]: any) => (
-              <button
-                key={key}
-                onClick={() => setSelectedCategory(key)}
-                style={{
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  background: "#fff",
-                  textAlign: "left",
-                }}
-              >
-                {value.name}
-              </button>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {selectedCategory && !selectedSubtype && (
-        <Section title={indexData.categories[selectedCategory].name}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-              gap: "12px",
-            }}
-          >
-            {Object.entries(
-              indexData.categories[selectedCategory].subtypes
-            ).map(([key, value]: any) => (
-              <div key={key} style={{ display: "flex", gap: "8px" }}>
-                <button
-                  onClick={() => setSelectedSubtype(key)}
-                  style={{
-                    padding: "12px",
-                    borderRadius: "8px",
-                    border: "1px solid #ccc",
-                    background: "#fff",
-                    textAlign: "left",
-                    flex: 1,
-                  }}
-                >
-                  {value.name}
-                </button>
-
-                <button
-                  onClick={() => toggleFavorite(value.profile)}
-                  style={{
-                    padding: "12px",
-                    borderRadius: "8px",
-                    border: "1px solid #ccc",
-                    background: "#fff",
-                  }}
-                >
-                  {favorites.includes(value.profile) ? "★" : "☆"}
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => setSelectedCategory(null)}
-            style={{ marginTop: "16px" }}
-          >
-            Назад
-          </button>
-        </Section>
-      )}
-
-      {selectedCategory && selectedSubtype && (
-        <Section
-          title={
-            indexData.categories[selectedCategory].subtypes[selectedSubtype].name
-          }
-        >
-          {(() => {
-            const profileId =
-              indexData.categories[selectedCategory].subtypes[selectedSubtype]
-                .profile;
-
-            return (
-              <>
-                <button
-                  onClick={() => {
-                    addRecent(profileId);
-                    onProfileSelect(profileId);
-                  }}
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    border: "1px solid #000",
-                    background: "#fff",
-                    marginBottom: "16px",
-                  }}
-                >
-                  Открыть профиль
-                </button>
-
-                <button
-                  onClick={() => toggleFavorite(profileId)}
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    border: "1px solid #ccc",
-                    background: "#fff",
-                    marginBottom: "16px",
-                  }}
-                >
-                  {favorites.includes(profileId)
-                    ? "★ Удалить из избранного"
-                    : "☆ В избранное"}
-                </button>
-
-                <button
-                  onClick={() => setSelectedSubtype(null)}
-                  style={{ marginTop: "16px" }}
-                >
-                  Назад
-                </button>
-              </>
-            );
-          })()}
-        </Section>
-      )}
-
-      {customRecipes.length > 0 && (
-        <Section title="Мои рецепты">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: "12px",
-            }}
-          >
-            {customRecipes.map((r) => (
-              <CustomRecipeCard
-                key={r.id}
-                recipe={r}
-                onOpen={onOpenCustomRecipe}
-                onDelete={onDeleteCustomRecipe}
-              />
-            ))}
-          </div>
-        </Section>
-      )}
+      </div>
     </div>
   );
 };
