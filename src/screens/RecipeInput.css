@@ -208,3 +208,20 @@
   border-color: #355f48;
   color: #ffffff;
 }
+
+
+/* Main flour: enough room for translated flour names */
+.recipe-row.simple:has(.recipe-flour-select) {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+}
+
+.recipe-flour-select {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .recipe-row.simple:has(.recipe-flour-select) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

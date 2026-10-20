@@ -4,65 +4,130 @@
   "category": "bread",
   "subtype": "focaccia",
   "prefermentId": "none",
-
   "base": {
     "flour": 1000,
-    "hydration": 75,
     "salt": 2.2,
     "sugar": 2,
     "fat": 6,
     "eggs": 0,
-    "yeast": { "type": "instant", "percent": 0.6 }
+    "yeast": {
+      "type": "instant",
+      "percent": 0.6
+    },
+    "liquidPct": 75,
+    "liquidType": "water"
   },
-
   "limits": {
-    "hydration": { "min": 65, "max": 85 },
-    "salt": { "min": 1.5, "max": 2.5 },
-    "sugar": { "min": 0, "max": 10 },
-    "fat": { "min": 0, "max": 15 },
-    "yeastPercent": { "min": 0.1, "max": 1.5 }
+    "hydration": {
+      "min": 65,
+      "max": 85
+    },
+    "salt": {
+      "min": 1.5,
+      "max": 2.5
+    },
+    "sugar": {
+      "min": 0,
+      "max": 10
+    },
+    "fat": {
+      "min": 0,
+      "max": 15
+    },
+    "yeastPercent": {
+      "min": 0.1,
+      "max": 1.5
+    }
   },
-
   "process": {
     "mixingIntensity": "medium",
     "mixingTime": {
-      "manual": { "min": 8, "max": 15 },
-      "planetary": { "min": 5, "max": 10 },
-      "spiral": { "min": 3, "max": 8 }
+      "manual": {
+        "min": 8,
+        "max": 15
+      },
+      "planetary": {
+        "min": 5,
+        "max": 10
+      },
+      "spiral": {
+        "min": 3,
+        "max": 8
+      }
     },
     "glutenDevelopment": "medium",
     "bulkFermentationTarget": "x2.0",
     "finalProofTarget": "пальцевый тест"
   },
-
   "climateAdjustments": {
-    "dry": { "hydrationDelta": 2, "comment": "Сухой климат — тесто быстрее сохнет, добавляем воду." },
-    "moderate": { "hydrationDelta": 0, "comment": "Базовые параметры под умеренный климат." },
-    "humid": { "hydrationDelta": -2, "comment": "Влажный климат — мука может вести себя как более влажная." }
+    "dry": {
+      "hydrationDelta": 2,
+      "comment": "Сухой климат — тесто быстрее сохнет, добавляем воду."
+    },
+    "moderate": {
+      "hydrationDelta": 0,
+      "comment": "Базовые параметры под умеренный климат."
+    },
+    "humid": {
+      "hydrationDelta": -2,
+      "comment": "Влажный климат — мука может вести себя как более влажная."
+    }
   },
-
   "mixingAdjustments": {
-    "manual": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "Классический ручной замес." },
-    "planetary": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "Подходит для большинства тест." },
-    "spiral": { "hydrationDelta": 2, "yeastPercentDelta": -0.05, "comment": "Спиральный позволяет работать с более влажным тестом." }
+    "manual": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": "Классический ручной замес."
+    },
+    "planetary": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": "Подходит для большинства тест."
+    },
+    "spiral": {
+      "hydrationDelta": 2,
+      "yeastPercentDelta": -0.05,
+      "comment": "Спиральный позволяет работать с более влажным тестом."
+    }
   },
-
   "schedule": {
     "bulk": {
       "totalHours": 2,
       "temperature": 24,
       "steps": [
-        { "timeFromStartMinutes": 0, "action": "Автолиз", "comment": "Мука + вода без соли и жиров." },
-        { "timeFromStartMinutes": 30, "action": "Добавление соли и жиров", "comment": "Замешиваем до средней клейковины." },
-        { "timeFromStartMinutes": 60, "action": "Складка", "comment": "Одна складка для укрепления структуры." }
+        {
+          "timeFromStartMinutes": 0,
+          "action": "Автолиз",
+          "comment": "Мука + вода без соли и жиров."
+        },
+        {
+          "timeFromStartMinutes": 30,
+          "action": "Добавление соли и жиров",
+          "comment": "Замешиваем до средней клейковины."
+        },
+        {
+          "timeFromStartMinutes": 60,
+          "action": "Складка",
+          "comment": "Одна складка для укрепления структуры."
+        }
       ]
     },
-    "finalProof": { "totalHours": 1.5, "temperature": 24, "comment": "Ориентироваться по тесту, а не по времени." },
-    "coldRetard": { "enabled": false, "hours": 12, "temperature": 4, "comment": "Ночное брожение в холодильнике (опционально)." }
+    "finalProof": {
+      "totalHours": 1.5,
+      "temperature": 24,
+      "comment": "Ориентироваться по тесту, а не по времени."
+    },
+    "coldRetard": {
+      "enabled": false,
+      "hours": 12,
+      "temperature": 4,
+      "comment": "Ночное брожение в холодильнике (опционально)."
+    }
   },
-
-  "bake": { "temperature": 220, "timeMinutes": 25 },
-
+  "bake": {
+    "temperature": 220,
+    "timeMinutes": 25
+  },
   "uiHints": {
     "flourLabel": "Мука (базовая порция)",
     "hydrationLabel": "Гидратация (вода % к муке)",

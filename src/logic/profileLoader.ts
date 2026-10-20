@@ -129,7 +129,10 @@ export function loadProfile(
   // -----------------------------
   const climateAdj = profile.climateAdjustments?.[climate];
   if (climateAdj) {
-    if (!usesRecipeComposition) {
+    if (usesRecipeComposition) {
+      base.liquidPct =
+        (base.liquidPct ?? 0) + (climateAdj.hydrationDelta || 0);
+    } else {
       base.hydration =
         (base.hydration ?? 0) + (climateAdj.hydrationDelta || 0);
     }
@@ -145,7 +148,10 @@ export function loadProfile(
   // -----------------------------
   const mixingAdj = profile.mixingAdjustments?.[mixing];
   if (mixingAdj) {
-    if (!usesRecipeComposition) {
+    if (usesRecipeComposition) {
+      base.liquidPct =
+        (base.liquidPct ?? 0) + (mixingAdj.hydrationDelta || 0);
+    } else {
       base.hydration =
         (base.hydration ?? 0) + (mixingAdj.hydrationDelta || 0);
     }
@@ -200,16 +206,20 @@ export function loadProfile(
   // -----------------------------
   // 4. Ограничения профиля
   // -----------------------------
-  if (
-    !usesRecipeComposition &&
-    limits.hydration &&
-    typeof base.hydration === "number"
-  ) {
-    base.hydration = clamp(
-      base.hydration,
-      limits.hydration.min,
-      limits.hydration.max
-    );
+  if (limits.hydration) {
+    if (usesRecipeComposition) {
+      base.liquidPct = clamp(
+        base.liquidPct,
+        limits.hydration.min,
+        limits.hydration.max
+      );
+    } else if (typeof base.hydration === "number") {
+      base.hydration = clamp(
+        base.hydration,
+        limits.hydration.min,
+        limits.hydration.max
+      );
+    }
   }
 
   if (limits.salt) {

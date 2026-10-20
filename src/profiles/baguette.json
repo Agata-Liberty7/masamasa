@@ -4,10 +4,8 @@
   "category": "bread",
   "subtype": "baguette",
   "prefermentId": "poolish",
-
   "base": {
     "flour": 1000,
-    "hydration": 70,
     "salt": 2,
     "sugar": 0,
     "fat": 0,
@@ -15,29 +13,52 @@
     "yeast": {
       "type": "instant",
       "percent": 0.5
+    },
+    "liquidPct": 70,
+    "liquidType": "water"
+  },
+  "limits": {
+    "hydration": {
+      "min": 65,
+      "max": 78
+    },
+    "salt": {
+      "min": 1.8,
+      "max": 2.3
+    },
+    "sugar": {
+      "min": 0,
+      "max": 3
+    },
+    "fat": {
+      "min": 0,
+      "max": 3
+    },
+    "yeastPercent": {
+      "min": 0.1,
+      "max": 1
     }
   },
-
-  "limits": {
-    "hydration": { "min": 65, "max": 78 },
-    "salt": { "min": 1.8, "max": 2.3 },
-    "sugar": { "min": 0, "max": 3 },
-    "fat": { "min": 0, "max": 3 },
-    "yeastPercent": { "min": 0.1, "max": 1 }
-  },
-
   "process": {
     "mixingIntensity": "medium",
     "mixingTime": {
-      "manual": { "min": 8, "max": 12 },
-      "planetary": { "min": 5, "max": 7 },
-      "spiral": { "min": 3, "max": 5 }
+      "manual": {
+        "min": 8,
+        "max": 12
+      },
+      "planetary": {
+        "min": 5,
+        "max": 7
+      },
+      "spiral": {
+        "min": 3,
+        "max": 5
+      }
     },
     "glutenDevelopment": "medium",
     "bulkFermentationTarget": "x2.0",
     "finalProofTarget": "пальцевый тест"
   },
-
   "climateAdjustments": {
     "dry": {
       "hydrationDelta": 2,
@@ -55,7 +76,6 @@
       "comment": "Влажный климат: тесто липче, уменьшаем воду."
     }
   },
-
   "mixingAdjustments": {
     "manual": {
       "hydrationDelta": 0,
@@ -73,7 +93,6 @@
       "comment": "Спиральный: лучше развивает клейковину, можно повысить воду."
     }
   },
-
   "schedule": {
     "bulk": {
       "totalHours": 2.5,
@@ -96,13 +115,11 @@
         }
       ]
     },
-
     "finalProof": {
       "totalHours": 0.75,
       "temperature": 24,
       "comment": "Ориентироваться по тесту: пальцевый тест."
     },
-
     "coldRetard": {
       "enabled": true,
       "hours": 12,
@@ -110,12 +127,10 @@
       "comment": "Холодная ферментация даёт классический аромат багета."
     }
   },
-
   "bake": {
     "temperature": 240,
     "timeMinutes": 25
   },
-
   "uiHints": {
     "flourLabel": "Мука (базовая порция)",
     "hydrationLabel": "Гидратация (вода % к муке)",
@@ -128,4 +143,3 @@
     ]
   }
 }
-    

@@ -4,57 +4,117 @@
   "category": "pastry",
   "subtype": "shortcrust",
   "prefermentId": "none",
-
   "base": {
     "flour": 1000,
-    "hydration": 0,
     "salt": 1,
     "sugar": 30,
     "fat": 50,
     "eggs": 10,
-    "yeast": { "type": "none", "percent": 0 }
+    "yeast": {
+      "type": "none",
+      "percent": 0
+    },
+    "liquidPct": 0,
+    "liquidType": "water"
   },
-
   "limits": {
-    "hydration": { "min": 0, "max": 10 },
-    "salt": { "min": 0, "max": 2 },
-    "sugar": { "min": 0, "max": 50 },
-    "fat": { "min": 20, "max": 80 },
-    "yeastPercent": { "min": 0, "max": 0 }
+    "hydration": {
+      "min": 0,
+      "max": 10
+    },
+    "salt": {
+      "min": 0,
+      "max": 2
+    },
+    "sugar": {
+      "min": 0,
+      "max": 50
+    },
+    "fat": {
+      "min": 20,
+      "max": 80
+    },
+    "yeastPercent": {
+      "min": 0,
+      "max": 0
+    }
   },
-
   "process": {
     "mixingIntensity": "low",
     "mixingTime": {
-      "manual": { "min": 3, "max": 5 },
-      "planetary": { "min": 2, "max": 4 },
-      "spiral": { "min": 0, "max": 0 }
+      "manual": {
+        "min": 3,
+        "max": 5
+      },
+      "planetary": {
+        "min": 2,
+        "max": 4
+      },
+      "spiral": {
+        "min": 0,
+        "max": 0
+      }
     },
     "glutenDevelopment": "none",
     "bulkFermentationTarget": "none",
     "finalProofTarget": "none"
   },
-
   "climateAdjustments": {
-    "dry": { "hydrationDelta": 0, "yeastDeltaPercent": 0, "comment": "" },
-    "moderate": { "hydrationDelta": 0, "yeastDeltaPercent": 0, "comment": "" },
-    "humid": { "hydrationDelta": 0, "yeastDeltaPercent": 0, "comment": "" }
+    "dry": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    },
+    "moderate": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    },
+    "humid": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    }
   },
-
   "mixingAdjustments": {
-    "manual": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "" },
-    "planetary": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "" },
-    "spiral": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "" }
+    "manual": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    },
+    "planetary": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    },
+    "spiral": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    }
   },
-
   "schedule": {
-    "bulk": { "totalHours": 0, "temperature": 24, "steps": [] },
-    "finalProof": { "totalHours": 0, "temperature": 24, "comment": "" },
-    "coldRetard": { "enabled": true, "hours": 1, "temperature": 4, "comment": "Охлаждение перед раскаткой." }
+    "bulk": {
+      "totalHours": 0,
+      "temperature": 24,
+      "steps": []
+    },
+    "finalProof": {
+      "totalHours": 0,
+      "temperature": 24,
+      "comment": ""
+    },
+    "coldRetard": {
+      "enabled": true,
+      "hours": 1,
+      "temperature": 4,
+      "comment": "Охлаждение перед раскаткой."
+    }
   },
-
-  "bake": { "temperature": 180, "timeMinutes": 15 },
-
+  "bake": {
+    "temperature": 180,
+    "timeMinutes": 15
+  },
   "uiHints": {
     "flourLabel": "Мука",
     "hydrationLabel": "Гидратация",

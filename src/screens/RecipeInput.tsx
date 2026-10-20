@@ -63,9 +63,6 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   const base = profile?.base ?? {};
   const pref = profile?.preferment ?? {};
 
-  const usesRecipeComposition =
-    typeof base.liquidPct === "number";
-
   const [mode, setMode] = React.useState<"flour" | "dough">(
     initialValues.mode ?? "flour"
   );
@@ -78,15 +75,11 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     initialValues.targetDoughWeight ?? 0
   );
 
-  const [hydration, setHydration] = React.useState(
-    initialValues.hydration ??
-      base.hydration ??
-      60
-  );
-
   const [liquidPct, setLiquidPct] = React.useState(
     initialValues.liquidPct ??
+      initialValues.hydration ??
       base.liquidPct ??
+      base.hydration ??
       0
   );
 
@@ -131,7 +124,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   );
 
   const [liquidType, setLiquidType] = React.useState<LiquidType>(
-    initialValues.liquidType ?? "water"
+    initialValues.liquidType ?? base.liquidType ?? "water"
   );
 
   const [fatType, setFatType] = React.useState<FatType>(
@@ -178,15 +171,11 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setFlour(initialValues.flour ?? nextBase.flour ?? 1000);
     setTargetDoughWeight(initialValues.targetDoughWeight ?? 0);
 
-    setHydration(
-      initialValues.hydration ??
-        nextBase.hydration ??
-        60
-    );
-
     setLiquidPct(
       initialValues.liquidPct ??
+        initialValues.hydration ??
         nextBase.liquidPct ??
+        nextBase.hydration ??
         0
     );
     setSalt(initialValues.salt ?? nextBase.salt ?? 2);
@@ -245,7 +234,6 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
 
   const handleSubmit = () => {
     const flourSafe = n(flour, 0);
-    const hydrationSafe = n(hydration, 0);
     const liquidPctSafe = n(liquidPct, 0);
     const saltSafe = n(salt, 0);
     const sugarSafe = n(sugar, 0);
@@ -257,9 +245,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     let finalFlour = flourSafe;
 
     if (mode === "dough" && targetDoughWeightSafe > 0) {
-      const liquidPercent = usesRecipeComposition
-        ? liquidPctSafe
-        : hydrationSafe;
+      const liquidPercent = liquidPctSafe;
 
       const liquidGr = (flourSafe * liquidPercent) / 100;
       const saltGr = (flourSafe * saltSafe) / 100;
@@ -289,15 +275,8 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
 
       flour: finalFlour,
 
-      // Legacy hydration остаётся только для старых профилей.
-      hydration: usesRecipeComposition
-        ? undefined
-        : hydrationSafe,
-
-      // Новый composition input.
-      liquidPct: usesRecipeComposition
-        ? liquidPctSafe
-        : undefined,
+      // Единая модель основной жидкости.
+      liquidPct: liquidPctSafe,
 
       salt: saltSafe,
       sugar: sugarSafe,
@@ -421,7 +400,6 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         <section className="recipe-card">
           <h2 className="recipe-card-title">{t("recipeInput.composition")}</h2>
 
-          {usesRecipeComposition ? (
             <div className="recipe-row">
               <span className="recipe-label">{t("recipeInput.primaryLiquid")}</span>
               <select
@@ -448,20 +426,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 <span className="recipe-unit">%</span>
               </div>
             </div>
-          ) : (
-            <div className="recipe-row simple">
-              <span className="recipe-label">{t("recipeInput.hydration")}</span>
-              <div className="recipe-percent-wrap">
-                <input
-                  className="recipe-number"
-                  type="number"
-                  value={hydration}
-                  onChange={(e) => setHydration(e.target.value)}
-                />
-                <span className="recipe-unit">%</span>
-              </div>
-            </div>
-          )}
+
 
           <div className="recipe-row">
             <span className="recipe-label">{t("recipeInput.eggs")}</span>
@@ -591,7 +556,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           <div className="recipe-row simple">
             <span className="recipe-label">{t("recipeInput.mainFlour")}</span>
             <select
-              className="recipe-select"
+              className="recipe-select recipe-flour-select"
               value={mainFlour}
               onChange={(e) =>
                 setMainFlour(e.target.value as FlourType)

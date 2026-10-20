@@ -4,56 +4,110 @@
   "category": "bread",
   "subtype": "pita",
   "prefermentId": "none",
-
   "base": {
     "flour": 1000,
-    "hydration": 60,
     "salt": 2,
     "sugar": 1,
     "fat": 1,
     "eggs": 0,
-    "yeast": { "type": "instant", "percent": 1 }
+    "yeast": {
+      "type": "instant",
+      "percent": 1
+    },
+    "liquidPct": 60,
+    "liquidType": "water"
   },
-
   "limits": {
-    "hydration": { "min": 55, "max": 70 },
-    "salt": { "min": 1.5, "max": 2.5 },
-    "sugar": { "min": 0, "max": 10 },
-    "fat": { "min": 0, "max": 10 },
-    "yeastPercent": { "min": 0.3, "max": 2 }
+    "hydration": {
+      "min": 55,
+      "max": 70
+    },
+    "salt": {
+      "min": 1.5,
+      "max": 2.5
+    },
+    "sugar": {
+      "min": 0,
+      "max": 10
+    },
+    "fat": {
+      "min": 0,
+      "max": 10
+    },
+    "yeastPercent": {
+      "min": 0.3,
+      "max": 2
+    }
   },
-
   "process": {
     "mixingIntensity": "medium",
     "mixingTime": {
-      "manual": { "min": 6, "max": 10 },
-      "planetary": { "min": 4, "max": 7 },
-      "spiral": { "min": 3, "max": 5 }
+      "manual": {
+        "min": 6,
+        "max": 10
+      },
+      "planetary": {
+        "min": 4,
+        "max": 7
+      },
+      "spiral": {
+        "min": 3,
+        "max": 5
+      }
     },
     "glutenDevelopment": "medium",
     "bulkFermentationTarget": "x2.0",
     "finalProofTarget": "короткая, чтобы сохранить подпружинивание"
   },
-
   "climateAdjustments": {
-    "dry": { "hydrationDelta": 2, "yeastDeltaPercent": 0.05, "comment": "Сухой климат: тесто быстро сохнет." },
-    "moderate": { "hydrationDelta": 0, "yeastDeltaPercent": 0, "comment": "Умеренный климат: стандартные параметры." },
-    "humid": { "hydrationDelta": -2, "yeastDeltaPercent": -0.05, "comment": "Влажный климат: тесто липче." }
+    "dry": {
+      "hydrationDelta": 2,
+      "yeastDeltaPercent": 0.05,
+      "comment": "Сухой климат: тесто быстро сохнет."
+    },
+    "moderate": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": "Умеренный климат: стандартные параметры."
+    },
+    "humid": {
+      "hydrationDelta": -2,
+      "yeastDeltaPercent": -0.05,
+      "comment": "Влажный климат: тесто липче."
+    }
   },
-
   "mixingAdjustments": {
-    "manual": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "Ручной замес подходит." },
-    "planetary": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "Планетарный — оптимально." },
-    "spiral": { "hydrationDelta": 1, "yeastPercentDelta": -0.05, "comment": "Спиральный быстро развивает клейковину." }
+    "manual": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": "Ручной замес подходит."
+    },
+    "planetary": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": "Планетарный — оптимально."
+    },
+    "spiral": {
+      "hydrationDelta": 1,
+      "yeastPercentDelta": -0.05,
+      "comment": "Спиральный быстро развивает клейковину."
+    }
   },
-
   "schedule": {
     "bulk": {
       "totalHours": 1,
       "temperature": 26,
       "steps": [
-        { "timeFromStartMinutes": 0, "action": "Автолиз", "comment": "10–20 минут." },
-        { "timeFromStartMinutes": 20, "action": "Добавление соли и сахара", "comment": "Замешиваем до средней клейковины." }
+        {
+          "timeFromStartMinutes": 0,
+          "action": "Автолиз",
+          "comment": "10–20 минут."
+        },
+        {
+          "timeFromStartMinutes": 20,
+          "action": "Добавление соли и сахара",
+          "comment": "Замешиваем до средней клейковины."
+        }
       ]
     },
     "finalProof": {
@@ -61,11 +115,17 @@
       "temperature": 26,
       "comment": "Короткая расстойка — иначе не будет кармана."
     },
-    "coldRetard": { "enabled": false, "hours": 0, "temperature": 4, "comment": "" }
+    "coldRetard": {
+      "enabled": false,
+      "hours": 0,
+      "temperature": 4,
+      "comment": ""
+    }
   },
-
-  "bake": { "temperature": 260, "timeMinutes": 6 },
-
+  "bake": {
+    "temperature": 260,
+    "timeMinutes": 6
+  },
   "uiHints": {
     "flourLabel": "Мука (базовая порция)",
     "hydrationLabel": "Гидратация",

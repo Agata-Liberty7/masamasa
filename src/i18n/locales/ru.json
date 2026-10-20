@@ -192,7 +192,26 @@
     "g": "г"
   },
   "profiles": {
-    "brioche": "Бриошь"
+    "brioche": "Бриошь",
+    "bagel": "Бейгл",
+    "baguette": "Багет",
+    "baked_pirozhki": "Пирожки печёные",
+    "belyashi": "Беляши",
+    "bread": "Хлеб",
+    "chebureki": "Чебуреки",
+    "choux": "Заварное тесто",
+    "ciabatta": "Чиабатта",
+    "cinnabon": "Синабон",
+    "donuts": "Пончики",
+    "empanada": "Эмпанада",
+    "enriched": "Сдобное тесто",
+    "ensaimada": "Энсаймада",
+    "focaccia": "Фокачча",
+    "pita": "Пита",
+    "pizza": "Пицца",
+    "shortcrust": "Песочное тесто",
+    "sourdough": "Хлеб на закваске",
+    "sponge": "Бисквит"
   },
   "recipeOutput": {
     "title": "Итоговый рецепт",

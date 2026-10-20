@@ -192,7 +192,26 @@
     "g": "g"
   },
   "profiles": {
-    "brioche": "Brioche"
+    "brioche": "Brioche",
+    "bagel": "Bagel",
+    "baguette": "Baguette",
+    "baked_pirozhki": "Baked filled buns",
+    "belyashi": "Belyashi",
+    "bread": "Bread",
+    "chebureki": "Chebureki",
+    "choux": "Choux pastry",
+    "ciabatta": "Ciabatta",
+    "cinnabon": "Cinnamon rolls",
+    "donuts": "Doughnuts",
+    "empanada": "Empanada",
+    "enriched": "Enriched dough",
+    "ensaimada": "Ensaimada",
+    "focaccia": "Focaccia",
+    "pita": "Pita bread",
+    "pizza": "Pizza",
+    "shortcrust": "Shortcrust pastry",
+    "sourdough": "Sourdough bread",
+    "sponge": "Sponge cake"
   },
   "recipeOutput": {
     "title": "Final recipe",

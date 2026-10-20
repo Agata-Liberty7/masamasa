@@ -50,9 +50,10 @@ const StartScreen: React.FC<StartScreenProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
 
-  const modules = import.meta.glob("../profiles/*.json", {
-    eager: true,
-  });
+  const modules = import.meta.glob(
+    ["../profiles/*.json", "!../profiles/profileTemplate.json"],
+    { eager: true }
+  );
 
   const indexData = useMemo(() => {
     const categories: Record<string, any> = {};

@@ -4,67 +4,127 @@
   "category": "bread",
   "subtype": "ciabatta",
   "prefermentId": "biga",
-
   "base": {
     "flour": 1000,
-    "hydration": 78,
     "salt": 2.2,
     "sugar": 0,
     "fat": 0,
     "eggs": 0,
-    "yeast": { "type": "instant", "percent": 0.6 }
+    "yeast": {
+      "type": "instant",
+      "percent": 0.6
+    },
+    "liquidPct": 78,
+    "liquidType": "water"
   },
-
   "limits": {
-    "hydration": { "min": 70, "max": 85 },
-    "salt": { "min": 1.8, "max": 2.5 },
-    "sugar": { "min": 0, "max": 5 },
-    "fat": { "min": 0, "max": 5 },
-    "yeastPercent": { "min": 0.1, "max": 1.2 }
+    "hydration": {
+      "min": 70,
+      "max": 85
+    },
+    "salt": {
+      "min": 1.8,
+      "max": 2.5
+    },
+    "sugar": {
+      "min": 0,
+      "max": 5
+    },
+    "fat": {
+      "min": 0,
+      "max": 5
+    },
+    "yeastPercent": {
+      "min": 0.1,
+      "max": 1.2
+    }
   },
-
   "process": {
     "mixingIntensity": "low",
     "mixingTime": {
-      "manual": { "min": 5, "max": 8 },
-      "planetary": { "min": 4, "max": 6 },
-      "spiral": { "min": 3, "max": 5 }
+      "manual": {
+        "min": 5,
+        "max": 8
+      },
+      "planetary": {
+        "min": 4,
+        "max": 6
+      },
+      "spiral": {
+        "min": 3,
+        "max": 5
+      }
     },
     "glutenDevelopment": "low",
     "bulkFermentationTarget": "x2.5",
     "finalProofTarget": "почти готово, но не перекисшее"
   },
-
   "climateAdjustments": {
-    "dry": { "hydrationDelta": 3, "yeastDeltaPercent": 0.05, "comment": "Сухой климат: чиабатта требует больше воды." },
-    "moderate": { "hydrationDelta": 0, "yeastDeltaPercent": 0, "comment": "Умеренный климат: используем базовые параметры." },
-    "humid": { "hydrationDelta": -3, "yeastDeltaPercent": -0.05, "comment": "Влажный климат: мука впитывает меньше воды." }
+    "dry": {
+      "hydrationDelta": 3,
+      "yeastDeltaPercent": 0.05,
+      "comment": "Сухой климат: чиабатта требует больше воды."
+    },
+    "moderate": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": "Умеренный климат: используем базовые параметры."
+    },
+    "humid": {
+      "hydrationDelta": -3,
+      "yeastDeltaPercent": -0.05,
+      "comment": "Влажный климат: мука впитывает меньше воды."
+    }
   },
-
   "mixingAdjustments": {
-    "manual": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "Ручной замес: минимальная интенсивность." },
-    "planetary": { "hydrationDelta": 0, "yeastPercentDelta": 0, "comment": "Планетарный: короткий замес, не развивать клейковину полностью." },
-    "spiral": { "hydrationDelta": 2, "yeastPercentDelta": -0.05, "comment": "Спиральный: легко развивает клейковину, осторожно с замесом." }
+    "manual": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": "Ручной замес: минимальная интенсивность."
+    },
+    "planetary": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": "Планетарный: короткий замес, не развивать клейковину полностью."
+    },
+    "spiral": {
+      "hydrationDelta": 2,
+      "yeastPercentDelta": -0.05,
+      "comment": "Спиральный: легко развивает клейковину, осторожно с замесом."
+    }
   },
-
   "schedule": {
     "bulk": {
       "totalHours": 3,
       "temperature": 24,
       "steps": [
-        { "timeFromStartMinutes": 0, "action": "Автолиз", "comment": "Мука + вода, 20–30 минут." },
-        { "timeFromStartMinutes": 30, "action": "Добавление соли", "comment": "Короткий замес, не развивать клейковину полностью." },
-        { "timeFromStartMinutes": 60, "action": "Складка", "comment": "Одна складка для укрепления структуры." },
-        { "timeFromStartMinutes": 120, "action": "Складка", "comment": "Вторая складка — для формирования крупных пор." }
+        {
+          "timeFromStartMinutes": 0,
+          "action": "Автолиз",
+          "comment": "Мука + вода, 20–30 минут."
+        },
+        {
+          "timeFromStartMinutes": 30,
+          "action": "Добавление соли",
+          "comment": "Короткий замес, не развивать клейковину полностью."
+        },
+        {
+          "timeFromStartMinutes": 60,
+          "action": "Складка",
+          "comment": "Одна складка для укрепления структуры."
+        },
+        {
+          "timeFromStartMinutes": 120,
+          "action": "Складка",
+          "comment": "Вторая складка — для формирования крупных пор."
+        }
       ]
     },
-
     "finalProof": {
       "totalHours": 1,
       "temperature": 24,
       "comment": "Расстойка на хорошо посыпанной поверхности, не пересыпать мукой."
     },
-
     "coldRetard": {
       "enabled": true,
       "hours": 12,
@@ -72,9 +132,10 @@
       "comment": "Холодная ферментация усиливает аромат и пористость."
     }
   },
-
-  "bake": { "temperature": 230, "timeMinutes": 30 },
-
+  "bake": {
+    "temperature": 230,
+    "timeMinutes": 30
+  },
   "uiHints": {
     "flourLabel": "Мука (базовая порция)",
     "hydrationLabel": "Гидратация (вода % к муке)",

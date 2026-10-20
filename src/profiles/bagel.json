@@ -4,10 +4,8 @@
   "category": "bread",
   "subtype": "bagel",
   "prefermentId": "none",
-
   "base": {
     "flour": 1000,
-    "hydration": 55,
     "salt": 2.2,
     "sugar": 3,
     "fat": 0,
@@ -15,29 +13,52 @@
     "yeast": {
       "type": "instant",
       "percent": 0.8
+    },
+    "liquidPct": 55,
+    "liquidType": "water"
+  },
+  "limits": {
+    "hydration": {
+      "min": 50,
+      "max": 60
+    },
+    "salt": {
+      "min": 1.8,
+      "max": 2.5
+    },
+    "sugar": {
+      "min": 0,
+      "max": 10
+    },
+    "fat": {
+      "min": 0,
+      "max": 5
+    },
+    "yeastPercent": {
+      "min": 0.2,
+      "max": 1.5
     }
   },
-
-  "limits": {
-    "hydration": { "min": 50, "max": 60 },
-    "salt": { "min": 1.8, "max": 2.5 },
-    "sugar": { "min": 0, "max": 10 },
-    "fat": { "min": 0, "max": 5 },
-    "yeastPercent": { "min": 0.2, "max": 1.5 }
-  },
-
   "process": {
     "mixingIntensity": "high",
     "mixingTime": {
-      "manual": { "min": 10, "max": 15 },
-      "planetary": { "min": 6, "max": 10 },
-      "spiral": { "min": 4, "max": 7 }
+      "manual": {
+        "min": 10,
+        "max": 15
+      },
+      "planetary": {
+        "min": 6,
+        "max": 10
+      },
+      "spiral": {
+        "min": 4,
+        "max": 7
+      }
     },
     "glutenDevelopment": "high",
     "bulkFermentationTarget": "x1.5",
     "finalProofTarget": "почти готово, но не перекисшее"
   },
-
   "climateAdjustments": {
     "dry": {
       "hydrationDelta": 2,
@@ -55,7 +76,6 @@
       "comment": "Влажный климат: тесто может стать липким."
     }
   },
-
   "mixingAdjustments": {
     "manual": {
       "hydrationDelta": 0,
@@ -73,7 +93,6 @@
       "comment": "Спиральный: легко развивает клейковину."
     }
   },
-
   "schedule": {
     "bulk": {
       "totalHours": 1,
@@ -103,12 +122,10 @@
       "comment": "Холодная ферментация улучшает вкус и плотность."
     }
   },
-
   "bake": {
     "temperature": 220,
     "timeMinutes": 18
   },
-
   "uiHints": {
     "flourLabel": "Мука (базовая порция)",
     "hydrationLabel": "Гидратация",
@@ -120,4 +137,3 @@
     ]
   }
 }
-      
