@@ -51,6 +51,20 @@ const n = (value: unknown, fallback = 0) => {
   return Number.isFinite(num) ? num : fallback;
 };
 
+
+const IngredientIcon = ({
+  name,
+}: {
+  name: string;
+}) => (
+  <img
+    className="ingredient-icon"
+    src={`/images/ingredients/${name}.png`}
+    alt=""
+    aria-hidden="true"
+  />
+);
+
 const RecipeInput: React.FC<RecipeInputProps> = ({
   profileId,
   profile,
@@ -337,6 +351,14 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         </div>
 
         <header className="recipe-header">
+          {profileId === "brioche" && (
+            <img
+              className="recipe-photo"
+              src="/images/recipes/brioche.png"
+              alt=""
+              aria-hidden="true"
+            />
+          )}
           <h1 className="recipe-title">
             {t(`profiles.${profileId}`, {
               defaultValue: profile?.name ?? profileId,
@@ -401,7 +423,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           <h2 className="recipe-card-title">{t("recipeInput.composition")}</h2>
 
             <div className="recipe-row">
-              <span className="recipe-label">{t("recipeInput.primaryLiquid")}</span>
+              <span className="recipe-label">{liquidType === "milk" ? <IngredientIcon name="milk" /> : <IngredientIcon name="water" />}{t("recipeInput.primaryLiquid")}</span>
               <select
                 className="recipe-select"
                 value={liquidType}
@@ -429,7 +451,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
 
 
           <div className="recipe-row">
-            <span className="recipe-label">{t("recipeInput.eggs")}</span>
+            <span className="recipe-label"><IngredientIcon name="egg" />{t("recipeInput.eggs")}</span>
             <select
               className="recipe-select"
               value={eggType}
@@ -456,7 +478,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           </div>
 
           <div className="recipe-row">
-            <span className="recipe-label">{t("recipeInput.fat")}</span>
+            <span className="recipe-label">{fatType === "oil" ? <IngredientIcon name="oil" /> : <IngredientIcon name="butter" />}{t("recipeInput.fat")}</span>
             <select
               className="recipe-select"
               value={fatType}
@@ -483,7 +505,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           </div>
 
           <div className="recipe-row">
-            <span className="recipe-label">{t("recipeInput.sugar")}</span>
+            <span className="recipe-label"><IngredientIcon name="sugar" />{t("recipeInput.sugar")}</span>
             <select
               className="recipe-select"
               value={sugarType}
@@ -510,7 +532,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           </div>
 
           <div className="recipe-row simple">
-            <span className="recipe-label">{t("recipeInput.salt")}</span>
+            <span className="recipe-label"><IngredientIcon name="salt" />{t("recipeInput.salt")}</span>
             <div className="recipe-percent-wrap">
               <input
                 className="recipe-number"
@@ -523,7 +545,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           </div>
 
           <div className="recipe-row">
-            <span className="recipe-label">{t("recipeInput.yeast")}</span>
+            <span className="recipe-label"><IngredientIcon name="yeast" />{t("recipeInput.yeast")}</span>
             <select
               className="recipe-select"
               value={yeastForm}
@@ -554,7 +576,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           <h2 className="recipe-card-title">{t("recipeInput.flourSection")}</h2>
 
           <div className="recipe-row simple">
-            <span className="recipe-label">{t("recipeInput.mainFlour")}</span>
+            <span className="recipe-label"><IngredientIcon name="flour" />{t("recipeInput.mainFlour")}</span>
             <select
               className="recipe-select recipe-flour-select"
               value={mainFlour}
