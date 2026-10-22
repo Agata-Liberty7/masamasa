@@ -75,7 +75,7 @@ function App() {
       coldHours: coldFermentationHours,
       warmHours: warmFermentationHours,
       flourType: "normal",
-      yeastForm: "instant",
+      roomTemp,
     });
 
     setSelectedProfile(profileId);

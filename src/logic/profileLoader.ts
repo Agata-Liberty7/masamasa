@@ -108,6 +108,7 @@ export function loadProfile(
     warmHours?: number;
     flourType?: FlourType;
     yeastForm?: YeastForm;
+    roomTemp?: number;
   }
 ) {
   const raw = profiles[profileId];
@@ -170,6 +171,8 @@ export function loadProfile(
   const warmHours = opts?.warmHours ?? 0;
   const flourType = opts?.flourType ?? "normal";
   const yeastForm = opts?.yeastForm ?? (base.yeast?.type ?? "instant");
+  const roomTemp = opts?.roomTemp ?? 24;
+  const originalYeastForm: YeastForm = base.yeast?.type === "fresh" ? "fresh" : "instant";
 
   // 3.1 Гидратация
   // Здесь НЕ вызываем computeHydration(), потому что на этапе загрузки профиля
@@ -188,6 +191,21 @@ export function loadProfile(
       doughType: flags.isEnriched ? "enriched" : "lean",
       yeastForm,
       productionMode,
+      roomTemp,
+      mainFlour: flourType,
+      extraFlour1: "normal",
+      extraPct1: 0,
+      extraFlour2: "normal",
+      extraPct2: 0,
+    });
+
+    const baselineYeastPercent = computeYeastPercent({
+      coldHours: 0,
+      warmHours: 1,
+      doughType: flags.isEnriched ? "enriched" : "lean",
+      yeastForm,
+      productionMode: "home",
+      roomTemp: 24,
       mainFlour: flourType,
       extraFlour1: "normal",
       extraPct1: 0,
@@ -196,10 +214,16 @@ export function loadProfile(
     });
 
     if (
-      typeof base.yeast.percent !== "number" ||
-      Number.isNaN(base.yeast.percent)
+      typeof base.yeast.percent === "number" &&
+      Number.isFinite(base.yeast.percent) &&
+      baselineYeastPercent > 0
     ) {
-      base.yeast.percent = modelYeastPercent;
+      base.yeast.percent *= modelYeastPercent / baselineYeastPercent;
+      if (yeastForm !== originalYeastForm) {
+        base.yeast.percent *= yeastForm === "fresh" ? 3 : 1 / 3;
+      }
+    } else {
+      base.yeast.percent = modelYeastPercent * 100;
     }
   }
 

@@ -147,10 +147,8 @@ export type RecipeResult = {
 //  Конвертация дрожжей
 // ============================================================
 
-const YEAST_MULTIPLIER: Record<YeastForm, number> = {
-  instant: 1,
-  fresh: 3,
-};
+// yeastPct is already the baker's percentage of the selected yeast form.
+// Conversion between forms happens in the input UI, not during gram calculation.
 
 // ============================================================
 //  Вода в яйцах
@@ -262,20 +260,15 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
   //  движок отдельно рассчитывает рекомендацию.
   // ----------------------------------------------------------
 
-  const yeastMultiplier =
-    YEAST_MULTIPLIER[input.yeastForm] ?? 1;
+  const yeast = Math.round((input.flour * input.yeastPct) / 100);
 
-  const yeast = Math.round(
-    ((input.flour * input.yeastPct) / 100) *
-      yeastMultiplier
-  );
-
-  const yeastRecommendedPct = computeYeastPercent({
+  const yeastRecommendedPct = 100 * computeYeastPercent({
     coldHours: input.coldFermentationHours,
     warmHours: input.warmFermentationHours,
     doughType: input.doughType,
     yeastForm: input.yeastForm,
     productionMode: input.productionMode,
+    roomTemp: input.roomTemp,
 
     mainFlour: input.mainFlour,
     extraFlour1: input.extraFlour1,

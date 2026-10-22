@@ -49,6 +49,11 @@ const StartScreen: React.FC<StartScreenProps> = ({
   onDeleteCustomRecipe,
 }) => {
   const { t, i18n } = useTranslation();
+  const conditionsHelp = i18n.language.startsWith("es")
+    ? "La temperatura, el tiempo de fermentación y el modo de producción ajustan la cantidad inicial de levadura. El clima y el amasado también pueden ajustar la receta. Son estimaciones: comprueba siempre la fermentación real."
+    : i18n.language.startsWith("en")
+      ? "Temperature, fermentation time and production mode adjust the initial yeast amount. Climate and mixing may also adjust the recipe. These are estimates: always check actual fermentation."
+      : "Температура, время ферментации и режим производства корректируют исходное количество дрожжей. Климат и замес также могут влиять на рецептуру. Это ориентировочный расчёт: контролируйте фактическую ферментацию.";
 
   const modules = import.meta.glob(
     ["../profiles/*.json", "!../profiles/profileTemplate.json"],
@@ -402,6 +407,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
               {t("start.professional")}
             </button>
           </div>
+          <p style={{ fontSize: "0.84rem", opacity: 0.78, marginTop: 12 }}>{conditionsHelp}</p>
         </section>
 
         <section className="start-search-section">

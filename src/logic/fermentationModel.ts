@@ -58,6 +58,7 @@ export type YeastModelInput = {
   extraPct2: number;
 
   productionMode: "home" | "professional";
+  roomTemp?: number;
 };
 
 export type HydrationModelInput = {
@@ -320,6 +321,7 @@ export function computeYeastPercent(input: YeastModelInput): number {
     extraFlour2,
     extraPct2,
     productionMode,
+    roomTemp = 24,
   } = input;
 
   const cold = Math.max(0, coldHours);
@@ -350,7 +352,11 @@ export function computeYeastPercent(input: YeastModelInput): number {
     extraPct2
   );
 
-  const result = base * kDough * kMode * kWarm * (1 + kFlour) * kW;
+  // Reference temperature is 24 C. This is a bounded planning heuristic,
+  // not a prediction of actual dough temperature or fermentation endpoint.
+  const safeTemp = Number.isFinite(roomTemp) ? clamp(roomTemp, 16, 32) : 24;
+  const kTemp = clamp(Math.pow(1.07, 24 - safeTemp), 0.6, 1.8);
+  const result = base * kDough * kMode * kWarm * (1 + kFlour) * kW * kTemp;
 
   return Math.max(0.0001, result);
 }

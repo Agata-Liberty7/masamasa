@@ -4,30 +4,22 @@
   "category": "enriched",
   "subtype": "brioche",
   "prefermentId": "none",
-
   "base": {
     "flour": 1000,
-
     "liquidPct": 9,
     "liquidType": "water",
-
     "salt": 2.5,
-
     "sugar": 12,
     "sugarType": "white",
-
     "fat": 50,
     "fatType": "butter",
-
     "eggs": 50,
     "eggType": "whole",
-
     "yeast": {
-      "type": "instant",
+      "type": "fresh",
       "percent": 3
     }
   },
-
   "limits": {
     "salt": {
       "min": 1.5,
@@ -46,7 +38,6 @@
       "max": 4
     }
   },
-
   "process": {
     "mixingIntensity": "high",
     "mixingTime": {
@@ -67,7 +58,6 @@
     "bulkFermentationTarget": "x2.0",
     "finalProofTarget": "пальцевый тест"
   },
-
   "climateAdjustments": {
     "dry": {
       "yeastDeltaPercent": 0.05,
@@ -82,7 +72,6 @@
       "comment": ""
     }
   },
-
   "mixingAdjustments": {
     "manual": {
       "yeastPercentDelta": 0,
@@ -97,7 +86,6 @@
       "comment": ""
     }
   },
-
   "schedule": {
     "bulk": {
       "totalHours": 2,
@@ -116,12 +104,10 @@
       "comment": ""
     }
   },
-
   "bake": {
     "temperature": 180,
     "timeMinutes": 30
   },
-
   "uiHints": {
     "flourLabel": "Мука",
     "notesForBaker": []

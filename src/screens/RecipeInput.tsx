@@ -73,6 +73,12 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   onCalculate,
 }) => {
   const { t, i18n } = useTranslation();
+  const lang = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
+  const yeastHelp = {
+    ru: "Процент дрожжей указан для выбранного вида. При переключении свежие/мгновенные количество автоматически пересчитывается (1:3). Вы можете изменить его вручную.",
+    en: "Yeast percentage applies to the selected type. Switching fresh/instant converts the amount automatically (3:1). You can edit it manually.",
+    es: "El porcentaje corresponde al tipo de levadura elegido. Al cambiar entre fresca e instantánea se convierte automáticamente (3:1). Puedes editarlo manualmente.",
+  }[lang];
 
   const base = profile?.base ?? {};
   const pref = profile?.preferment ?? {};
@@ -549,9 +555,16 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
             <select
               className="recipe-select"
               value={yeastForm}
-              onChange={(e) =>
-                setYeastForm(e.target.value as YeastForm)
-              }
+                onChange={(e) => {
+                  const nextForm = e.target.value as YeastForm;
+                  if (nextForm !== yeastForm) {
+                    setYeastPct((previous: number | string) => {
+                      const value = n(previous, 0);
+                      return Math.round((value * (nextForm === "fresh" ? 3 : 1 / 3)) * 10000) / 10000;
+                    });
+                    setYeastForm(nextForm);
+                  }
+                }}
             >
               {YEAST_FORMS.map((type) => (
                 <option key={type} value={type}>
@@ -570,6 +583,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               <span className="recipe-unit">%</span>
             </div>
           </div>
+          <p style={{ fontSize: "0.82rem", opacity: 0.75, margin: "8px 0 0" }}>{yeastHelp}</p>
         </section>
 
         <section className="recipe-card">
