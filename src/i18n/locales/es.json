@@ -64,7 +64,7 @@
     "prefermentType": "Type",
     "prefermentFlourPct": "Flour in preferment (% of total flour)",
     "prefermentHydration": "Preferment Hydration (%)",
-    "prefermentYeastPct": "Yeast in preferment (% of total yeast)"
+    "prefermentYeastPct": "Levadura del prefermento (% de harina del prefermento)"
   },
   "output": {
     "title": "Final Recipe",
@@ -166,6 +166,7 @@
   },
   "eggs": "Eggs (% of flour)",
   "recipeInput": {
+    "prefermentInvalid": "El prefermento necesita más harina, líquido o levadura que la receta total. Reduce la harina, hidratación o levadura del prefermento.",
     "subtitle": "Fórmula base. Modifica la composición y calcula la receta.",
     "calculation": "Cálculo",
     "byFlour": "Por cantidad de harina",
@@ -214,6 +215,9 @@
     "choux": "Masa choux"
   },
   "recipeOutput": {
+    "totalComposition": "Ingredientes totales (incluido el prefermento)",
+    "finalMix": "Amasado final",
+    "finalMixNote": "Añade todo el prefermento preparado. Estas son solo las cantidades restantes para el amasado final.",
     "title": "Receta final",
     "composition": "Composición",
     "analytics": "Parámetros calculados",
@@ -233,7 +237,7 @@
     "extraFlour2": "Harina adicional 2",
     "prefermentFlour": "Harina",
     "prefermentLiquid": "Líquido",
-    "prefermentWater": "Agua",
+    "prefermentWater": "Agua contenida en el líquido (informativo)",
     "prefermentYeast": "Levadura",
     "prefermentWeight": "Peso del prefermento",
     "ofFlour": "sobre harina",

@@ -119,6 +119,10 @@ export function loadProfile(
   const limits = profile.limits ?? {};
 
   const flags = detectType(profile);
+  const hasCommercialYeast =
+    typeof base.yeast?.percent === "number" &&
+    Number.isFinite(base.yeast.percent) &&
+    base.yeast.percent > 0;
 
   // Новый формат профиля: состав рецепта определяет расчётные показатели.
   // Старый hydration остаётся временно только для legacy-профилей.
@@ -138,7 +142,7 @@ export function loadProfile(
         (base.hydration ?? 0) + (climateAdj.hydrationDelta || 0);
     }
 
-    if (base.yeast) {
+    if (hasCommercialYeast && base.yeast) {
       base.yeast.percent =
         (base.yeast.percent ?? 0) + (climateAdj.yeastDeltaPercent || 0);
     }
@@ -157,7 +161,7 @@ export function loadProfile(
         (base.hydration ?? 0) + (mixingAdj.hydrationDelta || 0);
     }
 
-    if (base.yeast) {
+    if (hasCommercialYeast && base.yeast) {
       base.yeast.percent =
         (base.yeast.percent ?? 0) + (mixingAdj.yeastPercentDelta || 0);
     }
@@ -184,7 +188,7 @@ export function loadProfile(
   // Профиль остаётся источником истины.
   // Модель используем только как fallback, если в профиле не задан yeast.percent.
   // Но flourType уже учитываем реально.
-  if (base.yeast && profile.prefermentId !== "levain") {
+  if (hasCommercialYeast && base.yeast && profile.prefermentId !== "levain") {
     const modelYeastPercent = computeYeastPercent({
       coldHours,
       warmHours,

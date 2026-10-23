@@ -62,7 +62,7 @@ export type RecipeInput = {
   prefermentType: PrefermentType;
   prefermentFlourPct: number;
   prefermentHydrationPct: number;
-  prefermentYeastPct: number;
+  prefermentYeastPct: number; // % of flour within preferment
 
   // Условия производства
   roomTemp: number;
@@ -130,7 +130,7 @@ export type RecipeResult = {
   prefermentType: PrefermentType;
   prefermentFlourPct: number;
   prefermentHydrationPct: number;
-  prefermentYeastPct: number;
+  prefermentYeastPct: number; // % of flour within preferment
 
   // Основной замес
   finalFlour: number;
@@ -260,7 +260,7 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
   //  движок отдельно рассчитывает рекомендацию.
   // ----------------------------------------------------------
 
-  const yeast = Math.round((input.flour * input.yeastPct) / 100);
+  const yeast = Math.round(((input.flour * input.yeastPct) / 100) * 1000) / 1000;
 
   const yeastRecommendedPct = 100 * computeYeastPercent({
     coldHours: input.coldFermentationHours,
@@ -308,9 +308,19 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
       input.liquidType
     );
 
+    // Yeast in preferment uses baker's % of preferment flour, NOT
+    // percent of the total yeast mass. Keep sub-gram precision.
     const prefYeast = Math.round(
-      (yeast * input.prefermentYeastPct) / 100
-    );
+      ((prefFlour * input.prefermentYeastPct) / 100) * 1000
+    ) / 1000;
+
+    if (
+      input.prefermentFlourPct > 100 ||
+      prefLiquid > liquid ||
+      prefYeast > yeast + 0.0001
+    ) {
+      throw new Error("Preferment needs more flour, liquid, or yeast than the total recipe contains.");
+    }
 
     preferment = {
       type: input.prefermentType,
@@ -343,7 +353,7 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
 
   const finalYeast = Math.max(
     0,
-    yeast - preferment.yeast
+    Math.round((yeast - preferment.yeast) * 1000) / 1000
   );
 
   // ----------------------------------------------------------

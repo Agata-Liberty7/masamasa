@@ -120,7 +120,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
         ? "en-GB"
         : "ru-RU",
     {
-      maximumFractionDigits: 1,
+      maximumFractionDigits: 3,
     }
   );
 
@@ -197,7 +197,9 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
 
         <section className="recipe-output-card">
           <h2 className="recipe-output-card-title">
-            {t("recipeOutput.composition")}
+            {prefermentType !== "none" && safeNum(preferment?.flour) > 0
+              ? t("recipeOutput.totalComposition")
+              : t("recipeOutput.composition")}
           </h2>
 
           <div className="recipe-output-list">
@@ -479,6 +481,33 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
             </>
           )}
         </section>
+
+        {prefermentType !== "none" && safeNum(preferment?.flour) > 0 && (
+          <section className="recipe-output-card">
+            <h2 className="recipe-output-card-title">
+              {t("recipeOutput.finalMix")}
+            </h2>
+            <div className="recipe-output-list">
+              {[
+                { key: "flourTotal", amount: safeNum(data?.finalFlour) },
+                { key: "primaryLiquid", amount: safeNum(data?.finalLiquid) },
+                { key: "salt", amount: salt },
+                { key: "sugar", amount: sugar },
+                { key: "fat", amount: fat },
+                { key: "eggs", amount: eggsGr },
+                { key: "yeast", amount: safeNum(data?.finalYeast) },
+              ].filter(row => row.amount > 0 || row.key === "yeast").map(row => (
+                <div className="recipe-output-row" key={row.key}>
+                  <span>{t(`recipeOutput.${row.key}`)}</span>
+                  <strong>{formatGr(row.amount)}</strong>
+                </div>
+              ))}
+            </div>
+            <p className="recipe-output-type">
+              {t("recipeOutput.finalMixNote")}
+            </p>
+          </section>
+        )}
 
         <div className="recipe-output-actions">
           <button

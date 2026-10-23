@@ -64,7 +64,7 @@
     "prefermentType": "Type",
     "prefermentFlourPct": "Flour in preferment (% of total flour)",
     "prefermentHydration": "Preferment Hydration (%)",
-    "prefermentYeastPct": "Yeast in preferment (% of total yeast)"
+    "prefermentYeastPct": "Yeast in preferment (% of preferment flour)"
   },
   "output": {
     "title": "Final Recipe",
@@ -166,6 +166,7 @@
   },
   "eggs": "Eggs (% of flour)",
   "recipeInput": {
+    "prefermentInvalid": "The preferment needs more flour, liquid, or yeast than the total recipe contains. Reduce the preferment flour, hydration, or yeast.",
     "subtitle": "Base formula. Adjust the composition and calculate the recipe.",
     "calculation": "Calculation",
     "byFlour": "By flour",
@@ -214,6 +215,9 @@
     "sponge": "Sponge cake"
   },
   "recipeOutput": {
+    "totalComposition": "Total ingredients (including preferment)",
+    "finalMix": "Final mix",
+    "finalMixNote": "Add all the prepared preferment. These are only the remaining ingredients for the final mix.",
     "title": "Final recipe",
     "composition": "Composition",
     "analytics": "Calculated values",
@@ -233,7 +237,7 @@
     "extraFlour2": "Additional flour 2",
     "prefermentFlour": "Flour",
     "prefermentLiquid": "Liquid",
-    "prefermentWater": "Water",
+    "prefermentWater": "Water in liquid (informational)",
     "prefermentYeast": "Yeast",
     "prefermentWeight": "Preferment weight",
     "ofFlour": "of flour",

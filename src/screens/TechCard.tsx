@@ -9,15 +9,7 @@ type ScheduleStep = {
 
 type TechCardProps = {
   profile: any; // нормализованный профиль
-  recipe: {
-    effectivePrefermentHours: number;
-    fermentation: {
-      bulkHours: number;
-      proofHours: number;
-      totalHours: number;
-      notes: string[];
-    };
-  };
+  recipe: any; // includes measured preferment and final-mix allocations
   onBack: () => void;
 };
 
@@ -46,7 +38,37 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
 
 const TechCard: React.FC<TechCardProps> = ({ profile, recipe, onBack }) => {
   const { roomTemp, climate, mixing } = useAppContext();
-  const { effectivePrefermentHours, fermentation } = recipe;
+  // Current calculation result contains ingredient allocations, while older
+  // tech cards expected fermentation timings. Use the profile schedule as
+  // an explicit fallback rather than crashing or fabricating derived timings.
+  const effectivePrefermentHours = recipe?.effectivePrefermentHours;
+  const fermentation = recipe?.fermentation ?? {
+    bulkHours: Number(profile?.schedule?.bulk?.totalHours ?? 0),
+    proofHours: Number(profile?.schedule?.finalProof?.totalHours ?? 0),
+    totalHours: 0,
+    notes: [],
+  };
+  const formatGr = (v: number) =>
+    `${Number(v || 0).toLocaleString("ru-RU", { maximumFractionDigits: 3 })} г`;
+  const ingredientAllocation = () =>
+    recipe?.preferment?.flour > 0 ? (
+      <>
+        <Section title="Закладка предфермента">
+          <p>Мука: <strong>{formatGr(recipe.preferment.flour)}</strong></p>
+          <p>Жидкость: <strong>{formatGr(recipe.preferment.liquid)}</strong></p>
+          <p>Дрожжи: <strong>{formatGr(recipe.preferment.yeast)}</strong></p>
+        </Section>
+        <Section title="Основной замес (без уже подготовленного предфермента)">
+          <p>Мука: <strong>{formatGr(recipe.finalFlour)}</strong></p>
+          <p>Жидкость: <strong>{formatGr(recipe.finalLiquid)}</strong></p>
+          <p>Дрожжи: <strong>{formatGr(recipe.finalYeast)}</strong></p>
+          <p>Соль: <strong>{formatGr(recipe.salt)}</strong></p>
+          <p>Сахар: <strong>{formatGr(recipe.sugar)}</strong></p>
+          <p>Жиры: <strong>{formatGr(recipe.fat)}</strong></p>
+          <p>Яйца: <strong>{formatGr(recipe.eggsGr)}</strong></p>
+        </Section>
+      </>
+    ) : null;
 
   const [mode, setMode] = React.useState<"compact" | "timeline" | "full">(
     "compact"
@@ -66,9 +88,11 @@ const TechCard: React.FC<TechCardProps> = ({ profile, recipe, onBack }) => {
       {profile.preferment.enabled && (
         <Section title="Предфермент">
           <p>Тип: <strong>{profile.preferment.type}</strong></p>
-          <p>Эквивалентное время: <strong>{formatTime(effectivePrefermentHours)}</strong></p>
+          {typeof effectivePrefermentHours === "number" && <p>Эквивалентное время: <strong>{formatTime(effectivePrefermentHours)}</strong></p>}
         </Section>
       )}
+
+      {ingredientAllocation()}
 
       <Section title="Основное брожение">
         <p><strong>{formatTime(fermentation.bulkHours)}</strong> при {roomTemp}°C</p>
@@ -202,7 +226,7 @@ const TechCard: React.FC<TechCardProps> = ({ profile, recipe, onBack }) => {
       {profile.preferment.enabled && (
         <Section title="Предфермент">
           <p>Тип: <strong>{profile.preferment.type}</strong></p>
-          <p>Эквивалентное время: <strong>{formatTime(effectivePrefermentHours)}</strong></p>
+          {typeof effectivePrefermentHours === "number" && <p>Эквивалентное время: <strong>{formatTime(effectivePrefermentHours)}</strong></p>}
         </Section>
       )}
 
@@ -215,6 +239,8 @@ const TechCard: React.FC<TechCardProps> = ({ profile, recipe, onBack }) => {
           </p>
         </Section>
       )}
+
+      {ingredientAllocation()}
 
       <Section title="Основное брожение">
         <p>

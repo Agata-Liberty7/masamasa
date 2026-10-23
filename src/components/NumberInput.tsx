@@ -7,16 +7,36 @@ type NumberInputProps = {
 };
 
 const NumberInput: React.FC<NumberInputProps> = ({ label, value, onChange }) => {
+  // Keep the user's partial decimal text (0., 0,1) while focused.
+  const [draft, setDraft] = React.useState(String(value));
+  const [focused, setFocused] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!focused) setDraft(String(value));
+  }, [value, focused]);
+
   return (
     <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <span style={{ fontSize: "14px", fontWeight: 500 }}>{label}</span>
-
       <input
-        type="number"
-        value={value === 0 ? "" : value}
+        type="text"
+        inputMode="decimal"
+        value={draft}
+        onFocus={() => setFocused(true)}
+        onBlur={() => {
+          setFocused(false);
+          setDraft(String(value));
+        }}
         onChange={(e) => {
           const raw = e.target.value;
-          onChange(raw === "" ? 0 : Number(raw));
+          if (!/^\d*([.,]\d*)?$/.test(raw)) return;
+          setDraft(raw);
+          if (raw === "" || raw === "." || raw === ",") {
+            onChange(0);
+            return;
+          }
+          const number = Number(raw.replace(",", "."));
+          if (Number.isFinite(number)) onChange(number);
         }}
         style={{
           width: "100%",

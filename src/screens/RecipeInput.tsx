@@ -289,6 +289,28 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       }
     }
 
+    // Validate the allocation before calculating, without silently
+    // changing the requested hydration or preferment percentage.
+    if (prefermentType !== "none" && n(prefermentFlourPct, 0) > 0) {
+      const pFlourPct = n(prefermentFlourPct, 0);
+      const pHydration = n(prefermentHydrationPct, 100);
+      const pYeastPct = n(prefermentYeastPct, 0);
+      const pFlour = Math.round((finalFlour * pFlourPct) / 100);
+      const pLiquid = Math.round((pFlour * pHydration) / 100);
+      const pYeast = (pFlour * pYeastPct) / 100;
+      const totalLiquid = Math.round((finalFlour * liquidPctSafe) / 100);
+      const totalYeast = (finalFlour * yeastPctSafe) / 100;
+
+      if (
+        pFlourPct > 100 ||
+        pHydration < 0 || pYeastPct < 0 ||
+        pLiquid > totalLiquid || pYeast > totalYeast + 0.0001
+      ) {
+        window.alert(t("recipeInput.prefermentInvalid"));
+        return;
+      }
+    }
+
     onCalculate({
       mode,
       targetDoughWeight: targetDoughWeightSafe,
