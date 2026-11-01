@@ -1,6 +1,6 @@
 {
   "id": "enriched",
-  "name": "Сдобное тесто",
+  "name": "Сдоба базовая",
   "category": "enriched",
   "subtype": "base_enriched",
   "prefermentId": "none",

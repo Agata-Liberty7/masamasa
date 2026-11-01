@@ -20,17 +20,18 @@
     "searchPlaceholder": "Например: бриошь, багет, пирожки...",
     "recentProfiles": "Недавние",
     "favorites": "Избранное",
-    "categories": "Категории теста",
+    "categories": "Виды теста",
     "myRecipes": "Мои рецепты",
     "title": "MasaMasa",
-    "subtitle": "Выберите базовый тип теста и настройте рецепт под свои условия.",
+    "subtitle": "Выберите вид теста, затем изделие и адаптируйте рецепт под свои условия.",
     "roomTempShort": "Температура",
     "warmHoursShort": "Тёплая ферментация",
     "coldHoursShort": "Холодная ферментация",
     "noResults": "Ничего не найдено",
     "addFavorite": "Добавить в избранное",
     "removeFavorite": "Удалить из избранного",
-    "deleteRecipe": "Удалить рецепт"
+    "deleteRecipe": "Удалить рецепт",
+    "comingSoon": "В разработке"
   },
   "input": {
     "title": "Параметры теста",
@@ -196,23 +197,24 @@
     "brioche": "Бриошь",
     "bagel": "Бейгл",
     "baguette": "Багет",
-    "baked_pirozhki": "Пирожки печёные",
+    "baked_pirozhki": "Пирожковое тесто",
     "belyashi": "Беляши",
     "bread": "Хлеб",
     "chebureki": "Чебуреки",
-    "choux": "Заварное тесто",
+    "choux": "Эклеры",
     "ciabatta": "Чиабатта",
     "cinnabon": "Синабон",
-    "donuts": "Пончики",
+    "donuts": "Пончиковое тесто",
     "empanada": "Эмпанада",
-    "enriched": "Сдобное тесто",
+    "enriched": "Сдоба базовая",
     "ensaimada": "Энсаймада",
     "focaccia": "Фокачча",
     "pita": "Пита",
     "pizza": "Пицца",
-    "shortcrust": "Песочное тесто",
+    "shortcrust": "Тарталетки",
     "sourdough": "Хлеб на закваске",
-    "sponge": "Бисквит"
+    "sponge": "Бисквит",
+    "swedish_enriched": "Шведская сдоба"
   },
   "recipeOutput": {
     "totalComposition": "Общий состав (включая предфермент)",
@@ -245,7 +247,7 @@
     "pcs": "шт."
   },
   "categories": {
-    "bread": "Хлеб",
+    "bread": "Хлебное",
     "enriched": "Сдобное",
     "fried_enriched": "Сдобное жареное",
     "baked_filled": "Пирожки печёные",
@@ -253,6 +255,25 @@
     "pastry": "Песочное",
     "choux": "Заварное",
     "cake": "Кексы и торты",
-    "other": "Другое"
+    "other": "Другое",
+    "yeast_lean": "Дрожжевое несдобное",
+    "laminated": "Слоёное",
+    "shortcrust": "Песочное",
+    "unleavened": "Пресное / бездрожжевое",
+    "sponge": "Бисквитное",
+    "cake_batter": "Кексовое"
+  },
+  "additives": {
+    "cardamom": "Кардамон молотый"
+  },
+  "processFat": {
+    "spreading": "Жир для растягивания",
+    "help": "Это отдельная закладка после замеса, не жир внутри теста.",
+    "separateStage": "Растягивание и нанесение жира",
+    "baseDoughWeight": "Масса теста до нанесения жира",
+    "finishedWeight": "Масса сформованного полуфабриката",
+    "ingredients": {
+      "lard": "Свиной жир (саим)"
+    }
   }
 }

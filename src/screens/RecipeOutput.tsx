@@ -97,6 +97,10 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
   );
 
   const totalDough = safeNum(data?.totalDough);
+  const processFatGr = safeNum(data?.processFat?.grams);
+  const processFatIngredient = safeText(data?.processFat?.ingredient, "lard");
+  const additives: Array<{id: string; percent: number; grams: number}> =
+    Array.isArray(data?.additives) ? data.additives : [];
 
   const ingredientName = (
     group:
@@ -272,6 +276,22 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
               </div>
             )}
 
+            {additives.filter((item) => safeNum(item.grams) > 0).map((item) => (
+              <div className="recipe-output-row" key={`additive-${item.id}`}>
+                <span>{t(`additives.${item.id}`, { defaultValue: item.id })}</span>
+                <strong>{formatGr(safeNum(item.grams))}</strong>
+              </div>
+            ))}
+
+            {processFatGr > 0 && (
+              <div className="recipe-output-row">
+                <span>{t("processFat.spreading")}
+                  <small className="recipe-output-type">{t(`processFat.ingredients.${processFatIngredient}`)}</small>
+                </span>
+                <strong>{formatGr(processFatGr)}</strong>
+              </div>
+            )}
+
             {yeast > 0 && (
               <div className="recipe-output-row">
                 <span>
@@ -315,7 +335,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
 
             <div className="recipe-output-metric">
               <span>
-                {t("recipeOutput.doughWeight")}
+                {t(processFatGr > 0 ? "processFat.finishedWeight" : "recipeOutput.doughWeight")}
               </span>
               <strong>{formatGr(totalDough)}</strong>
             </div>
@@ -495,10 +515,11 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
                 { key: "sugar", amount: sugar },
                 { key: "fat", amount: fat },
                 { key: "eggs", amount: eggsGr },
+                ...additives.map((item) => ({key: `additives.${item.id}`, amount: safeNum(item.grams)})),
                 { key: "yeast", amount: safeNum(data?.finalYeast) },
               ].filter(row => row.amount > 0 || row.key === "yeast").map(row => (
                 <div className="recipe-output-row" key={row.key}>
-                  <span>{t(`recipeOutput.${row.key}`)}</span>
+                  <span>{row.key.startsWith("additives.") ? t(row.key) : t(`recipeOutput.${row.key}`)}</span>
                   <strong>{formatGr(row.amount)}</strong>
                 </div>
               ))}
@@ -506,6 +527,22 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
             <p className="recipe-output-type">
               {t("recipeOutput.finalMixNote")}
             </p>
+          </section>
+        )}
+
+        {processFatGr > 0 && (
+          <section className="recipe-output-card">
+            <h2 className="recipe-output-card-title">{t("processFat.separateStage")}</h2>
+            <div className="recipe-output-list">
+              <div className="recipe-output-row">
+                <span>{t("processFat.baseDoughWeight")}</span>
+                <strong>{formatGr(totalDough - processFatGr)}</strong>
+              </div>
+              <div className="recipe-output-row">
+                <span>{t("processFat.spreading")}: {t(`processFat.ingredients.${processFatIngredient}`)}</span>
+                <strong>{formatGr(processFatGr)}</strong>
+              </div>
+            </div>
           </section>
         )}
 

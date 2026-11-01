@@ -368,3 +368,56 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Approved product photos: cards with images, text-only cards remain unchanged. */
+.start-profile-card:has(> .start-recipe-thumb) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.start-recipe-thumb {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  object-fit: cover;
+  border-radius: 9px;
+  background: #f2eee8;
+}
+.start-recipe-card-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.start-profile-card:has(> .start-recipe-thumb) > strong,
+.start-profile-card .start-recipe-card-text strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Dough-first catalog: taxonomy card state and recipe counts. */
+.start-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+}
+.start-category-card strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.start-category-status {
+  color: #76847a;
+  font-size: 11px;
+  font-weight: 400;
+}
+.start-category-card:disabled {
+  opacity: 0.62;
+  cursor: default;
+  background: #f8f9f7;
+}
+.start-category-card:disabled:hover {
+  background: #f8f9f7;
+  border-color: #e0e5e1;
+}

@@ -8,14 +8,19 @@
     "flour": 1000,
     "salt": 1.8,
     "sugar": 20,
-    "fat": 30,
+    "fat": 0,
     "eggs": 10,
     "yeast": {
       "type": "instant",
       "percent": 1
     },
     "liquidPct": 55,
-    "liquidType": "water"
+    "liquidType": "water",
+    "fatType": "butter",
+    "processFat": {
+      "ingredient": "lard",
+      "percent": 30
+    }
   },
   "limits": {
     "hydration": {
@@ -55,9 +60,7 @@
         "max": 7
       }
     },
-    "glutenDevelopment": "medium",
-    "bulkFermentationTarget": "x2.0",
-    "finalProofTarget": "пальцевый тест"
+    "glutenDevelopment": "medium"
   },
   "climateAdjustments": {
     "dry": {
@@ -95,20 +98,42 @@
   },
   "schedule": {
     "bulk": {
-      "totalHours": 2,
+      "totalHours": null,
       "temperature": 24,
       "steps": []
     },
     "finalProof": {
-      "totalHours": 2,
+      "totalHours": 12,
       "temperature": 26,
-      "comment": ""
+      "comment": "",
+      "traditionalReference": {
+        "source": "IGP Ensaimada de Mallorca",
+        "phase": "after_shaping",
+        "minimumHours": 12,
+        "appliesToCurrentFormula": false
+      },
+      "durationStatus": "working-assumption"
     },
     "coldRetard": {
       "enabled": false,
       "hours": 0,
       "temperature": 4,
       "comment": ""
+    },
+    "rest": {
+      "minutes": 20,
+      "durationStatus": "working-estimate",
+      "scope": "one-batch; adjust for production scale"
+    },
+    "stretch": {
+      "minutes": 30,
+      "durationStatus": "working-estimate",
+      "scope": "one-batch; adjust for production scale"
+    },
+    "shape": {
+      "minutes": 15,
+      "durationStatus": "working-estimate",
+      "scope": "one-batch; adjust for production scale"
     }
   },
   "bake": {
@@ -118,6 +143,12 @@
   "uiHints": {
     "flourLabel": "Мука",
     "hydrationLabel": "Гидратация",
-    "notesForBaker": []
+    "notesForBaker": [
+      "Рабочая модель: в исходной рецептуре 30% жира перенесены из замеса на отдельную операцию нанесения; технологические параметры требуют проверки.",
+      "Прежние 2 ч основного брожения и 2 ч расстойки были шаблонными, поэтому исключены из регламента до проверки.",
+      "В IGP Ensaimada de Mallorca минимальная ферментация сформованной заготовки составляет 12 ч. Это справочный технологический ориентир, а не сертификация нынешней рецептуры.",
+      "Заданные в интерфейсе часы тёплой и холодной ферментации влияют на расчёт дрожжей и не включают автоматически 12 ч расстойки.",
+      "Времена отдыха (20 мин), растягивания (30 мин) и формования (15 мин) — предварительные оценки на партию, не нормативы; при расчёте конкретной партии уточните их в техкарте."
+    ]
   }
 }

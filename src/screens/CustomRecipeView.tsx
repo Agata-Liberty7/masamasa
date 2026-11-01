@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   name: string;
@@ -6,6 +7,7 @@ type Props = {
   profile: any;
   conditions: any;
   onBack: () => void;
+  onOpenTechCard: () => void;
 };
 
 const Table: React.FC<{ rows: { label: string; value: any }[] }> = ({ rows }) => (
@@ -38,7 +40,12 @@ const CustomRecipeView: React.FC<Props> = ({
   recipe,
   conditions,
   onBack,
+  onOpenTechCard,
 }) => {
+  const { i18n } = useTranslation();
+  const techCardLabel = i18n.language.startsWith("es")
+    ? "Abrir ficha técnica"
+    : i18n.language.startsWith("en") ? "Open process card" : "Открыть техкарту";
   if (!recipe) {
     return (
       <div style={{ padding: 24 }}>
@@ -164,7 +171,8 @@ const CustomRecipeView: React.FC<Props> = ({
         />
       </Section>
 
-      <div style={{ marginTop: "32px" }}>
+      <div style={{ marginTop: "32px", display: "flex", flexWrap: "wrap", gap: "12px" }}>
+        <button type="button" onClick={onOpenTechCard}>{techCardLabel}</button>
         <button onClick={onBack}>← Назад</button>
       </div>
     </div>

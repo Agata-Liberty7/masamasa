@@ -1,26 +1,28 @@
 {
   "id": "choux",
-  "name": "Заварное тесто",
+  "name": "Эклеры",
   "category": "choux",
   "subtype": "choux",
   "prefermentId": "none",
   "base": {
     "flour": 1000,
     "salt": 1.5,
-    "sugar": 5,
-    "fat": 50,
-    "eggs": 80,
+    "sugar": 0,
+    "fat": 75,
+    "eggs": 133,
     "yeast": {
       "type": "none",
       "percent": 0
     },
-    "liquidPct": 0,
-    "liquidType": "water"
+    "liquidPct": 150,
+    "liquidType": "water",
+    "fatType": "butter",
+    "eggType": "whole"
   },
   "limits": {
     "hydration": {
-      "min": 0,
-      "max": 10
+      "min": 130,
+      "max": 175
     },
     "salt": {
       "min": 0,
@@ -28,11 +30,11 @@
     },
     "sugar": {
       "min": 0,
-      "max": 40
+      "max": 8
     },
     "fat": {
-      "min": 20,
-      "max": 80
+      "min": 55,
+      "max": 95
     },
     "yeastPercent": {
       "min": 0,
@@ -57,7 +59,12 @@
     },
     "glutenDevelopment": "low",
     "bulkFermentationTarget": "none",
-    "finalProofTarget": "none"
+    "finalProofTarget": "none",
+    "panade": {
+      "minutes": 2,
+      "durationStatus": "working-estimate",
+      "purpose": "Cook flour with boiling liquid and butter; visible cohesive panade is the control"
+    }
   },
   "climateAdjustments": {
     "dry": {
@@ -109,6 +116,11 @@
       "hours": 0,
       "temperature": 4,
       "comment": ""
+    },
+    "coolAfterPanade": {
+      "minutes": 7,
+      "durationStatus": "working-estimate",
+      "purpose": "Cool sufficiently before incorporating eggs"
     }
   },
   "bake": {
@@ -122,6 +134,8 @@
       "Заваривание муки водой и жиром — ключевой этап.",
       "Яйца добавляются по консистенции, не по формуле.",
       "Не открывать духовку в первые 15 минут выпечки."
-    ]
+    ],
+    "formulaStatus": "provisional",
+    "formulaSource": "https://www.kingarthurbaking.com/recipes/pate-a-choux-recipe"
   }
 }

@@ -9,6 +9,7 @@ import brioche from "../profiles/brioche.json";
 import cinnabon from "../profiles/cinnabon.json";
 import donuts from "../profiles/donuts.json";
 import enriched from "../profiles/enriched.json";
+import swedish_enriched from "../profiles/swedish_enriched.json";
 import ensaimada from "../profiles/ensaimada.json";
 import belyashi from "../profiles/belyashi.json";
 import chebureki from "../profiles/chebureki.json";
@@ -44,6 +45,7 @@ const profiles: Record<string, any> = {
   cinnabon,
   donuts,
   enriched,
+  swedish_enriched,
   ensaimada,
   belyashi,
   chebureki,
@@ -288,6 +290,7 @@ export function loadProfile(
     process: profile.process,
     schedule: profile.schedule,
     bake: profile.bake,
+    frying: profile.frying,
     uiHints: profile.uiHints,
 
     preferment: {

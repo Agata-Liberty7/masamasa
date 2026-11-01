@@ -1,3 +1,4 @@
+import { getRecipeImage } from "../utils/recipeImages";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import "./RecipeInput.css";
@@ -114,9 +115,17 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   const [fat, setFat] = React.useState(
     initialValues.fat ?? base.fat ?? 0
   );
+  // Fat spread after mixing is NOT part of the base dough.
+  const [processFatPct, setProcessFatPct] = React.useState(
+    initialValues.processFatPct ?? base.processFat?.percent ?? 0
+  );
 
   const [eggsPct, setEggsPct] = React.useState(
     initialValues.eggsPct ?? base.eggs ?? 0
+  );
+
+  const [additives, setAdditives] = React.useState<Array<{id: string; percent: number | string}>>(
+    initialValues.additives ?? base.additives ?? []
   );
 
   const [yeastPct, setYeastPct] = React.useState(
@@ -201,8 +210,10 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setSalt(initialValues.salt ?? nextBase.salt ?? 2);
     setSugar(initialValues.sugar ?? nextBase.sugar ?? 0);
     setFat(initialValues.fat ?? nextBase.fat ?? 0);
+    setProcessFatPct(initialValues.processFatPct ?? nextBase.processFat?.percent ?? 0);
     setEggsPct(initialValues.eggsPct ?? nextBase.eggs ?? 0);
     setYeastPct(initialValues.yeastPct ?? nextBase.yeast?.percent ?? 1);
+    setAdditives(initialValues.additives ?? nextBase.additives ?? []);
 
     setMainFlour(initialValues.mainFlour ?? "normal");
     setExtraFlour1(initialValues.extraFlour1 ?? "normal");
@@ -259,7 +270,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     const sugarSafe = n(sugar, 0);
     const fatSafe = n(fat, 0);
     const eggsPctSafe = n(eggsPct, 0);
-    const yeastPctSafe = n(yeastPct, 0);
+    const yeastPctSafe = base.yeast?.type === "none" ? 0 : n(yeastPct, 0);
     const targetDoughWeightSafe = n(targetDoughWeight, 0);
 
     let finalFlour = flourSafe;
@@ -274,7 +285,15 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       const eggsGr = (flourSafe * eggsPctSafe) / 100;
       const yeastGr = (flourSafe * yeastPctSafe) / 100;
 
+      const processFatGr = Math.round(
+        (flourSafe * Math.max(0, n(processFatPct, 0)) / 100) * 1000
+      ) / 1000;
+      const additivesGr = additives.reduce(
+        (sum, item) => sum + Math.round((flourSafe * Math.max(0, n(item.percent, 0)) / 100) * 1000) / 1000, 0
+      );
       const totalNow =
+        processFatGr +
+        additivesGr +
         flourSafe +
         liquidGr +
         saltGr +
@@ -323,7 +342,10 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
       salt: saltSafe,
       sugar: sugarSafe,
       fat: fatSafe,
+      processFatPct: Math.max(0, n(processFatPct, 0)),
+      processFatIngredient: profile?.base?.processFat?.ingredient ?? "",
       eggsPct: eggsPctSafe,
+      additives: additives.map((item) => ({id: item.id, percent: Math.max(0, n(item.percent, 0))})),
       yeastPct: yeastPctSafe,
 
       mainFlour,
@@ -379,12 +401,14 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         </div>
 
         <header className="recipe-header">
-          {profileId === "brioche" && (
+          {getRecipeImage(profileId) && (
             <img
               className="recipe-photo"
-              src="/images/recipes/brioche.png"
+              src={getRecipeImage(profileId)}
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
             />
           )}
           <h1 className="recipe-title">
@@ -532,6 +556,24 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
             </div>
           </div>
 
+          {profile?.base?.processFat?.ingredient && (
+            <>
+              <div className="recipe-row simple">
+                <span className="recipe-label">{t("processFat.spreading")}: {t(`processFat.ingredients.${profile.base.processFat.ingredient}`, {defaultValue: profile.base.processFat.ingredient})}</span>
+                <div className="recipe-percent-wrap">
+                  <input
+                    className="recipe-number"
+                    type="number" min="0" step="0.1"
+                    value={processFatPct}
+                    onChange={(e) => setProcessFatPct(e.target.value)}
+                  />
+                  <span className="recipe-unit">%</span>
+                </div>
+              </div>
+              <p style={{fontSize: "0.82rem", opacity: 0.75, margin: "8px 0 0"}}>{t("processFat.help")}</p>
+            </>
+          )}
+
           <div className="recipe-row">
             <span className="recipe-label"><IngredientIcon name="sugar" />{t("recipeInput.sugar")}</span>
             <select
@@ -572,6 +614,27 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
             </div>
           </div>
 
+          {additives.map((item) => (
+            <div className="recipe-row simple" key={item.id}>
+              <span className="recipe-label">{t(`additives.${item.id}`, { defaultValue: item.id })}</span>
+              <div className="recipe-percent-wrap">
+                <input
+                  className="recipe-number"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={item.percent}
+                  onChange={(e) => setAdditives((prev) => prev.map((a) =>
+                    a.id === item.id ? {...a, percent: e.target.value} : a
+                  ))}
+                />
+                <span className="recipe-unit">%</span>
+              </div>
+            </div>
+          ))}
+
+          {base.yeast?.type !== "none" && (
+            <>
           <div className="recipe-row">
             <span className="recipe-label"><IngredientIcon name="yeast" />{t("recipeInput.yeast")}</span>
             <select
@@ -606,6 +669,8 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
             </div>
           </div>
           <p style={{ fontSize: "0.82rem", opacity: 0.75, margin: "8px 0 0" }}>{yeastHelp}</p>
+            </>
+          )}
         </section>
 
         <section className="recipe-card">

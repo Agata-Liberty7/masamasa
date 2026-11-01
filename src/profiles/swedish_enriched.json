@@ -1,0 +1,126 @@
+{
+  "id": "swedish_enriched",
+  "name": "Шведская сдоба",
+  "category": "enriched",
+  "subtype": "swedish_enriched",
+  "prefermentId": "none",
+  "base": {
+    "flour": 1000,
+    "salt": 1.3,
+    "sugar": 11,
+    "sugarType": "white",
+    "fat": 16,
+    "fatType": "butter",
+    "eggs": 10,
+    "eggType": "whole",
+    "yeast": {
+      "type": "instant",
+      "percent": 1.5
+    },
+    "liquidPct": 50,
+    "liquidType": "milk",
+    "additives": [
+      {
+        "id": "cardamom",
+        "percent": 0.6
+      }
+    ]
+  },
+  "limits": {
+    "hydration": {
+      "min": 42,
+      "max": 65
+    },
+    "salt": {
+      "min": 0.8,
+      "max": 2.2
+    },
+    "sugar": {
+      "min": 5,
+      "max": 22
+    },
+    "fat": {
+      "min": 8,
+      "max": 28
+    },
+    "yeastPercent": {
+      "min": 0.15,
+      "max": 3.0
+    }
+  },
+  "process": {
+    "mixingIntensity": "medium",
+    "mixingTime": {
+      "manual": {
+        "min": 10,
+        "max": 15
+      },
+      "planetary": {
+        "min": 6,
+        "max": 10
+      },
+      "spiral": {
+        "min": 4,
+        "max": 7
+      }
+    },
+    "glutenDevelopment": "medium"
+  },
+  "climateAdjustments": {
+    "dry": {
+      "hydrationDelta": 2,
+      "yeastDeltaPercent": 0.05,
+      "comment": ""
+    },
+    "moderate": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    },
+    "humid": {
+      "hydrationDelta": -2,
+      "yeastDeltaPercent": -0.05,
+      "comment": ""
+    }
+  },
+  "mixingAdjustments": {
+    "manual": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    },
+    "planetary": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    },
+    "spiral": {
+      "hydrationDelta": 1,
+      "yeastPercentDelta": -0.05,
+      "comment": ""
+    }
+  },
+  "schedule": {
+    "bulk": {
+      "steps": []
+    },
+    "finalProof": {
+      "comment": "Times not yet validated"
+    },
+    "coldRetard": {
+      "enabled": false,
+      "hours": 0,
+      "temperature": 4,
+      "comment": ""
+    }
+  },
+  "bake": {
+    "temperature": null,
+    "timeMinutes": null
+  },
+  "uiHints": {
+    "flourLabel": "Мука",
+    "hydrationLabel": "Гидратация",
+    "notesForBaker": []
+  }
+}

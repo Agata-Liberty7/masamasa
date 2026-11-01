@@ -23,14 +23,15 @@
     "categories": "Tipos de masa",
     "myRecipes": "Mis recetas",
     "title": "MasaMasa",
-    "subtitle": "Elige un tipo de masa base y adapta la receta a tus condiciones.",
+    "subtitle": "Elige un tipo de masa, después un producto, y adapta la receta a tus condiciones.",
     "roomTempShort": "Temperatura",
     "warmHoursShort": "Fermentación en caliente",
     "coldHoursShort": "Fermentación en frío",
     "noResults": "No se han encontrado resultados",
     "addFavorite": "Añadir a favoritos",
     "removeFavorite": "Quitar de favoritos",
-    "deleteRecipe": "Eliminar receta"
+    "deleteRecipe": "Eliminar receta",
+    "comingSoon": "En preparación"
   },
   "input": {
     "title": "Dough Parameters",
@@ -202,17 +203,18 @@
     "pizza": "Pizza",
     "brioche": "Brioche",
     "cinnabon": "Rollos de canela",
-    "donuts": "Donuts",
-    "enriched": "Masa enriquecida",
+    "donuts": "Masa para donuts",
+    "enriched": "Masa enriquecida básica",
     "ensaimada": "Ensaimada",
     "belyashi": "Belyashi",
     "chebureki": "Chebureki",
     "empanada": "Empanada",
-    "baked_pirozhki": "Pirozhki horneados",
+    "baked_pirozhki": "Masa para pirozhki",
     "sourdough": "Masa madre",
     "sponge": "Bizcocho",
-    "shortcrust": "Masa quebrada",
-    "choux": "Masa choux"
+    "shortcrust": "Bases de tartaletas",
+    "choux": "Éclairs",
+    "swedish_enriched": "Masa enriquecida sueca"
   },
   "recipeOutput": {
     "totalComposition": "Ingredientes totales (incluido el prefermento)",
@@ -245,14 +247,33 @@
     "pcs": "uds."
   },
   "categories": {
-    "bread": "Pan",
+    "bread": "Masa de pan",
     "enriched": "Masas enriquecidas",
     "fried_enriched": "Masas enriquecidas fritas",
     "baked_filled": "Empanadillas y bollos horneados",
     "fried_filled": "Empanadillas y bollos fritos",
     "pastry": "Masa quebrada",
-    "choux": "Masa choux",
+    "choux": "Pasta choux",
     "cake": "Bizcochos y tartas",
-    "other": "Otros"
+    "other": "Otros",
+    "yeast_lean": "Masa fermentada sin enriquecer",
+    "laminated": "Masa laminada",
+    "shortcrust": "Masa quebrada",
+    "unleavened": "Masa sin levadura",
+    "sponge": "Masa de bizcocho",
+    "cake_batter": "Masa de magdalenas y cakes"
+  },
+  "additives": {
+    "cardamom": "Cardamomo molido"
+  },
+  "processFat": {
+    "spreading": "Grasa para estirar",
+    "help": "Se aplica después del amasado, no se incorpora a la masa base.",
+    "separateStage": "Estirado y aplicación de manteca",
+    "baseDoughWeight": "Masa antes de untar",
+    "finishedWeight": "Masa de la pieza formada",
+    "ingredients": {
+      "lard": "Manteca de cerdo (saïm)"
+    }
   }
 }

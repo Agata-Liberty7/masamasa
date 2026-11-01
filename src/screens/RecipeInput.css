@@ -274,3 +274,15 @@
 
 
 }
+
+/* Approved recipe photos on recipe details. */
+.recipe-header:has(.recipe-photo) {
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+.recipe-header .recipe-photo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 13px;
+  background: #f2eee8;
+}

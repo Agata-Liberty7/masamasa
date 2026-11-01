@@ -48,6 +48,11 @@ export type RecipeInput = {
   sugar: number;
   fat: number;
   eggsPct: number;
+  // Applied only after the mixing phase (e.g. saim for Ensaimada).
+  processFatPct?: number;
+  processFatIngredient?: string;
+  // Optional profile-specific dry ingredients (% baker's flour).
+  additives?: Array<{ id: string; percent: number }>;
 
   // Типы ингредиентов
   fatType: FatType;
@@ -103,10 +108,15 @@ export type RecipeResult = {
   sugar: number;
   fat: number;
 
+  processFat: {ingredient: string; percent: number; grams: number};
+
   // Яйца
   eggsPct: number;
   eggsGr: number;
   approxEggCount: number;
+
+  // Дополнительные ингредиенты (в граммах)
+  additives: Array<{id: string; percent: number; grams: number}>;
 
   // Дрожжи
   yeast: number;
@@ -225,6 +235,23 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
     (input.flour * input.fat) / 100
   );
 
+  const additives = (input.additives ?? []).map((item) => ({
+    id: item.id,
+    percent: Number.isFinite(item.percent) ? Math.max(0, item.percent) : 0,
+    grams: Math.round((input.flour * (Number.isFinite(item.percent) ? Math.max(0, item.percent) : 0) / 100) * 1000) / 1000,
+  }));
+  const additivesGr = additives.reduce((total, item) => total + item.grams, 0);
+
+  const processFatPct = typeof input.processFatPct === "number" && Number.isFinite(input.processFatPct)
+    ? Math.max(0, input.processFatPct)
+    : 0;
+  const processFatGr = Math.round((input.flour * processFatPct / 100) * 1000) / 1000;
+  const processFat = {
+    ingredient: input.processFatIngredient || "",
+    percent: processFatPct,
+    grams: processFatGr,
+  };
+
   // ----------------------------------------------------------
   //  4. Яйца
   //
@@ -262,7 +289,7 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
 
   const yeast = Math.round(((input.flour * input.yeastPct) / 100) * 1000) / 1000;
 
-  const yeastRecommendedPct = 100 * computeYeastPercent({
+  const yeastRecommendedPct = input.yeastPct > 0 ? 100 * computeYeastPercent({
     coldHours: input.coldFermentationHours,
     warmHours: input.warmFermentationHours,
     doughType: input.doughType,
@@ -276,8 +303,9 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
 
     extraFlour2: input.extraFlour2,
     extraPct2,
-  });
+  }) : 0;
 
+  // No yeast recommendation for non-yeasted doughs.
   // ----------------------------------------------------------
   //  6. Предфермент
   // ----------------------------------------------------------
@@ -396,11 +424,14 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
     saltGr +
     sugarGr +
     fatGr +
+    additivesGr +
     eggsGr +
     finalYeast;
 
+  // Finished shaped semi-product includes fat spread AFTER mixing.
+  // finalDough remains the actual main-mix mass, without spreading fat.
   const totalDough =
-    finalDough + preferment.total;
+    finalDough + preferment.total + processFatGr;
 
   // ----------------------------------------------------------
   //  10. Результат
@@ -431,6 +462,11 @@ export function calculateRecipe(input: RecipeInput): RecipeResult {
     salt: saltGr,
     sugar: sugarGr,
     fat: fatGr,
+
+    // Дополнительные ингредиенты
+    additives,
+
+    processFat,
 
     // Яйца
     eggsPct: input.eggsPct,

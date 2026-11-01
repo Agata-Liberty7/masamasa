@@ -1,6 +1,6 @@
 {
   "id": "baked_pirozhki",
-  "name": "Пирожки печёные",
+  "name": "Пирожковое тесто",
   "category": "baked_filled",
   "subtype": "pirozhki",
   "prefermentId": "none",

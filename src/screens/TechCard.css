@@ -1,0 +1,349 @@
+
+.tech-card-page { background: #f6f7f5; min-height: 100vh; padding: 28px 18px 72px; color: #23332b; }
+.tech-card-actions { max-width: 850px; margin: 0 auto 18px; display: flex; justify-content: space-between; gap: 12px; }
+.tech-card-actions button { appearance: none; border: 1px solid #ccd5ce; background: #fff; color: #355f49; padding: 10px 18px; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600; }
+.tech-card-actions .tech-card-print { background: #355f49; color: #fff; border-color: #355f49; }
+.tech-card-sheet { max-width: 850px; margin: 0 auto; background: white; border: 1px solid #e5e9e5; border-radius: 12px; padding: 36px 42px; box-shadow: 0 4px 18px #1d34200d; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif; font-size: 14px; }
+.tech-card-header { display: flex; align-items: start; justify-content: space-between; gap: 20px; border-bottom: 2px solid #355f49; padding-bottom: 24px; }
+.tech-card-brand { font-family: Georgia,serif; font-size: 23px; font-weight: 700; color: #355f49; }
+.tech-card-overline { margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: #557160; }
+.tech-card-header h1 { font-family: Georgia,serif; font-size: 32px; margin: 0 0 8px; color: #1d3327; }
+.tech-card-subtitle { color: #627268; font-size: 12px; margin: 0; }
+.tech-card-batch { display: grid; gap: 7px; text-align: right; min-width: 150px; }
+.tech-card-batch span { font-size: 12px; color: #65756a; }
+.tech-card-batch strong { font-size: 23px; white-space: nowrap; color: #355f49; }
+.tech-card-batch small { color: #7b897f; font-size: 11px; }
+.tech-card-section { margin-top: 27px; break-inside: avoid-page; }
+.tech-card-section h2 { font-family: Georgia,serif; font-size: 19px; color: #254b36; margin: 0 0 12px; }
+.tech-card-conditions { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 0; }
+.tech-card-conditions > div { border: 1px solid #e5eae5; background: #f8faf8; border-radius: 7px; padding: 11px; }
+.tech-card-conditions dt { font-size: 11px; color: #617568; margin-bottom: 5px; }
+.tech-card-conditions dd { font-weight: 600; margin: 0; }
+.tech-card-table { border-collapse: collapse; width: 100%; }
+.tech-card-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; text-align: left; color: #64776a; border-bottom: 1px solid #9dad9f; padding: 9px 8px; }
+.tech-card-table td { border-bottom: 1px solid #e9ece9; padding: 10px 8px; }
+.tech-card-table tbody tr:nth-child(even) { background: #fafbfa; }
+.tech-card-table .tech-card-amount { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tech-card-table th:last-child { text-align: right; }
+.tech-card-table tfoot th { color: #254b36; font-weight: 700; }
+.tech-card-note { margin: 0 0 12px; font-size: 12px; color: #607468; }
+.tech-card-flours { margin: 13px 0 0; font-size: 12px; color: #637366; }
+.tech-card-flours p { margin: 4px 0; }
+.tech-card-steps { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.tech-card-steps > div { padding: 13px; background: #f7f9f7; border-radius: 8px; border: 1px solid #e5ebe6; break-inside: avoid; }
+.tech-card-steps h3,.tech-card-operations h3 { font-size: 14px; margin: 0 0 8px; color: #355f49; }
+.tech-card-steps p { margin: 5px 0; font-size: 12px; line-height: 1.5; }
+.tech-card-operations { margin-top: 16px; }
+.tech-card-operations li,.tech-card-notes li { margin-bottom: 7px; line-height: 1.5; }
+.tech-card-footer { color: #647468; font-size: 11px; margin-top: 30px; border-top: 1px solid #dae4dd; padding-top: 14px; line-height: 1.5; }
+@media(max-width:650px) { .tech-card-page { padding: 16px 8px 48px; } .tech-card-sheet { padding: 22px 18px; } .tech-card-header { flex-direction: column; } .tech-card-batch { text-align: left; } .tech-card-conditions { grid-template-columns: repeat(2,minmax(0,1fr)); } .tech-card-steps { grid-template-columns: 1fr; } .tech-card-header h1 { font-size: 27px; } }
+@media print {
+  @page { size: A4; margin: 13mm; }
+  html,body,#root { background: #fff !important; }
+  .tech-card-page { background: #fff; padding: 0; min-height: 0; }
+  .tech-card-actions { display: none !important; }
+  .tech-card-sheet { max-width: none; border: 0; box-shadow: none; padding: 0; border-radius: 0; font-size: 11px; }
+  .tech-card-header { padding-bottom: 13px; }
+  .tech-card-header h1 { font-size: 26px; }
+  .tech-card-section { margin-top: 14px; }
+  .tech-card-section h2 { font-size: 16px; margin-bottom: 7px; }
+  .tech-card-conditions { gap: 6px; }
+  .tech-card-conditions > div { padding: 6px 8px; }
+  .tech-card-table td { padding: 5px 7px; }
+  .tech-card-table th { padding: 5px 7px; }
+  .tech-card-steps { gap: 7px; }
+  .tech-card-steps > div { padding: 8px; }
+  .tech-card-footer { margin-top: 12px; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+
+/* Profile-and-condition timeline, also included in print/PDF. */
+.tech-card-timeline { margin-top: 12px; }
+.tech-card-timeline h3 { font-size: 15px; margin: 0 0 9px; color: #355f49; }
+.tech-card-timeline .tech-card-table td { vertical-align: top; font-size: 12px; }
+.tech-card-timeline .tech-card-table th:last-child { text-align: left; }
+.tech-card-timeline .tech-card-table th:nth-child(2) { text-align: right; }
+.tech-card-timeline-note { display: block; font-size: 10px; color: #6e7b71; margin-top: 4px; font-weight: normal; }
+.tech-card-timeline-totals { margin-top: 12px; padding: 12px 14px; background: #f7f9f7; border: 1px solid #e5ebe6; border-radius: 8px; font-size: 12px; }
+.tech-card-timeline-totals p { margin: 5px 0; line-height: 1.5; }
+@media print { .tech-card-timeline-totals { break-inside: avoid; } }
+
+/* Editable per-stage timing. Printable values stay visible without form controls. */
+.tech-card-editable-table .tech-card-edit-duration { min-width: 146px; }
+.tech-card-duration-fields { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.tech-card-duration-fields label { display: flex; align-items: center; gap: 3px; font-size: 10px; color: #64776a; }
+.tech-card-duration-fields label span { order: 2; }
+.tech-card-duration-fields input { box-sizing: border-box; width: 52px; border: 1px solid #cbd6cd; border-radius: 6px; background: #fff; padding: 7px 3px; font-size: 13px; color: #23332b; text-align: center; font-variant-numeric: tabular-nums; }
+.tech-card-duration-fields input:focus { outline: 2px solid #719981; outline-offset: 1px; }
+.tech-card-setting-time { color: #687a6f; font-size: 10px; font-weight: 400; display: block; }
+.tech-card-duration-for-print { display: block; font-size: 11px; color: #254b36; margin-top: 4px; white-space: nowrap; }
+.tech-card-timeline-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.tech-card-timeline-actions button { padding: 8px 12px; border: 1px solid #cbd6cd; border-radius: 7px; background: #fff; color: #355f49; cursor: pointer; font-weight: 600; }
+.tech-card-timeline-actions small { max-width: 450px; color: #6a7c70; font-size: 11px; line-height: 1.4; }
+@media (max-width: 600px) { .tech-card-editable-table .tech-card-edit-duration { min-width: 125px; } .tech-card-duration-fields input { width: 42px; } .tech-card-editable-table td { padding-left: 4px; padding-right: 4px; } }
+@media print { .tech-card-duration-fields, .tech-card-timeline-actions, .tech-card-setting-time { display: none !important; } .tech-card-duration-for-print { font-size: 12px; color: #1c2d23; font-weight: 700; margin: 0; } }
+/* Saved editable technology cards */
+.tech-card-actions .tech-card-save { background: #e9f1eb; border-color: #96b6a1; color: #234735; }
+@media (max-width: 600px) { .tech-card-actions { flex-wrap: wrap; } }
+
+
+/* MASAMASA_PRINT_PAGE_FLOW_V1 */
+@media print {
+  .tech-card-page,
+  .tech-card-sheet {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .tech-card-section,
+  .tech-card-timeline,
+  .tech-card-operations,
+  .tech-card-timeline-totals {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .tech-card-section h2,
+  .tech-card-section h3 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .tech-card-table tr,
+  .tech-card-conditions > div {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .tech-card-table thead {
+    display: table-header-group;
+  }
+}
+
+/* MASAMASA_UNIQUE_SAVES_NOTICE_V1 */
+.tech-card-save-notice { color: #25533c; font-size: 0.92rem; font-weight: 600; }
+@media print { .tech-card-save-notice { display: none !important; } }
+
+/* MASAMASA_CLIENT_PDF_V1: client-side PDF export actions */
+.tech-card-actions { flex-wrap: wrap; align-items: center; }
+.tech-card-pdf-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.tech-card-actions .tech-card-pdf-controls button { white-space: nowrap; }
+.tech-card-pdf-ready { color: #25533c; font-weight: 600; font-size: 0.91rem; }
+.tech-card-pdf-error { color: #a12727; font-weight: 600; font-size: 0.91rem; }
+.tech-card-actions button:disabled { cursor: wait; opacity: 0.68; }
+@media print { .tech-card-pdf-controls { display: none !important; } }
+
+
+/* MASAMASA_PDF_TOOLBAR_LAYOUT_V1: readable, responsive action groups */
+.tech-card-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  column-gap: 16px;
+  row-gap: 10px;
+}
+.tech-card-actions-main,
+.tech-card-actions-export {
+  display: flex;
+  align-items: stretch;
+  gap: 9px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.tech-card-actions-export { justify-content: flex-end; }
+.tech-card-actions-main { justify-content: flex-start; }
+.tech-card-actions-main > button,
+.tech-card-actions-export > button,
+.tech-card-pdf-result-buttons > button {
+  min-height: 42px;
+  white-space: normal;
+  line-height: 1.25;
+  text-align: center;
+}
+.tech-card-actions > .tech-card-save-notice,
+.tech-card-actions > .tech-card-pdf-result,
+.tech-card-actions > .tech-card-pdf-error {
+  grid-column: 1 / -1;
+}
+.tech-card-save-notice {
+  display: block;
+  padding: 7px 11px;
+  border: 1px solid #d5e5d9;
+  border-radius: 8px;
+  background: #eef5ef;
+}
+.tech-card-pdf-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border: 1px solid #d5e5d9;
+  background: #f2f7f3;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+.tech-card-pdf-result-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tech-card-pdf-result-buttons > button {
+  appearance: none;
+  border: 1px solid #b5cbb9;
+  background: #fff;
+  color: #355f49;
+  border-radius: 8px;
+  padding: 10px 13px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tech-card-actions > .tech-card-pdf-error {
+  padding: 8px 11px;
+}
+
+@media (max-width: 680px) {
+  .tech-card-actions {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 10px;
+    margin-bottom: 15px;
+  }
+  .tech-card-actions-main,
+  .tech-card-actions-export {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+  .tech-card-actions-export--standalone {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tech-card-actions-main > button,
+  .tech-card-actions-export > button {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+    height: 100%;
+    padding: 9px 8px;
+    font-size: 0.92rem;
+  }
+  .tech-card-pdf-result {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
+  }
+  .tech-card-pdf-result-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  .tech-card-pdf-result-buttons > button {
+    min-width: 0;
+    padding: 10px 7px;
+  }
+  .tech-card-pdf-result-buttons > button:only-child {
+    grid-column: 1 / -1;
+  }
+}
+@media print {
+  .tech-card-actions { display: none !important; }
+}
+
+/* MASAMASA_MOBILE_TIMELINE_CARDS_V1 */
+/* Screen-only, scoped to the live page so the detached HTML2PDF sheet retains A4 table layout. */
+@media screen and (max-width: 640px) {
+  .tech-card-page .tech-card-timeline {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: visible;
+  }
+
+  .tech-card-page .tech-card-editable-table,
+  .tech-card-page .tech-card-editable-table tbody {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    table-layout: auto;
+  }
+
+  .tech-card-page .tech-card-editable-table thead {
+    display: none;
+  }
+
+  .tech-card-page .tech-card-editable-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 10px;
+    padding: 12px;
+    gap: 8px;
+    border: 1px solid #dce5df;
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .tech-card-page .tech-card-editable-table tbody td {
+    display: block;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    padding: 0 !important;
+    border: 0 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  .tech-card-page .tech-card-editable-table tbody td:first-child > strong {
+    display: block;
+    font-size: 1rem;
+  }
+
+  .tech-card-page .tech-card-editable-table tbody td.tech-card-edit-duration {
+    padding: 10px !important;
+    border-radius: 8px;
+    background: #f5f8f6;
+  }
+
+  .tech-card-page .tech-card-editable-table .tech-card-duration-fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  .tech-card-page .tech-card-editable-table .tech-card-duration-fields label {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 5px;
+  }
+
+  .tech-card-page .tech-card-editable-table .tech-card-duration-fields input {
+    box-sizing: border-box;
+    width: 54px;
+    min-width: 0;
+    max-width: 54px;
+  }
+
+  .tech-card-page .tech-card-editable-table tbody td:nth-child(3) {
+    font-size: 0.82rem;
+    opacity: 0.75;
+  }
+}
+/* END MASAMASA_MOBILE_TIMELINE_CARDS_V1 */

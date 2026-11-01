@@ -20,17 +20,18 @@
     "searchPlaceholder": "For example: brioche, baguette, buns...",
     "recentProfiles": "Recent",
     "favorites": "Favorites",
-    "categories": "Dough categories",
+    "categories": "Dough types",
     "myRecipes": "My recipes",
     "title": "MasaMasa",
-    "subtitle": "Choose a base dough type and adapt the recipe to your conditions.",
+    "subtitle": "Choose a dough type, then a product, and adapt the recipe to your conditions.",
     "roomTempShort": "Temperature",
     "warmHoursShort": "Warm fermentation",
     "coldHoursShort": "Cold fermentation",
     "noResults": "Nothing found",
     "addFavorite": "Add to favorites",
     "removeFavorite": "Remove from favorites",
-    "deleteRecipe": "Delete recipe"
+    "deleteRecipe": "Delete recipe",
+    "comingSoon": "Coming soon"
   },
   "input": {
     "title": "Dough Parameters",
@@ -196,23 +197,24 @@
     "brioche": "Brioche",
     "bagel": "Bagel",
     "baguette": "Baguette",
-    "baked_pirozhki": "Baked filled buns",
+    "baked_pirozhki": "Pirozhki dough",
     "belyashi": "Belyashi",
     "bread": "Bread",
     "chebureki": "Chebureki",
-    "choux": "Choux pastry",
+    "choux": "Éclairs",
     "ciabatta": "Ciabatta",
     "cinnabon": "Cinnamon rolls",
-    "donuts": "Doughnuts",
+    "donuts": "Doughnut dough",
     "empanada": "Empanada",
-    "enriched": "Enriched dough",
+    "enriched": "Basic enriched dough",
     "ensaimada": "Ensaimada",
     "focaccia": "Focaccia",
     "pita": "Pita bread",
     "pizza": "Pizza",
-    "shortcrust": "Shortcrust pastry",
+    "shortcrust": "Tartlet shells",
     "sourdough": "Sourdough bread",
-    "sponge": "Sponge cake"
+    "sponge": "Sponge cake",
+    "swedish_enriched": "Swedish enriched dough"
   },
   "recipeOutput": {
     "totalComposition": "Total ingredients (including preferment)",
@@ -245,14 +247,33 @@
     "pcs": "pcs"
   },
   "categories": {
-    "bread": "Bread",
+    "bread": "Bread dough",
     "enriched": "Enriched dough",
     "fried_enriched": "Fried enriched dough",
     "baked_filled": "Baked filled dough",
     "fried_filled": "Fried filled dough",
     "pastry": "Pastry",
-    "choux": "Choux",
+    "choux": "Choux pastry",
     "cake": "Cakes",
-    "other": "Other"
+    "other": "Other",
+    "yeast_lean": "Lean yeast dough",
+    "laminated": "Laminated dough",
+    "shortcrust": "Shortcrust pastry",
+    "unleavened": "Unleavened dough",
+    "sponge": "Sponge cake batter",
+    "cake_batter": "Cake batter"
+  },
+  "additives": {
+    "cardamom": "Ground cardamom"
+  },
+  "processFat": {
+    "spreading": "Fat for stretching",
+    "help": "Added separately after mixing; not incorporated into the base dough.",
+    "separateStage": "Stretching and fat application",
+    "baseDoughWeight": "Mixed dough before spreading",
+    "finishedWeight": "Shaped semi-product mass",
+    "ingredients": {
+      "lard": "Pork lard (saim)"
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { getRecipeImage } from "../utils/recipeImages";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./StartScreen.css";
@@ -26,8 +27,47 @@ type StartScreenProps = {
   onProfileSelect: (profileId: string) => void;
 
   customRecipes: any[];
+  focusMyRecipes?: boolean;
+  onMyRecipesFocused?: () => void;
   onOpenCustomRecipe: (id: string) => void;
   onDeleteCustomRecipe: (id: string) => void;
+};
+
+// Visual catalog taxonomy. Recipe JSON categories and calculation logic remain unchanged.
+const DOUGH_GROUP_ORDER = [
+  "bread",
+  "yeast_lean",
+  "enriched",
+  "laminated",
+  "shortcrust",
+  "choux",
+  "unleavened",
+  "sponge",
+  "cake_batter",
+] as const;
+
+const PROFILE_DOUGH_GROUP: Record<string, string> = {
+  "bread": "bread",
+  "baguette": "bread",
+  "ciabatta": "bread",
+  "focaccia": "bread",
+  "pita": "bread",
+  "bagel": "bread",
+  "sourdough": "bread",
+  "pizza": "bread",
+  "baked_pirozhki": "enriched",
+  "belyashi": "yeast_lean",
+  "enriched": "enriched",
+  "swedish_enriched": "enriched",
+  "brioche": "enriched",
+  "cinnabon": "enriched",
+  "ensaimada": "enriched",
+  "donuts": "enriched",
+  "shortcrust": "shortcrust",
+  "choux": "choux",
+  "chebureki": "unleavened",
+  "empanada": "unleavened",
+  "sponge": "sponge",
 };
 
 const StartScreen: React.FC<StartScreenProps> = ({
@@ -45,10 +85,17 @@ const StartScreen: React.FC<StartScreenProps> = ({
   onColdFermentationChange,
   onProfileSelect,
   customRecipes,
+  focusMyRecipes,
+  onMyRecipesFocused,
   onOpenCustomRecipe,
   onDeleteCustomRecipe,
 }) => {
   const { t, i18n } = useTranslation();
+  React.useEffect(() => {
+    if (!focusMyRecipes) return;
+    document.getElementById('masamasa-my-recipes')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    onMyRecipesFocused?.();
+  }, [focusMyRecipes, onMyRecipesFocused]);
   const conditionsHelp = i18n.language.startsWith("es")
     ? "La temperatura, el tiempo de fermentación y el modo de producción ajustan la cantidad inicial de levadura. El clima y el amasado también pueden ajustar la receta. Son estimaciones: comprueba siempre la fermentación real."
     : i18n.language.startsWith("en")
@@ -61,7 +108,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
   );
 
   const indexData = useMemo(() => {
-    const categories: Record<string, any> = {};
+    const categories: Record<string, any> = Object.fromEntries(
+      DOUGH_GROUP_ORDER.map((group) => [group, { subtypes: {} }])
+    );
     const profileNamesById: Record<string, string> = {};
 
     for (const path in modules) {
@@ -71,7 +120,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
       if (!profile?.base) continue;
 
       const id = profile.id;
-      const category = profile.category || "other";
+      const category = PROFILE_DOUGH_GROUP[id] ?? "other";
       const subtype = profile.subtype || id;
       const name = profile.name || id;
 
@@ -438,12 +487,17 @@ const StartScreen: React.FC<StartScreenProps> = ({
                       openProfile(item.profile)
                     }
                   >
-                    <strong>{item.name}</strong>
-                    <small>
-                      {getCategoryName(
-                        item.category
-                      )}
-                    </small>
+                    {getRecipeImage(item.profile) && (
+                      <img className="start-recipe-thumb" src={getRecipeImage(item.profile)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                    )}
+                    <span className="start-recipe-card-text">
+                      <strong>{item.name}</strong>
+                      <small>
+                        {getCategoryName(
+                          item.category
+                        )}
+                      </small>
+                    </span>
                   </button>
                 ))
               ) : (
@@ -473,6 +527,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
                         openProfile(id)
                       }
                     >
+                      {getRecipeImage(id) && (
+                        <img className="start-recipe-thumb" src={getRecipeImage(id)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                      )}
                       <strong>
                         {getProfileNameById(id)}
                       </strong>
@@ -501,6 +558,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
                           openProfile(id)
                         }
                       >
+                        {getRecipeImage(id) && (
+                          <img className="start-recipe-thumb" src={getRecipeImage(id)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                        )}
                         <strong>
                           {getProfileNameById(id)}
                         </strong>
@@ -556,13 +616,17 @@ const StartScreen: React.FC<StartScreenProps> = ({
                       type="button"
                       className="start-category-card"
                       key={category}
+                      disabled={Object.keys(indexData.categories[category].subtypes).length === 0}
                       onClick={() =>
                         setSelectedCategory(
                           category
                         )
                       }
                     >
-                      {getCategoryName(category)}
+                      <strong>{getCategoryName(category)}</strong>
+                      <small className="start-category-status">
+                        {Object.keys(indexData.categories[category].subtypes).length || t("start.comingSoon")}
+                      </small>
                     </button>
                   ))}
                 </div>
@@ -584,6 +648,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
                           openProfile(item.profile)
                         }
                       >
+                        {getRecipeImage(item.profile) && (
+                          <img className="start-recipe-thumb" src={getRecipeImage(item.profile)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                        )}
                         <strong>
                           {getProfileNameById(
                             item.profile
@@ -630,7 +697,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
             </section>
 
             {customRecipes.length > 0 && (
-              <section className="start-section">
+              <section id="masamasa-my-recipes" className="start-section">
                 <h2 className="start-section-title">
                   {t("start.myRecipes")}
                 </h2>
