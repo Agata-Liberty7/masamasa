@@ -1,0 +1,134 @@
+{
+  "id": "challah",
+  "name": "Хала",
+  "category": "bread",
+  "subtype": "challah",
+  "prefermentId": "none",
+  "base": {
+    "flour": 1000,
+    "salt": 1.5,
+    "sugar": 10,
+    "fat": 7.5,
+    "fatType": "oil",
+    "eggs": 10,
+    "eggType": "whole",
+    "yeast": {
+      "type": "fresh",
+      "percent": 4
+    },
+    "liquidPct": 40,
+    "liquidType": "water"
+  },
+  "limits": {
+    "hydration": {
+      "min": 35,
+      "max": 48
+    },
+    "salt": {
+      "min": 1,
+      "max": 2.5
+    },
+    "sugar": {
+      "min": 5,
+      "max": 20
+    },
+    "fat": {
+      "min": 4,
+      "max": 15
+    },
+    "yeastPercent": {
+      "min": 0.3,
+      "max": 5
+    }
+  },
+  "process": {
+    "mixingIntensity": "medium",
+    "mixingTime": {
+      "manual": {
+        "min": 8,
+        "max": 12
+      },
+      "planetary": {
+        "min": 5,
+        "max": 7
+      },
+      "spiral": {
+        "min": 4,
+        "max": 6
+      }
+    },
+    "glutenDevelopment": "medium",
+    "bulkFermentationTarget": "около +70% объёма",
+    "finalProofTarget": "пальцевый тест"
+  },
+  "climateAdjustments": {
+    "dry": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    },
+    "moderate": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    },
+    "humid": {
+      "hydrationDelta": 0,
+      "yeastDeltaPercent": 0,
+      "comment": ""
+    }
+  },
+  "mixingAdjustments": {
+    "manual": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    },
+    "planetary": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    },
+    "spiral": {
+      "hydrationDelta": 0,
+      "yeastPercentDelta": 0,
+      "comment": ""
+    }
+  },
+  "schedule": {
+    "bulk": {
+      "totalHours": 0.6666666666666666,
+      "temperature": 24,
+      "steps": []
+    },
+    "finalProof": {
+      "totalHours": 0.6666666666666666,
+      "temperature": 24,
+      "comment": "До заметного увеличения объёма и готовности по пальцевому тесту."
+    },
+    "coldRetard": {
+      "enabled": false,
+      "hours": 0,
+      "temperature": 4,
+      "comment": ""
+    }
+  },
+  "bake": {
+    "temperature": 218,
+    "timeMinutes": 25
+  },
+  "uiHints": {
+    "flourLabel": "Мука",
+    "hydrationLabel": "Основная жидкость",
+    "notesForBaker": [
+      "Традиционная хала на растительном масле, без молока и сливочного масла.",
+      "Яйца в рецептуре: около 100 г (2 крупных яйца); взвесьте фактическую закладку.",
+      "Разделить тесто на жгуты, заплести косы и дать подойти перед выпечкой.",
+      "Отдельное яйцо для смазывания и посыпка в расчёт теста не входят.",
+      "Время брожения, расстойки и количество дрожжей проверяйте по фактическому состоянию теста."
+    ],
+    "formulaSource": "https://www.jewishfoodsociety.org/recipes/classic-challah",
+    "formulaStatus": "reference-adapted",
+    "formulaNote": "Основа Ури Шефта; 2 яйца приближённо приняты за 100 г. Времена служат ориентирами."
+  }
+}

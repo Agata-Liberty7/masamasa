@@ -18,6 +18,40 @@ const commonWarning: LocalizedText = {
 };
 
 const protocols: Record<string, TechnologyProtocol> = {
+  challah: {
+    stage: "review",
+    steps: {
+      ru: [
+        "Смешать воду и свежие дрожжи, добавить муку, яйца, сахар, соль и растительное масло.",
+        "Замесить до гладкого, достаточно упругого теста; следить за его температурой.",
+        "Оставить для первого подъёма примерно до увеличения объёма на 70%; время ориентировочное.",
+        "Разделить на равные части, сформовать жгуты и заплести косы.",
+        "Провести окончательную расстойку до готовности по состоянию теста; смазать яйцом (не входит в расчёт).",
+        "Выпекать до выраженной золотистой корочки; режим 218 °C / 25 минут является стартовым ориентиром."
+      ],
+      en: [
+        "Combine water and fresh yeast, then add flour, eggs, sugar, salt and vegetable oil.",
+        "Knead to a smooth, slightly firm dough; monitor dough temperature.",
+        "Allow the first rise until about 70% volume increase; time is an estimate.",
+        "Divide evenly, form ropes and braid the loaves.",
+        "Proof until ready by dough condition; brush with egg (not included in dough calculation).",
+        "Bake until deeply golden; 218 °C / 25 minutes is an initial guideline."
+      ],
+      es: [
+        "Mezclar agua y levadura fresca; añadir harina, huevos, azúcar, sal y aceite vegetal.",
+        "Amasar hasta obtener una masa lisa y algo firme; controlar la temperatura.",
+        "Dejar levar hasta aumentar alrededor del 70 % de volumen; el tiempo es orientativo.",
+        "Dividir, formar cordones y trenzar las piezas.",
+        "Dejar fermentar hasta el punto adecuado; pintar con huevo (fuera del cálculo de masa).",
+        "Hornear hasta dorar bien; 218 °C / 25 minutos es una referencia inicial."
+      ]
+    },
+    warning: {
+      ru: "Рецептура адаптирована из Jewish Food Society (Ури Шефт). Масса двух яиц принята приблизительно за 100 г. Дрожжи и длительность расстойки требуют проверки в выбранных условиях; смазка и посыпка не включены.",
+      en: "Adapted from Jewish Food Society (Uri Scheft). Two eggs are approximated as 100 g. Validate yeast dosage and proof duration for actual conditions; glaze and seeds are excluded.",
+      es: "Adaptación de Jewish Food Society (Uri Scheft). Se estiman dos huevos en 100 g. Verificar levadura y fermentación según las condiciones; el huevo para pintar y las semillas se excluyen."
+    }
+  },
   choux: {
     stage: "review",
     steps: {

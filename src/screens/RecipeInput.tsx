@@ -1,5 +1,6 @@
 import { getRecipeImage } from "../utils/recipeImages";
 import React from "react";
+import { useAppContext } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
 import "./RecipeInput.css";
 import NumberInput from "../components/NumberInput";
@@ -75,6 +76,24 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
+  // MASAMASA_CONDITIONS_ACCESS_V1: edit existing shared settings in place.
+  // Never unmount this form: manually entered ingredients stay intact.
+  const [showConditions, setShowConditions] = React.useState(false);
+  const {
+    climate, setClimate, mixing, setMixing, productionMode, setProductionMode,
+    roomTemp, setRoomTemp, warmFermentationHours, setWarmFermentationHours,
+    coldFermentationHours, setColdFermentationHours,
+  } = useAppContext();
+  const conditionSummary = {
+    ru: { temp: "Температура помещения", warm: "Тёплая ферментация", cold: "Холодная ферментация" },
+    en: { temp: "Room temperature", warm: "Warm fermentation", cold: "Cold fermentation" },
+    es: { temp: "Temperatura ambiente", warm: "Fermentación templada", cold: "Fermentación en frío" },
+  } as const;
+  const conditionLabels = {
+    ru: {review: "Проверить или изменить условия производства?", button: "Изменить условия", close: "Скрыть условия", temp: "Температура помещения, °C", warm: "Тёплая ферментация, ч", cold: "Холодная ферментация, ч", climate: "Климат", mixing: "Замес", mode: "Режим", dry: "Сухой", moderate: "Умеренный", humid: "Влажный", manual: "Ручной", planetary: "Планетарный", spiral: "Спиральный", home: "Домашний", professional: "Производственный", notice: "Изменение условий не сбрасывает введённые ингредиенты. Проверьте процент дрожжей: автоматический пересчёт уже введённой дозировки не выполняется."},
+    en: {review: "Review or change production conditions?", button: "Edit conditions", close: "Hide conditions", temp: "Room temperature, °C", warm: "Warm fermentation, h", cold: "Cold fermentation, h", climate: "Climate", mixing: "Mixing", mode: "Mode", dry: "Dry", moderate: "Moderate", humid: "Humid", manual: "Manual", planetary: "Planetary", spiral: "Spiral", home: "Home", professional: "Professional", notice: "Editing conditions keeps all entered ingredients. Check the yeast percentage: the previously entered yeast dosage is not recalculated automatically."},
+    es: {review: "¿Quieres revisar o cambiar las condiciones de producción?", button: "Cambiar condiciones", close: "Ocultar condiciones", temp: "Temperatura ambiente, °C", warm: "Fermentación templada, h", cold: "Fermentación en frío, h", climate: "Clima", mixing: "Amasado", mode: "Modo", dry: "Seco", moderate: "Moderado", humid: "Húmedo", manual: "Manual", planetary: "Planetaria", spiral: "Espiral", home: "Doméstico", professional: "Profesional", notice: "Al cambiar las condiciones se conservan los ingredientes introducidos. Revisa el porcentaje de levadura: la dosis ya introducida no se recalcula automáticamente."},
+  }[lang];
   const yeastHelp = {
     ru: "Процент дрожжей указан для выбранного вида. При переключении свежие/мгновенные количество автоматически пересчитывается (1:3). Вы можете изменить его вручную.",
     en: "Yeast percentage applies to the selected type. Switching fresh/instant converts the amount automatically (3:1). You can edit it manually.",
@@ -812,6 +831,32 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
             </div>
           )}
         </section>
+
+        {/* MASAMASA_CONDITIONS_PRECALC_V2: optional checkpoint immediately before calculation. */}
+        <section className="recipe-card" aria-label={conditionLabels.review}>
+          <h2 className="recipe-card-title" style={{ marginBottom: 8 }}>{conditionLabels.review}</h2>
+          {/* MASAMASA_CONDITIONS_SUMMARY_V3: units appear only after numeric values. */}
+          <div style={{ display: "grid", gap: 5, margin: "0 0 12px", fontSize: "0.9rem", opacity: 0.88 }}>
+            <div><strong>{conditionSummary[lang].temp}:</strong> {roomTemp} °C</div>
+            <div><strong>{conditionSummary[lang].warm}:</strong> {warmFermentationHours} {lang === "ru" ? "ч" : "h"}</div>
+            <div><strong>{conditionSummary[lang].cold}:</strong> {coldFermentationHours} {lang === "ru" ? "ч" : "h"}</div>
+          </div>
+          <button type="button" className="recipe-submit" style={{ width: "100%", textAlign: "center" }} onClick={() => setShowConditions((value) => !value)} aria-expanded={showConditions}>
+            {showConditions ? conditionLabels.close : conditionLabels.button}
+          </button>
+          {showConditions && (
+            <div style={{display: "grid", gap: 12, marginTop: 14}}>
+              <label>{conditionLabels.temp}<input className="recipe-number" type="number" min="0" max="45" step="1" value={roomTemp} onChange={(e) => setRoomTemp(Number(e.target.value))} /></label>
+              <label>{conditionLabels.warm}<input className="recipe-number" type="number" min="0" max="168" step="0.5" value={warmFermentationHours} onChange={(e) => setWarmFermentationHours(Number(e.target.value))} /></label>
+              <label>{conditionLabels.cold}<input className="recipe-number" type="number" min="0" max="168" step="0.5" value={coldFermentationHours} onChange={(e) => setColdFermentationHours(Number(e.target.value))} /></label>
+              <label>{conditionLabels.climate}<select className="recipe-select" value={climate} onChange={(e) => setClimate(e.target.value as "dry" | "moderate" | "humid")}><option value="dry">{conditionLabels.dry}</option><option value="moderate">{conditionLabels.moderate}</option><option value="humid">{conditionLabels.humid}</option></select></label>
+              <label>{conditionLabels.mixing}<select className="recipe-select" value={mixing} onChange={(e) => setMixing(e.target.value as "manual" | "planetary" | "spiral")}><option value="manual">{conditionLabels.manual}</option><option value="planetary">{conditionLabels.planetary}</option><option value="spiral">{conditionLabels.spiral}</option></select></label>
+              <label>{conditionLabels.mode}<select className="recipe-select" value={productionMode} onChange={(e) => setProductionMode(e.target.value as "home" | "professional")}><option value="home">{conditionLabels.home}</option><option value="professional">{conditionLabels.professional}</option></select></label>
+              <p style={{fontSize: "0.85rem", opacity: 0.84, margin: 0}}>{conditionLabels.notice}</p>
+            </div>
+          )}
+        </section>
+
 
         <button
           type="button"

@@ -244,7 +244,12 @@ const profileTranslations: Record<string, { en: string; es: string }> = {
   "Охлаждать перед раскаткой.": {
     "en": "Chill before rolling out.",
     "es": "Refrigerar antes de estirar la masa."
-  }
+  },
+  "Традиционная хала на растительном масле, без молока и сливочного масла.": { en: "Traditional challah with vegetable oil, without milk or butter.", es: "Jala tradicional con aceite vegetal, sin leche ni mantequilla." },
+  "Яйца в рецептуре: около 100 г (2 крупных яйца); взвесьте фактическую закладку.": { en: "Recipe eggs: about 100 g (2 large eggs); weigh the actual amount.", es: "Huevos de la receta: unos 100 g (2 huevos grandes); pesar la cantidad real." },
+  "Разделить тесто на жгуты, заплести косы и дать подойти перед выпечкой.": { en: "Divide the dough into strands, braid and allow to proof before baking.", es: "Dividir la masa en tiras, trenzarlas y dejar fermentar antes de hornear." },
+  "Отдельное яйцо для смазывания и посыпка в расчёт теста не входят.": { en: "The separate egg for glazing and any topping are not included in the dough calculation.", es: "El huevo adicional para pintar y la cobertura no se incluyen en el calculo de la masa." },
+  "Время брожения, расстойки и количество дрожжей проверяйте по фактическому состоянию теста.": { en: "Check fermentation, final proof and yeast quantity against the actual dough condition.", es: "Comprobar la fermentacion, el levado final y la dosis de levadura segun el estado real de la masa." },
 };
 
 export function translateProfileText(value: unknown, lang: Language): string {

@@ -421,3 +421,37 @@
   background: #f8f9f7;
   border-color: #e0e5e1;
 }
+
+/* MASAMASA_DISCOVERY_V1: compact, visible links to indexable product pages */
+.start-info-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 15px;
+  align-items: center;
+  border-top: 1px solid #dce4dd;
+  padding-top: 17px;
+  margin-top: 32px;
+  font-size: 12px;
+  color: #637469;
+}
+.start-info-footer a {
+  color: #355f49;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* MASAMASA_ABOUT_NAV_V1: visible language-aware navigation to static about */
+.start-about-link {
+  display: inline-flex;
+  margin-top: 10px;
+  color: #355f49;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.start-about-link:focus-visible {
+  outline: 2px solid #355f49;
+  outline-offset: 4px;
+  border-radius: 3px;
+}

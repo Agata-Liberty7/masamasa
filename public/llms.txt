@@ -1,0 +1,21 @@
+# MasaMasa
+
+> A browser-based bakery dough formula calculator and technical production-sheet tool. Website: https://masamasa.eu/
+
+MasaMasa lets bakers calculate ingredient quantities from flour-based percentages, adapt dough profiles, use supported preferments, edit production-stage timings and export PDF production sheets. The interface is available in English, Spanish and Russian.
+
+## Official information
+
+- [MasaMasa calculator](https://masamasa.eu/)
+- [English product overview](https://masamasa.eu/about/en/)
+- [Resumen en español](https://masamasa.eu/about/es/)
+- [Описание на русском](https://masamasa.eu/about/ru/)
+
+## Scope and limitations
+
+- Focus: dough formulation and production guidance, not fillings or frosting.
+- Timings are profile estimates and need validation in actual production.
+- Editing final-proof duration does not automatically adjust yeast dosage.
+- Browser-saved recipes do not automatically sync across devices.
+
+This is a supplementary plain-text overview, not a guarantee of search-engine or AI-system indexing.

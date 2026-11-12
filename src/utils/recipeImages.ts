@@ -1,5 +1,6 @@
 // Approved MasaMasa photographs. Profiles without an approved photo remain text-only.
 export const approvedRecipeImages: Record<string, string> = {
+  challah: "/images/recipes/challah.webp",
   bagel: "/images/recipes/bagel.webp",
   baguette: "/images/recipes/baguette.webp",
   brioche: "/images/recipes/brioche.webp",

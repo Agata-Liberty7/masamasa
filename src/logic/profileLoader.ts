@@ -1,5 +1,6 @@
 import pizza from "../profiles/pizza.json";
 import bread from "../profiles/bread.json";
+import challah from "../profiles/challah.json";
 import baguette from "../profiles/baguette.json";
 import focaccia from "../profiles/focaccia.json";
 import ciabatta from "../profiles/ciabatta.json";
@@ -36,6 +37,7 @@ import {
 const profiles: Record<string, any> = {
   pizza,
   bread,
+  challah,
   baguette,
   focaccia,
   ciabatta,

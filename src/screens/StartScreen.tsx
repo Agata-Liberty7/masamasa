@@ -48,6 +48,7 @@ const DOUGH_GROUP_ORDER = [
 
 const PROFILE_DOUGH_GROUP: Record<string, string> = {
   "bread": "bread",
+  "challah": "bread",
   "baguette": "bread",
   "ciabatta": "bread",
   "focaccia": "bread",
@@ -262,6 +263,23 @@ const StartScreen: React.FC<StartScreenProps> = ({
             <p className="start-subtitle">
               {t("start.subtitle")}
             </p>
+            {/* MASAMASA_ABOUT_NAV_V1 */}
+            <a
+              className="start-about-link"
+              href={
+                i18n.language.startsWith("es")
+                  ? "/about/es/index.html"
+                  : i18n.language.startsWith("en")
+                    ? "/about/en/index.html"
+                    : "/about/ru/index.html"
+              }
+            >
+              {i18n.language.startsWith("es")
+                ? "Acerca de MasaMasa"
+                : i18n.language.startsWith("en")
+                  ? "About MasaMasa"
+                  : "О проекте MasaMasa"}
+            </a>
           </div>
 
           <div className="start-language">
@@ -309,7 +327,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
           </div>
         </div>
 
-        <section className="start-card">
+        <section className="start-card" id="masamasa-production-conditions">
           <h2 className="start-card-title">
             {t("start.conditions")}
           </h2>
@@ -595,6 +613,11 @@ const StartScreen: React.FC<StartScreenProps> = ({
                 </h2>
 
                 {selectedCategory && (
+                  <button type="button" className="start-inline-back" onClick={() => document.getElementById("masamasa-production-conditions")?.scrollIntoView({behavior: "smooth", block: "start"})}>
+                    {i18n.language.startsWith("es") ? "Cambiar condiciones" : i18n.language.startsWith("en") ? "Edit conditions" : "Изменить условия"}
+                  </button>
+                )}
+                {selectedCategory && (
                   <button
                     type="button"
                     className="start-inline-back"
@@ -750,6 +773,13 @@ const StartScreen: React.FC<StartScreenProps> = ({
             )}
           </>
         )}
+      {/* MASAMASA_DISCOVERY_V1 */}
+      <footer className="start-info-footer" aria-label="About MasaMasa">
+        <span>MasaMasa:</span>
+        <a href="/about/en/index.html" lang="en">About (EN)</a>
+        <a href="/about/es/index.html" lang="es">Acerca (ES)</a>
+        <a href="/about/ru/index.html" lang="ru">О проекте (RU)</a>
+      </footer>
       </div>
     </div>
   );

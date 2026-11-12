@@ -194,6 +194,7 @@
     "g": "g"
   },
   "profiles": {
+    "challah": "Challah",
     "brioche": "Brioche",
     "bagel": "Bagel",
     "baguette": "Baguette",

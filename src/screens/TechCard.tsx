@@ -92,7 +92,7 @@ const messages = {
     subtitle: "Расчётная закладка ингредиентов и технологические ориентиры",
     back: "Назад к рецепту",
     print: "Печать",
-    batch: "Выход теста",
+    batch: "Расчётная масса",
     batchWithProcessFat: "Масса полуфабриката",
     spreading: "Жир для растягивания",
     spreadingStep: "Отдельная операция после замеса",
@@ -154,7 +154,7 @@ const messages = {
     subtitle: "Calculated ingredient allocations and process guidance",
     back: "Back to recipe",
     print: "Print",
-    batch: "Total dough",
+    batch: "Calculated mass",
     batchWithProcessFat: "Shaped product mass",
     spreading: "Fat for stretching",
     spreadingStep: "Separate operation after mixing",
@@ -216,7 +216,7 @@ const messages = {
     subtitle: "Cantidades calculadas y orientaciones del proceso",
     back: "Volver a la receta",
     print: "Imprimir",
-    batch: "Masa total",
+    batch: "Masa calculada",
     batchWithProcessFat: "Peso de la pieza formada",
     spreading: "Grasa para estirar",
     spreadingStep: "Operación separada después del amasado",
@@ -326,6 +326,11 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
   const productionTimeline = buildProductionTimeline(profile, conditions, hasFermentation, hasPref);
   const [durationEdits, setDurationEdits] = React.useState<StageTimeEdits>(() => initialDurationEdits ?? {});
   const editLabels = editingText[lang];
+  const nonFermentedEditHint = {
+    ru: "Плановое время по операции можно изменить. Это не меняет рецептуру.",
+    en: "Edit planned stage times here. This does not change the formula.",
+    es: "Puedes modificar los tiempos previstos por etapa. Esto no cambia la fórmula.",
+  } as const;
   const saveLabels = cardSavingText[lang];
   const plannedTimeline = planProductionTimeline(productionTimeline, durationEdits);
   const [pdfLoading, setPdfLoading] = React.useState(false);
@@ -509,8 +514,12 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
             <div><dt>{m.climate}</dt><dd>{(m as Record<string, string>)[conditions.climate] || conditions.climate}</dd></div>
             <div><dt>{m.mixing}</dt><dd>{(m as Record<string, string>)[conditions.mixing] || conditions.mixing}</dd></div>
             <div><dt>{m.mode}</dt><dd>{(m as Record<string, string>)[conditions.productionMode] || conditions.productionMode}</dd></div>
-            <div><dt>{m.warm}</dt><dd>{hours(conditions.warmFermentationHours)}</dd></div>
-            <div><dt>{m.cold}</dt><dd>{hours(conditions.coldFermentationHours)}</dd></div>
+            {hasFermentation && (
+              <>
+                <div><dt>{m.warm}</dt><dd>{hours(conditions.warmFermentationHours)}</dd></div>
+                <div><dt>{m.cold}</dt><dd>{hours(conditions.coldFermentationHours)}</dd></div>
+              </>
+            )}
           </dl>
         </section>
 
@@ -580,7 +589,7 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
           </div>}
           <div className="tech-card-timeline">
             <h3>{timelineLabels.heading}</h3>
-            <p className="tech-card-note">{editLabels.editable}</p>
+            <p className="tech-card-note">{hasFermentation ? editLabels.editable : nonFermentedEditHint[lang]}</p>
             <table className="tech-card-table tech-card-editable-table">
               <thead><tr><th>{m.steps}</th><th>{m.minutes}</th><th>{m.conditions}</th></tr></thead>
               <tbody>
@@ -671,7 +680,11 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
           <section className="tech-card-section"><h2>{m.notes}</h2><ul className="tech-card-notes">{profile.uiHints.notesForBaker.map((note: string, i: number) => <li key={i}>{profileText(note)}</li>)}</ul></section>
         )}
 
-        <footer className="tech-card-footer">{m.disclaimer}</footer>
+        <footer className="tech-card-footer">{hasFermentation ? m.disclaimer : {
+          ru: "Времена технологических операций являются ориентирами. Контролируйте фактическое состояние теста и готовность изделия.",
+          en: "Process timings are guidelines. Check the actual dough condition and product readiness.",
+          es: "Los tiempos del proceso son orientativos. Comprueba el estado real de la masa y el punto de cocción.",
+        }[lang]}</footer>
       </article>
     </main>
   );
