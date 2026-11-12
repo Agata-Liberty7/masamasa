@@ -4,6 +4,7 @@ import { useAppContext } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
 import "./RecipeInput.css";
 import NumberInput from "../components/NumberInput";
+import { loadProfile } from "../logic/profileLoader";
 import type { PrefermentType } from "../logic/preferment";
 
 import type {
@@ -90,9 +91,9 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     es: { temp: "Temperatura ambiente", warm: "Fermentación templada", cold: "Fermentación en frío" },
   } as const;
   const conditionLabels = {
-    ru: {review: "Проверить или изменить условия производства?", button: "Изменить условия", close: "Скрыть условия", temp: "Температура помещения, °C", warm: "Тёплая ферментация, ч", cold: "Холодная ферментация, ч", climate: "Климат", mixing: "Замес", mode: "Режим", dry: "Сухой", moderate: "Умеренный", humid: "Влажный", manual: "Ручной", planetary: "Планетарный", spiral: "Спиральный", home: "Домашний", professional: "Производственный", notice: "Изменение условий не сбрасывает введённые ингредиенты. Проверьте процент дрожжей: автоматический пересчёт уже введённой дозировки не выполняется."},
-    en: {review: "Review or change production conditions?", button: "Edit conditions", close: "Hide conditions", temp: "Room temperature, °C", warm: "Warm fermentation, h", cold: "Cold fermentation, h", climate: "Climate", mixing: "Mixing", mode: "Mode", dry: "Dry", moderate: "Moderate", humid: "Humid", manual: "Manual", planetary: "Planetary", spiral: "Spiral", home: "Home", professional: "Professional", notice: "Editing conditions keeps all entered ingredients. Check the yeast percentage: the previously entered yeast dosage is not recalculated automatically."},
-    es: {review: "¿Quieres revisar o cambiar las condiciones de producción?", button: "Cambiar condiciones", close: "Ocultar condiciones", temp: "Temperatura ambiente, °C", warm: "Fermentación templada, h", cold: "Fermentación en frío, h", climate: "Clima", mixing: "Amasado", mode: "Modo", dry: "Seco", moderate: "Moderado", humid: "Húmedo", manual: "Manual", planetary: "Planetaria", spiral: "Espiral", home: "Doméstico", professional: "Profesional", notice: "Al cambiar las condiciones se conservan los ingredientes introducidos. Revisa el porcentaje de levadura: la dosis ya introducida no se recalcula automáticamente."},
+    ru: {review: "Проверить или изменить условия производства?", button: "Изменить условия", close: "Скрыть условия", temp: "Температура помещения, °C", warm: "Тёплая ферментация, ч", cold: "Холодная ферментация, ч", climate: "Климат", mixing: "Замес", mode: "Режим", dry: "Сухой", moderate: "Умеренный", humid: "Влажный", manual: "Ручной", planetary: "Планетарный", spiral: "Спиральный", home: "Домашний", professional: "Производственный", notice: "Ингредиенты сохраняются. Дрожжи пересчитываются автоматически, если их количество не изменялось вручную."},
+    en: {review: "Review or change production conditions?", button: "Edit conditions", close: "Hide conditions", temp: "Room temperature, °C", warm: "Warm fermentation, h", cold: "Cold fermentation, h", climate: "Climate", mixing: "Mixing", mode: "Mode", dry: "Dry", moderate: "Moderate", humid: "Humid", manual: "Manual", planetary: "Planetary", spiral: "Spiral", home: "Home", professional: "Professional", notice: "Ingredients are preserved. Yeast updates automatically unless you have edited its percentage manually."},
+    es: {review: "¿Quieres revisar o cambiar las condiciones de producción?", button: "Cambiar condiciones", close: "Ocultar condiciones", temp: "Temperatura ambiente, °C", warm: "Fermentación templada, h", cold: "Fermentación en frío, h", climate: "Clima", mixing: "Amasado", mode: "Modo", dry: "Seco", moderate: "Moderado", humid: "Húmedo", manual: "Manual", planetary: "Planetaria", spiral: "Espiral", home: "Doméstico", professional: "Profesional", notice: "Se conservan los ingredientes. La levadura se actualiza automáticamente salvo que hayas modificado su porcentaje manualmente."},
   }[lang];
   const yeastHelp = {
     ru: "Процент дрожжей указан для выбранного вида. При переключении свежие/мгновенные количество автоматически пересчитывается (1:3). Вы можете изменить его вручную.",
@@ -150,6 +151,16 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   const [yeastPct, setYeastPct] = React.useState(
     initialValues.yeastPct ?? base.yeast?.percent ?? 1
   );
+  // MASAMASA_YEAST_CONDITIONS_V1: retain manual yeast edits; update untouched defaults.
+  const yeastManuallyEdited = React.useRef(false);
+  const lastProductionConditions = React.useRef<string | null>(null);
+  const [suggestedYeastPct, setSuggestedYeastPct] = React.useState<number | null>(null);
+  const yeastConditionText = {
+    ru: { auto: "Процент дрожжей пересчитан по новым условиям производства.", manual: "Процент дрожжей изменён вручную. Новые условия не заменили вашу дозировку.", apply: "Применить расчёт дрожжей", recommended: "Расчёт по условиям" },
+    en: { auto: "Yeast percentage updated for the new production conditions.", manual: "Yeast percentage was edited manually. Your dosage was preserved.", apply: "Apply calculated yeast", recommended: "Calculated for conditions" },
+    es: { auto: "Porcentaje de levadura actualizado según las nuevas condiciones.", manual: "El porcentaje de levadura se editó manualmente. Se ha conservado tu dosis.", apply: "Aplicar cálculo de levadura", recommended: "Cálculo según condiciones" },
+  }[lang];
+  const [yeastConditionsChanged, setYeastConditionsChanged] = React.useState(false);
 
   const [mainFlour, setMainFlour] = React.useState<FlourType>(
     initialValues.mainFlour ?? "normal"
@@ -232,6 +243,10 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setProcessFatPct(initialValues.processFatPct ?? nextBase.processFat?.percent ?? 0);
     setEggsPct(initialValues.eggsPct ?? nextBase.eggs ?? 0);
     setYeastPct(initialValues.yeastPct ?? nextBase.yeast?.percent ?? 1);
+    yeastManuallyEdited.current = false;
+    lastProductionConditions.current = null;
+    setSuggestedYeastPct(null);
+    setYeastConditionsChanged(false);
     setAdditives(initialValues.additives ?? nextBase.additives ?? []);
 
     setMainFlour(initialValues.mainFlour ?? "normal");
@@ -281,6 +296,33 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     setExtraPct1(Math.round(n(extraPct1, 0) * k));
     setExtraPct2(Math.round(n(extraPct2, 0) * k));
   }, [extraPct1, extraPct2]);
+
+  // Match the initial loadProfile yeast model when production conditions change.
+  // Do not overwrite an explicitly edited yeast percentage.
+  React.useEffect(() => {
+    const key = JSON.stringify([profileId, climate, mixing, productionMode, roomTemp, warmFermentationHours, coldFermentationHours]);
+    if (lastProductionConditions.current === null) {
+      lastProductionConditions.current = key;
+      return;
+    }
+    if (key === lastProductionConditions.current) return;
+    lastProductionConditions.current = key;
+    if (base.yeast?.type === "none" || !(Number(base.yeast?.percent) > 0)) return;
+    const recalculated = loadProfile(profileId, climate, mixing, {
+      productionMode,
+      roomTemp,
+      warmHours: warmFermentationHours,
+      coldHours: coldFermentationHours,
+      flourType: "normal",
+      yeastForm,
+    });
+    const next = Number(recalculated.base?.yeast?.percent);
+    if (!Number.isFinite(next) || next < 0) return;
+    const rounded = Math.round(next * 10000) / 10000;
+    setSuggestedYeastPct(rounded);
+    setYeastConditionsChanged(true);
+    if (!yeastManuallyEdited.current) setYeastPct(rounded);
+  }, [profileId, climate, mixing, productionMode, roomTemp, warmFermentationHours, coldFermentationHours]);
 
   const handleSubmit = () => {
     const flourSafe = n(flour, 0);
@@ -682,12 +724,23 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 className="recipe-number"
                 type="number"
                 value={yeastPct}
-                onChange={(e) => setYeastPct(e.target.value)}
+                onChange={(e) => { yeastManuallyEdited.current = true; setYeastPct(e.target.value); }}
               />
               <span className="recipe-unit">%</span>
             </div>
           </div>
           <p style={{ fontSize: "0.82rem", opacity: 0.75, margin: "8px 0 0" }}>{yeastHelp}</p>
+          {yeastConditionsChanged && <div role="status" style={{ marginTop: 9, fontSize: "0.85rem" }}>
+            <p style={{ margin: "0 0 6px" }}>{yeastManuallyEdited.current ? yeastConditionText.manual : yeastConditionText.auto}</p>
+            {yeastManuallyEdited.current && suggestedYeastPct !== null && <>
+              <p style={{ margin: "0 0 6px" }}>{yeastConditionText.recommended}: {suggestedYeastPct}%</p>
+              <button type="button" onClick={() => {
+                setYeastPct(suggestedYeastPct);
+                yeastManuallyEdited.current = false;
+                setYeastConditionsChanged(false);
+              }}>{yeastConditionText.apply}</button>
+            </>}
+          </div>}
             </>
           )}
         </section>
