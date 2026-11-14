@@ -1,0 +1,46 @@
+/* MASAMASA_BLANK_RECIPE_V1: standalone notebook editor, no recipe-engine changes */
+.mm-blank-editor { background: #f7faf7; border: 1px solid #dae6dd; border-radius: 14px; padding: 18px; margin: 18px 0; }
+.mm-blank-editor h3 { margin: 0 0 16px; font-size: 18px; }
+.mm-blank-field { display: grid; gap: 6px; margin: 14px 0; font-size: 14px; color: #3d4c42; }
+.mm-blank-field input,.mm-blank-field textarea,.mm-blank-table input[type="text"],.mm-blank-table input[type="number"] { box-sizing: border-box; width: 100%; border: 1px solid #cad7ce; border-radius: 8px; background: white; color: #223329; padding: 9px; font: inherit; }
+.mm-blank-table-wrap { overflow-x: auto; }
+.mm-blank-table { width: 100%; border-collapse: collapse; min-width: 440px; font-size: 13px; }
+.mm-blank-table th { color: #536358; font-size: 12px; text-align: left; font-weight: 600; padding: 8px 5px; }
+.mm-blank-table td { padding: 5px; border-bottom: 1px solid #e2ebe3; }
+.mm-blank-table td:nth-child(2) { width: 110px; }
+.mm-blank-table td:nth-child(3),.mm-blank-table td:nth-child(4),.mm-blank-table td:nth-child(5) { text-align: center; }
+.mm-blank-table th:nth-child(3),.mm-blank-table th:nth-child(4) { text-align: center; }
+.mm-blank-table input[type="checkbox"] { width: 18px; height: 18px; accent-color: #355f48; }
+.mm-blank-remove { background: transparent; border: 0; color: #9a4343; font-size: 23px; cursor: pointer; }
+.mm-blank-add { background: transparent; border: 1px solid #cddccf; color: #355f48; padding: 8px 12px; border-radius: 8px; margin-top: 12px; cursor: pointer; }
+.mm-blank-totals { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: #526158; }
+.mm-blank-helper { margin: 14px 0; border-radius: 10px; background: #ecf3ed; padding: 12px; }
+.mm-blank-helper button { border: none; background: none; color: #355f48; font-weight: 600; cursor: pointer; padding: 0; }
+.mm-blank-helper p { font-size: 13px; line-height: 1.5; color: #44564a; margin: 8px 0 0; }
+.mm-blank-error { color: #a13636; font-size: 13px; }
+.mm-blank-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.mm-blank-save,.mm-blank-cancel,.mm-blank-new { border-radius: 9px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+.mm-blank-save,.mm-blank-new { background: #355f48; color: white; border: 1px solid #355f48; }
+.mm-blank-cancel { background: white; color: #355f48; border: 1px solid #cad7ce; }
+.mm-notebook-heading-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mm-notebook-personal { margin-top: 12px; }
+.mm-notebook-kind { color: #607267; font-size: 11px; display: block; margin-top: 3px; }
+@media (max-width: 650px) { .mm-blank-editor { padding: 12px; } .mm-notebook-heading-actions { align-items: stretch; } }
+
+/* MASAMASA_AUTO_FLOUR_TABLE_V1 */
+.mm-blank-table { min-width: 0; table-layout: fixed; }
+.mm-blank-table th,.mm-blank-table td { padding: 6px 2px; box-sizing: border-box; }
+.mm-blank-table th:nth-child(2),.mm-blank-table td:nth-child(2) { width: 52px; }
+.mm-blank-table th:nth-child(3),.mm-blank-table td:nth-child(3) { width: 56px; text-align: center; }
+.mm-blank-table th:nth-child(4),.mm-blank-table td:nth-child(4) { width: 24px; }
+.mm-blank-table input[type="text"],.mm-blank-table input[type="number"] { min-width: 0; padding: 8px 3px; }
+.mm-blank-table input[type="number"] { text-align: right; appearance: textfield; -moz-appearance: textfield; }
+.mm-blank-table input[type="number"]::-webkit-inner-spin-button,.mm-blank-table input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.mm-blank-table td:nth-child(3) { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 12px; }
+.mm-blank-table .mm-blank-remove { min-width: 0; width: 100%; padding: 0; }
+.mm-blank-basis { margin-top: 10px; font-size: 12px; color: #526158; overflow-wrap: anywhere; }
+.mm-blank-basis > button { border: 0; background: transparent; padding: 4px; text-decoration: underline; color: #355f48; cursor: pointer; font: inherit; }
+.mm-blank-basis-options { padding: 10px; margin-top: 6px; border: 1px solid #cad7ce; border-radius: 8px; }
+.mm-blank-basis-options p { margin: 0 0 8px; line-height: 1.4; }
+.mm-blank-basis-options label { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.mm-blank-basis-options input { flex: 0 0 auto; width: 18px; height: 18px; accent-color: #355f48; }

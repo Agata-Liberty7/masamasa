@@ -2,6 +2,7 @@ import { getRecipeImage } from "../utils/recipeImages";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./StartScreen.css";
+import NotebookRecipeEditor, { type NotebookRecipe } from "./NotebookRecipeEditor";
 
 export type ProductionMode = "home" | "professional";
 export type Climate = "dry" | "moderate" | "humid";
@@ -92,6 +93,40 @@ const StartScreen: React.FC<StartScreenProps> = ({
   onDeleteCustomRecipe,
 }) => {
   const { t, i18n } = useTranslation();
+  // MASAMASA_BLANK_RECIPE_V1: independent storage, preserving legacy saved cards.
+  const storageKey = "masamasa:notebookRecipes:v1";
+  const [notebookRecipes, setNotebookRecipes] = useState<NotebookRecipe[]>(() => {
+    try {
+      const value = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      return Array.isArray(value) ? value.filter((x): x is NotebookRecipe => x?.version === 1 && typeof x?.id === "string" && Array.isArray(x?.ingredients)) : [];
+    } catch { return []; }
+  });
+  const [editingNotebookId, setEditingNotebookId] = useState<string | null>(null);
+  const [notebookEditorOpen, setNotebookEditorOpen] = useState(false);
+  const notebookLanguage = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
+  const notebookText = {
+    ru: { create: "Записать рецепт", personal: "С чистого листа", delete: "Удалить рецепт? Это действие нельзя отменить.", storage: "Не удалось сохранить изменения в этом браузере.", edit: "Изменить", remove: "Удалить" },
+    en: { create: "Write a recipe", personal: "From scratch", delete: "Delete this recipe? This cannot be undone.", storage: "Could not save changes in this browser.", edit: "Edit", remove: "Delete" },
+    es: { create: "Anotar una receta", personal: "Desde cero", delete: "¿Eliminar esta receta? No se puede deshacer.", storage: "No se pudieron guardar los cambios en este navegador.", edit: "Editar", remove: "Eliminar" },
+  }[notebookLanguage];
+  const persistNotebook = (items: NotebookRecipe[]): boolean => {
+    try { localStorage.setItem(storageKey, JSON.stringify(items)); setNotebookRecipes(items); return true; }
+    catch { window.alert(notebookText.storage); return false; }
+  };
+  const saveNotebook = (recipe: NotebookRecipe): boolean => {
+    const updated = notebookRecipes.some(x => x.id === recipe.id)
+      ? notebookRecipes.map(x => x.id === recipe.id ? recipe : x)
+      : [recipe, ...notebookRecipes];
+    if (!persistNotebook(updated)) return false;
+    setEditingNotebookId(null);
+    setNotebookEditorOpen(false);
+    return true;
+  };
+  const removeNotebook = (id: string) => {
+    if (!window.confirm(notebookText.delete)) return;
+    persistNotebook(notebookRecipes.filter(x => x.id !== id));
+  };
+
   React.useEffect(() => {
     if (!focusMyRecipes) return;
     document.getElementById('masamasa-my-recipes')?.scrollIntoView({ behavior: 'auto', block: 'start' });
@@ -261,7 +296,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
               {t("start.title")}
             </h1>
             <p className="start-subtitle">
-              {t("start.subtitle")}
+              {i18n.language.startsWith("es") ? "Tu cuaderno personal de panadería: guarda tus recetas, adapta las cantidades y calcula tus masas." : i18n.language.startsWith("en") ? "Your personal baking notebook: save recipes, adjust quantities and calculate your dough." : "Личная записная книжка пекаря: сохраняйте рецепты, меняйте количество ингредиентов и рассчитывайте тесто."}
             </p>
             {/* MASAMASA_ABOUT_NAV_V1 */}
             <a
@@ -327,10 +362,131 @@ const StartScreen: React.FC<StartScreenProps> = ({
           </div>
         </div>
 
-        <section className="start-card" id="masamasa-production-conditions">
-          <h2 className="start-card-title">
-            {t("start.conditions")}
+        {/* MASAMASA_NOTEBOOK_HOME_V1: personal recipes first; originals remain in localStorage. */}
+        <section id="masamasa-my-recipes" className="start-card mm-notebook-home">
+          <div className="mm-notebook-heading">
+            <div>
+              <h2 className="start-card-title">
+                {i18n.language.startsWith("es") ? "Mi cuaderno de panadería" : i18n.language.startsWith("en") ? "My baking notebook" : "Моя записная книжка пекаря"}
+              </h2>
+              <p className="mm-notebook-intro">
+                {i18n.language.startsWith("es") ? "Tus recetas y tus cantidades, siempre a mano." : i18n.language.startsWith("en") ? "Your recipes and quantities, always at hand." : "Ваши рецепты и расчёты всегда под рукой."}
+              </p>
+            </div>
+            <div className="mm-notebook-heading-actions">
+              {!notebookEditorOpen && (
+              <button type="button" className="mm-blank-new" onClick={() => { setEditingNotebookId(null); setNotebookEditorOpen(true); }}>
+                {notebookText.create}
+              </button>
+              )}
+
+            </div>
+          </div>
+          {notebookEditorOpen && (
+            <NotebookRecipeEditor
+              key={editingNotebookId ?? "new"}
+              lang={notebookLanguage}
+              recipe={notebookRecipes.find(x => x.id === editingNotebookId) ?? null}
+              onSave={saveNotebook}
+              onCancel={() => { setEditingNotebookId(null); setNotebookEditorOpen(false); }}
+            />
+          )}
+          {notebookRecipes.length > 0 && (
+            <div className="start-custom-grid mm-notebook-personal">
+              {/* MASAMASA_NOTEBOOK_EDITOR_VIEW_V2: hide only the recipe currently being edited. */}
+              {notebookRecipes.filter(recipe => !notebookEditorOpen || recipe.id !== editingNotebookId).map(recipe => (
+                <div className="start-custom-card" key={recipe.id}>
+                  <button type="button" className="start-custom-main" onClick={() => { setEditingNotebookId(recipe.id); setNotebookEditorOpen(true); }}>
+                    <strong>{recipe.title}</strong>
+                    <span className="mm-notebook-kind">{notebookText.personal} · {recipe.ingredients.length} · {new Date(recipe.updatedAt).toLocaleDateString(locale)}</span>
+                  </button>
+                  <button type="button" className="start-delete" title={notebookText.remove} aria-label={notebookText.remove} onClick={() => removeNotebook(recipe.id)}>×</button>
+                </div>
+              ))}
+            </div>
+          )}
+          {customRecipes.length === 0 && notebookRecipes.length === 0 ? (
+            <div className="mm-notebook-empty">
+              <p>{i18n.language.startsWith("es") ? "Tu cuaderno todavía está vacío. Elige una receta de la biblioteca, adáptala y guárdala aquí." : i18n.language.startsWith("en") ? "Your notebook is empty. Choose a recipe from the library, adapt it and save it here." : "Ваша записная книжка пока пуста. Выберите рецепт из библиотеки, адаптируйте его и сохраните здесь."}</p>
+              <a className="mm-notebook-library" href="#masamasa-recipe-library">
+                {i18n.language.startsWith("es") ? "Explorar recetas base" : i18n.language.startsWith("en") ? "Explore base recipes" : "Посмотреть базовые рецепты"}
+              </a>
+            </div>
+          ) : (
+            <div className="start-custom-grid">
+              {customRecipes.map((recipe) => (
+                <div className="start-custom-card" key={recipe.id}>
+                  <button type="button" className="start-custom-main" onClick={() => onOpenCustomRecipe(recipe.id)}>
+                    <strong>{recipe.name}</strong>
+                    <small>{new Date(recipe.timestamp).toLocaleString(locale)}</small>
+                  </button>
+                  <button type="button" className="start-delete" title={t("start.deleteRecipe")} onClick={() => onDeleteCustomRecipe(recipe.id)}>×</button>
+                </div>
+              ))}
+            </div>
+          )}
+          {(customRecipes.length > 0 || notebookRecipes.length > 0) && (
+            <a className="mm-notebook-base-link" href="#masamasa-recipe-library">
+              {i18n.language.startsWith("es") ? "Explorar recetas base" : i18n.language.startsWith("en") ? "Explore base recipes" : "Посмотреть базовые рецепты"}
+            </a>
+          )}
+          <p className="mm-notebook-storage">
+            {i18n.language.startsWith("es") ? "Por ahora, las recetas se guardan en este navegador." : i18n.language.startsWith("en") ? "For now, recipes are saved in this browser." : "Пока рецепты сохраняются в этом браузере."}
+          </p>
+        </section>
+
+        <section className="start-search-section">
+          <h2 className="start-section-title">
+            {i18n.language.startsWith("es") ? "Buscar por nombre de producto o receta" : i18n.language.startsWith("en") ? "Search by product or recipe name" : "Поиск по названию изделия или рецепта"}
           </h2>
+
+          <input
+            className="start-search"
+            value={searchQuery}
+            onChange={(event) =>
+              setSearchQuery(event.target.value)
+            }
+              placeholder={i18n.language.startsWith("es") ? "Por ejemplo, brioche, jalá..." : i18n.language.startsWith("en") ? "For example, brioche, challah..." : "Например, бриошь, хала..."}
+          />
+
+          {searchQuery && (
+            <div className="start-profile-grid start-search-results">
+              {searchResults.length > 0 ? (
+                searchResults.map((item) => (
+                  <button
+                    type="button"
+                    className="start-profile-card"
+                    key={item.profile}
+                    onClick={() =>
+                      openProfile(item.profile)
+                    }
+                  >
+                    {getRecipeImage(item.profile) && (
+                      <img className="start-recipe-thumb" src={getRecipeImage(item.profile)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                    )}
+                    <span className="start-recipe-card-text">
+                      <strong>{item.name}</strong>
+                      <small>
+                        {getCategoryName(
+                          item.category
+                        )}
+                      </small>
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="start-empty">
+                  {t("start.noResults")}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* MASAMASA_NOTEBOOK_NAV_V3: production settings are optional on home. */}
+        <details className="start-card mm-conditions-fold" id="masamasa-production-conditions">
+          <summary>{t("start.conditions")}</summary>
+          <div className="mm-conditions-content">
 
           <div className="start-conditions-grid">
             <label className="start-field">
@@ -475,57 +631,11 @@ const StartScreen: React.FC<StartScreenProps> = ({
             </button>
           </div>
           <p style={{ fontSize: "0.84rem", opacity: 0.78, marginTop: 12 }}>{conditionsHelp}</p>
-        </section>
+          </div>
+        </details>
 
-        <section className="start-search-section">
-          <h2 className="start-section-title">
-            {t("start.searchProfiles")}
-          </h2>
+        <div id="masamasa-recipe-library" />
 
-          <input
-            className="start-search"
-            value={searchQuery}
-            onChange={(event) =>
-              setSearchQuery(event.target.value)
-            }
-            placeholder={t(
-              "start.searchPlaceholder"
-            )}
-          />
-
-          {searchQuery && (
-            <div className="start-profile-grid start-search-results">
-              {searchResults.length > 0 ? (
-                searchResults.map((item) => (
-                  <button
-                    type="button"
-                    className="start-profile-card"
-                    key={item.profile}
-                    onClick={() =>
-                      openProfile(item.profile)
-                    }
-                  >
-                    {getRecipeImage(item.profile) && (
-                      <img className="start-recipe-thumb" src={getRecipeImage(item.profile)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                    )}
-                    <span className="start-recipe-card-text">
-                      <strong>{item.name}</strong>
-                      <small>
-                        {getCategoryName(
-                          item.category
-                        )}
-                      </small>
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <div className="start-empty">
-                  {t("start.noResults")}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
 
         {!searchQuery && (
           <>
@@ -719,58 +829,6 @@ const StartScreen: React.FC<StartScreenProps> = ({
               )}
             </section>
 
-            {customRecipes.length > 0 && (
-              <section id="masamasa-my-recipes" className="start-section">
-                <h2 className="start-section-title">
-                  {t("start.myRecipes")}
-                </h2>
-
-                <div className="start-custom-grid">
-                  {customRecipes.map((recipe) => (
-                    <div
-                      className="start-custom-card"
-                      key={recipe.id}
-                    >
-                      <button
-                        type="button"
-                        className="start-custom-main"
-                        onClick={() =>
-                          onOpenCustomRecipe(
-                            recipe.id
-                          )
-                        }
-                      >
-                        <strong>
-                          {recipe.name}
-                        </strong>
-                        <small>
-                          {new Date(
-                            recipe.timestamp
-                          ).toLocaleString(
-                            locale
-                          )}
-                        </small>
-                      </button>
-
-                      <button
-                        type="button"
-                        className="start-delete"
-                        title={t(
-                          "start.deleteRecipe"
-                        )}
-                        onClick={() =>
-                          onDeleteCustomRecipe(
-                            recipe.id
-                          )
-                        }
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
           </>
         )}
       {/* MASAMASA_DISCOVERY_V1 */}

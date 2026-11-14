@@ -455,3 +455,26 @@
   outline-offset: 4px;
   border-radius: 3px;
 }
+
+/* MASAMASA_NOTEBOOK_HOME_V1 */
+.mm-notebook-home { border-color: #d8e4d9; }
+.mm-notebook-heading { display: flex; gap: 16px; align-items: center; justify-content: space-between; }
+.mm-notebook-intro { color: #607267; font-size: 14px; margin: 7px 0 0; }
+.mm-notebook-library { display: inline-block; flex-shrink: 0; border-radius: 10px; background: #355f48; color: #fff; text-decoration: none; padding: 11px 14px; font-size: 14px; font-weight: 600; }
+.mm-notebook-library:hover { background: #294e38; color: #fff; }
+.mm-notebook-empty { background: #f5f8f5; border-radius: 12px; margin-top: 18px; padding: 18px; }
+.mm-notebook-empty p { margin: 0 0 14px; color: #526158; font-size: 14px; line-height: 1.5; }
+.mm-notebook-home .start-custom-grid { margin-top: 16px; }
+.mm-notebook-storage { color: #7a887e; font-size: 12px; margin: 14px 0 0; }
+#masamasa-recipe-library { scroll-margin-top: 20px; }
+@media (max-width: 600px) { .mm-notebook-heading { align-items: flex-start; flex-direction: column; } }
+
+/* MASAMASA_NOTEBOOK_NAV_V3 */
+.mm-conditions-fold { padding: 0; overflow: hidden; }
+.mm-conditions-fold > summary { list-style: none; cursor: pointer; font-weight: 700; font-size: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; }
+.mm-conditions-fold > summary::-webkit-details-marker { display: none; }
+.mm-conditions-fold > summary::after { content: "+"; color: #355f48; font-size: 22px; line-height: 1; }
+.mm-conditions-fold[open] > summary::after { content: "−"; }
+.mm-conditions-content { padding: 0 18px 18px; }
+.mm-notebook-base-link { color: #355f48; display: inline-block; margin-top: 15px; font-size: 14px; font-weight: 600; text-underline-offset: 3px; }
+.start-search-section { margin-bottom: 18px; }
