@@ -1,8 +1,11 @@
+import WorkspaceTabs, { type WorkspaceView } from "../components/WorkspaceTabs";
+import AppearanceControls from "../components/AppearanceControls";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import "./RecipeOutput.css";
 
 type RecipeOutputProps = {
+  onWorkspaceChange?: (view:WorkspaceView)=>void;
   profileId: string;
   profile: any;
   data: any;
@@ -34,6 +37,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
   onRestart,
   onShowTechCard,
   onSaveAsCustom,
+  onWorkspaceChange,
 }) => {
   const { t, i18n } = useTranslation();
 
@@ -141,6 +145,8 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
   return (
     <div className="recipe-output-page">
       <div className="recipe-output-shell">
+        <AppearanceControls />
+        {onWorkspaceChange && <WorkspaceTabs active="library" onChange={onWorkspaceChange}/>}
         <div className="recipe-output-topbar">
           <button
             type="button"
@@ -150,43 +156,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
             {t("common.back")}
           </button>
 
-          <div className="recipe-output-language">
-            <button
-              type="button"
-              className={
-                i18n.language.startsWith("ru")
-                  ? "active"
-                  : ""
-              }
-              onClick={() => i18n.changeLanguage("ru")}
-            >
-              RU
-            </button>
 
-            <button
-              type="button"
-              className={
-                i18n.language.startsWith("en")
-                  ? "active"
-                  : ""
-              }
-              onClick={() => i18n.changeLanguage("en")}
-            >
-              EN
-            </button>
-
-            <button
-              type="button"
-              className={
-                i18n.language.startsWith("es")
-                  ? "active"
-                  : ""
-              }
-              onClick={() => i18n.changeLanguage("es")}
-            >
-              ES
-            </button>
-          </div>
         </div>
 
         <header className="recipe-output-header">

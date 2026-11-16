@@ -16,8 +16,8 @@ const NumberInput: React.FC<NumberInputProps> = ({ label, value, onChange }) => 
   }, [value, focused]);
 
   return (
-    <label style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-      <span style={{ fontSize: "14px", fontWeight: 500 }}>{label}</span>
+    <label className="mm-number-field" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <span style={{ fontSize: "16px", fontWeight: 500 }}>{label}</span>
       <input
         type="text"
         inputMode="decimal"
@@ -39,11 +39,12 @@ const NumberInput: React.FC<NumberInputProps> = ({ label, value, onChange }) => 
           if (Number.isFinite(number)) onChange(number);
         }}
         style={{
+          boxSizing: "border-box",
           width: "100%",
           padding: "8px 10px",
           borderRadius: "6px",
           border: "1px solid #ccc",
-          fontSize: "14px",
+          fontSize: "16px",
         }}
       />
     </label>

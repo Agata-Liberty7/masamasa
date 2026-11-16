@@ -17,6 +17,8 @@ export async function makeTechnologyPdf(sheet: HTMLElement, fileName: string): P
   copy.style.borderRadius = "0";
   copy.style.boxShadow = "none";
   copy.style.backgroundColor = "#fff";
+  copy.style.color = "#23332b";
+  copy.style.colorScheme = "light";
   copy.style.boxSizing = "border-box";
 
   // Match the printable card: show the finalized durations, not editable fields.

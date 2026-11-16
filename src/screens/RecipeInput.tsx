@@ -1,4 +1,8 @@
-import { getRecipeImage } from "../utils/recipeImages";
+import WorkspaceTabs, { type WorkspaceView } from "../components/WorkspaceTabs";
+import { recipeInputFlour, ingredientGrams } from "../logic/recipeInputAmounts";
+import AppearanceControls from "../components/AppearanceControls";
+import UiIcon from "../components/UiIcon";
+import RecipeThumbnail from "../components/RecipeThumbnail";
 import React from "react";
 import { useAppContext } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
@@ -17,6 +21,7 @@ import type {
 } from "../logic/fermentationModel";
 
 type RecipeInputProps = {
+  onWorkspaceChange?: (view:WorkspaceView)=>void;
   profileId: string;
   profile: any;
   initialValues: any;
@@ -55,18 +60,7 @@ const n = (value: unknown, fallback = 0) => {
 };
 
 
-const IngredientIcon = ({
-  name,
-}: {
-  name: string;
-}) => (
-  <img
-    className="ingredient-icon"
-    src={`/images/ingredients/${name}.png`}
-    alt=""
-    aria-hidden="true"
-  />
-);
+const IngredientIcon = ({ name }: { name: string }) => <UiIcon name={name} className="ingredient-icon" />;
 
 const RecipeInput: React.FC<RecipeInputProps> = ({
   profileId,
@@ -74,6 +68,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   initialValues,
   onBack,
   onCalculate,
+  onWorkspaceChange,
 }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
@@ -324,8 +319,11 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     if (!yeastManuallyEdited.current) setYeastPct(rounded);
   }, [profileId, climate, mixing, productionMode, roomTemp, warmFermentationHours, coldFermentationHours]);
 
+  const previewFlour = recipeInputFlour({mode,flour:n(flour),targetDoughWeight:n(targetDoughWeight),liquidPct:n(liquidPct),salt:n(salt),sugar:n(sugar),fat:n(fat),eggsPct:n(eggsPct),yeastPct:base.yeast?.type === "none" ? 0 : n(yeastPct),processFatPct:n(processFatPct),additives:additives.map(item=>({percent:n(item.percent)}))});
+  const amountReady=previewFlour>0 && (mode!=="dough" || n(targetDoughWeight)>0);
+  const gramText=(percent:unknown,decimal=false)=>amountReady?`${ingredientGrams(previewFlour,n(percent),decimal).toLocaleString(lang,{maximumFractionDigits:3})} ${lang==="ru"?"г":"g"}`:"—";
+
   const handleSubmit = () => {
-    const flourSafe = n(flour, 0);
     const liquidPctSafe = n(liquidPct, 0);
     const saltSafe = n(salt, 0);
     const sugarSafe = n(sugar, 0);
@@ -334,40 +332,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     const yeastPctSafe = base.yeast?.type === "none" ? 0 : n(yeastPct, 0);
     const targetDoughWeightSafe = n(targetDoughWeight, 0);
 
-    let finalFlour = flourSafe;
-
-    if (mode === "dough" && targetDoughWeightSafe > 0) {
-      const liquidPercent = liquidPctSafe;
-
-      const liquidGr = (flourSafe * liquidPercent) / 100;
-      const saltGr = (flourSafe * saltSafe) / 100;
-      const sugarGr = (flourSafe * sugarSafe) / 100;
-      const fatGr = (flourSafe * fatSafe) / 100;
-      const eggsGr = (flourSafe * eggsPctSafe) / 100;
-      const yeastGr = (flourSafe * yeastPctSafe) / 100;
-
-      const processFatGr = Math.round(
-        (flourSafe * Math.max(0, n(processFatPct, 0)) / 100) * 1000
-      ) / 1000;
-      const additivesGr = additives.reduce(
-        (sum, item) => sum + Math.round((flourSafe * Math.max(0, n(item.percent, 0)) / 100) * 1000) / 1000, 0
-      );
-      const totalNow =
-        processFatGr +
-        additivesGr +
-        flourSafe +
-        liquidGr +
-        saltGr +
-        sugarGr +
-        fatGr +
-        eggsGr +
-        yeastGr;
-
-      if (totalNow > 0) {
-        const ratio = targetDoughWeightSafe / totalNow;
-        finalFlour = Math.round(flourSafe * ratio);
-      }
-    }
+    const finalFlour = previewFlour;
 
     // Validate the allocation before calculating, without silently
     // changing the requested hydration or preferment percentage.
@@ -431,47 +396,18 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
   return (
     <div className="recipe-input-page">
       <div className="recipe-input-shell">
-        <button onClick={onBack} className="recipe-back">
+        <AppearanceControls />
+        {onWorkspaceChange && <WorkspaceTabs active="library" onChange={onWorkspaceChange}/>}
+        <div className="mm-formula-topbar">
+        <button type="button" onClick={onBack} className="recipe-back">
           {t("common.back")}
         </button>
 
-        <div className="recipe-language">
-          <button
-            type="button"
-            className={i18n.language.startsWith("ru") ? "active" : ""}
-            onClick={() => i18n.changeLanguage("ru")}
-          >
-            RU
-          </button>
 
-          <button
-            type="button"
-            className={i18n.language.startsWith("en") ? "active" : ""}
-            onClick={() => i18n.changeLanguage("en")}
-          >
-            EN
-          </button>
 
-          <button
-            type="button"
-            className={i18n.language.startsWith("es") ? "active" : ""}
-            onClick={() => i18n.changeLanguage("es")}
-          >
-            ES
-          </button>
         </div>
-
         <header className="recipe-header">
-          {getRecipeImage(profileId) && (
-            <img
-              className="recipe-photo"
-              src={getRecipeImage(profileId)}
-              alt=""
-              aria-hidden="true"
-              loading="lazy"
-              decoding="async"
-            />
-          )}
+          <RecipeThumbnail profileId={profileId} className="recipe-photo" />
           <h1 className="recipe-title">
             {t(`profiles.${profileId}`, {
               defaultValue: profile?.name ?? profileId,
@@ -483,7 +419,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         </header>
 
         <section className="recipe-card">
-          <h2 className="recipe-card-title">{t("recipeInput.calculation")}</h2>
+          <h2 className="recipe-card-title mm-heading-label"><UiIcon name="scale" />{t("recipeInput.calculation")}</h2>
 
           <div className="recipe-mode">
             <button
@@ -504,7 +440,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
           </div>
 
           {mode === "flour" ? (
-            <div className="recipe-row simple">
+            <div className="recipe-row simple mm-formula-mass-row">
               <span className="recipe-label">{t("recipeInput.flourAmount")}</span>
               <div className="recipe-percent-wrap">
                 <input
@@ -517,7 +453,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               </div>
             </div>
           ) : (
-            <div className="recipe-row simple">
+            <div className="recipe-row simple mm-formula-mass-row">
               <span className="recipe-label">{t("recipeInput.doughWeight")}</span>
               <div className="recipe-percent-wrap">
                 <input
@@ -533,7 +469,8 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         </section>
 
         <section className="recipe-card">
-          <h2 className="recipe-card-title">{t("recipeInput.composition")}</h2>
+          <h2 className="recipe-card-title mm-heading-label"><UiIcon name="utensils" />{t("recipeInput.composition")}</h2>
+          {prefermentType !== "none" && <p className="mm-formula-amount-note">{lang==="ru"?"Общий состав рецепта, включая предфермент":lang==="es"?"Composición total, incluido el prefermento":"Total recipe composition, including preferment"}</p>}
 
             <div className="recipe-row">
               <span className="recipe-label">{liquidType === "milk" ? <IngredientIcon name="milk" /> : <IngredientIcon name="water" />}{t("recipeInput.primaryLiquid")}</span>
@@ -551,7 +488,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 ))}
               </select>
 
-              <div className="recipe-percent-wrap">
+              <div className="mm-formula-dose"><div className="recipe-percent-wrap">
                 <input
                   className="recipe-number"
                   type="number"
@@ -559,7 +496,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                   onChange={(e) => setLiquidPct(e.target.value)}
                 />
                 <span className="recipe-unit">%</span>
-              </div>
+              </div><output className="mm-formula-grams">{gramText(liquidPct)}</output></div>
             </div>
 
 
@@ -579,7 +516,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               ))}
             </select>
 
-            <div className="recipe-percent-wrap">
+            <div className="mm-formula-dose"><div className="recipe-percent-wrap">
               <input
                 className="recipe-number"
                 type="number"
@@ -587,7 +524,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 onChange={(e) => setEggsPct(e.target.value)}
               />
               <span className="recipe-unit">%</span>
-            </div>
+            </div><output className="mm-formula-grams">{gramText(eggsPct)}</output></div>
           </div>
 
           <div className="recipe-row">
@@ -606,7 +543,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               ))}
             </select>
 
-            <div className="recipe-percent-wrap">
+            <div className="mm-formula-dose"><div className="recipe-percent-wrap">
               <input
                 className="recipe-number"
                 type="number"
@@ -614,14 +551,14 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 onChange={(e) => setFat(e.target.value)}
               />
               <span className="recipe-unit">%</span>
-            </div>
+            </div><output className="mm-formula-grams">{gramText(fat)}</output></div>
           </div>
 
           {profile?.base?.processFat?.ingredient && (
             <>
               <div className="recipe-row simple">
                 <span className="recipe-label">{t("processFat.spreading")}: {t(`processFat.ingredients.${profile.base.processFat.ingredient}`, {defaultValue: profile.base.processFat.ingredient})}</span>
-                <div className="recipe-percent-wrap">
+                <div className="mm-formula-dose"><div className="recipe-percent-wrap">
                   <input
                     className="recipe-number"
                     type="number" min="0" step="0.1"
@@ -629,7 +566,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                     onChange={(e) => setProcessFatPct(e.target.value)}
                   />
                   <span className="recipe-unit">%</span>
-                </div>
+                </div><output className="mm-formula-grams">{gramText(Math.max(0,n(processFatPct)),true)}</output></div>
               </div>
               <p style={{fontSize: "0.82rem", opacity: 0.75, margin: "8px 0 0"}}>{t("processFat.help")}</p>
             </>
@@ -651,7 +588,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               ))}
             </select>
 
-            <div className="recipe-percent-wrap">
+            <div className="mm-formula-dose"><div className="recipe-percent-wrap">
               <input
                 className="recipe-number"
                 type="number"
@@ -659,12 +596,12 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 onChange={(e) => setSugar(e.target.value)}
               />
               <span className="recipe-unit">%</span>
-            </div>
+            </div><output className="mm-formula-grams">{gramText(sugar)}</output></div>
           </div>
 
           <div className="recipe-row simple">
-            <span className="recipe-label"><IngredientIcon name="salt" />{t("recipeInput.salt")}</span>
-            <div className="recipe-percent-wrap">
+            <span className="recipe-label mm-ingredient-tag"><IngredientIcon name="salt" />{t("recipeInput.salt")}</span>
+            <div className="mm-formula-dose"><div className="recipe-percent-wrap">
               <input
                 className="recipe-number"
                 type="number"
@@ -672,13 +609,13 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 onChange={(e) => setSalt(e.target.value)}
               />
               <span className="recipe-unit">%</span>
-            </div>
+            </div><output className="mm-formula-grams">{gramText(salt)}</output></div>
           </div>
 
           {additives.map((item) => (
             <div className="recipe-row simple" key={item.id}>
               <span className="recipe-label">{t(`additives.${item.id}`, { defaultValue: item.id })}</span>
-              <div className="recipe-percent-wrap">
+              <div className="mm-formula-dose"><div className="recipe-percent-wrap">
                 <input
                   className="recipe-number"
                   type="number"
@@ -690,7 +627,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                   ))}
                 />
                 <span className="recipe-unit">%</span>
-              </div>
+              </div><output className="mm-formula-grams">{gramText(Math.max(0,n(item.percent)),true)}</output></div>
             </div>
           ))}
 
@@ -719,7 +656,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               ))}
             </select>
 
-            <div className="recipe-percent-wrap">
+            <div className="mm-formula-dose"><div className="recipe-percent-wrap">
               <input
                 className="recipe-number"
                 type="number"
@@ -727,7 +664,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 onChange={(e) => { yeastManuallyEdited.current = true; setYeastPct(e.target.value); }}
               />
               <span className="recipe-unit">%</span>
-            </div>
+            </div><output className="mm-formula-grams">{gramText(yeastPct,true)}</output></div>
           </div>
           <p style={{ fontSize: "0.82rem", opacity: 0.75, margin: "8px 0 0" }}>{yeastHelp}</p>
           {yeastConditionsChanged && <div role="status" style={{ marginTop: 9, fontSize: "0.85rem" }}>
@@ -746,11 +683,11 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         </section>
 
         <section className="recipe-card">
-          <h2 className="recipe-card-title">{t("recipeInput.flourSection")}</h2>
+          <h2 className="recipe-card-title mm-heading-label"><UiIcon name="wheat" />{t("recipeInput.flourSection")}</h2>
 
           <div className="recipe-row simple">
             <span className="recipe-label"><IngredientIcon name="flour" />{t("recipeInput.mainFlour")}</span>
-            <select
+            <div className="mm-flourtype-value"><select
               className="recipe-select recipe-flour-select"
               value={mainFlour}
               onChange={(e) =>
@@ -762,7 +699,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                   {t(`ingredients.flour.${type}`)}
                 </option>
               ))}
-            </select>
+            </select><output className="mm-formula-grams">{gramText(Math.max(0,100-Math.max(0,n(extraPct1))-Math.max(0,n(extraPct2))))}</output></div>
           </div>
 
           {n(extraPct1, 0) > 0 && (
@@ -782,7 +719,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 ))}
               </select>
 
-              <div className="recipe-percent-wrap">
+              <div className="mm-formula-dose"><div className="recipe-percent-wrap">
                 <input
                   className="recipe-number"
                   type="number"
@@ -790,7 +727,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                   onChange={(e) => setExtraPct1(e.target.value)}
                 />
                 <span className="recipe-unit">%</span>
-              </div>
+              </div><output className="mm-formula-grams">{gramText(Math.max(0,n(extraPct1)))}</output></div>
             </div>
           )}
 
@@ -811,7 +748,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                 ))}
               </select>
 
-              <div className="recipe-percent-wrap">
+              <div className="mm-formula-dose"><div className="recipe-percent-wrap">
                 <input
                   className="recipe-number"
                   type="number"
@@ -819,7 +756,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
                   onChange={(e) => setExtraPct2(e.target.value)}
                 />
                 <span className="recipe-unit">%</span>
-              </div>
+              </div><output className="mm-formula-grams">{gramText(Math.max(0,n(extraPct2)))}</output></div>
             </div>
           )}
 
@@ -829,7 +766,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               className="recipe-add"
               onClick={() => setExtraPct1(10)}
             >
-              + {t("recipeInput.addFlour")}
+              <UiIcon name="plus" />{t("recipeInput.addFlour")}
             </button>
           )}
 
@@ -839,13 +776,13 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
               className="recipe-add"
               onClick={() => setExtraPct2(10)}
             >
-              + {t("recipeInput.addAnotherFlour")}
+              <UiIcon name="plus" />{t("recipeInput.addAnotherFlour")}
             </button>
           )}
         </section>
 
         <section className="recipe-card">
-          <h2 className="recipe-card-title">{t("recipeInput.preferment")}</h2>
+          <h2 className="recipe-card-title mm-heading-label"><UiIcon name="package" />{t("recipeInput.preferment")}</h2>
 
           <select
             className="recipe-select"
@@ -887,7 +824,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
 
         {/* MASAMASA_CONDITIONS_PRECALC_V2: optional checkpoint immediately before calculation. */}
         <section className="recipe-card" aria-label={conditionLabels.review}>
-          <h2 className="recipe-card-title" style={{ marginBottom: 8 }}>{conditionLabels.review}</h2>
+          <h2 className="recipe-card-title mm-heading-label" style={{ marginBottom: 8 }}><UiIcon name="thermometer" />{conditionLabels.review}</h2>
           {/* MASAMASA_CONDITIONS_SUMMARY_V3: units appear only after numeric values. */}
           <div style={{ display: "grid", gap: 5, margin: "0 0 12px", fontSize: "0.9rem", opacity: 0.88 }}>
             <div><strong>{conditionSummary[lang].temp}:</strong> {roomTemp} °C</div>
@@ -911,13 +848,13 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         </section>
 
 
-        <button
+        <div className="mm-formula-footer"><button
           type="button"
           className="recipe-submit"
           onClick={handleSubmit}
         >
           {t("common.calculate")}
-        </button>
+        </button></div>
       </div>
     </div>
   );

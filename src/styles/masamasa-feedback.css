@@ -1,0 +1,26 @@
+/* MASAMASA_FEEDBACK_V1: live gram values, focused home, cross-platform suggestions. */
+.mm-formula-dose,.mm-flourtype-value { min-width:0; }
+.mm-formula-grams { display:block; padding:4px 2px 0; color:var(--mm-text); font:600 13px/1.4 var(--mm-body); text-align:right; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.mm-formula-amount-note { margin:-6px 0 14px; color:var(--mm-muted); font-size:13px; }
+.mm-formula-dose .recipe-percent-wrap { width:100%; }
+.recipe-row:has(> .mm-formula-dose),.recipe-row:has(> .mm-flourtype-value) { align-items:start; }
+.mm-library-view[hidden],.mm-notebook-home[hidden] { display:none !important; }
+.mm-library-entry { min-height:44px; padding:8px 0; border:0; background:transparent; color:var(--mm-brand); font:600 14px/1.4 var(--mm-body); text-decoration:underline; text-underline-offset:4px; cursor:pointer; }
+.mm-library-header { margin:0 0 20px; }
+.mm-library-header h2 { margin:8px 0 0; color:var(--mm-text); font:600 24px/1.3 var(--mm-heading); }
+.mm-library-header h2:focus { outline:none; }
+.mm-ingredient-combobox { position:relative; }
+.mm-ingredient-combobox:focus-within { z-index:25; }
+.mm-ingredient-options { position:absolute; z-index:35; top:calc(100% + 4px); left:0; width:max(100%,260px); max-width:calc(100vw - 64px); overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:4px; border:1px solid var(--mm-border); border-radius:12px; background:var(--mm-surface); }
+.mm-ingredient-options-above { top:auto; bottom:calc(100% + 4px); }
+.mm-blank-table .mm-ingredient-options button { display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:10px 8px; border:0; border-radius:8px; background:transparent; color:var(--mm-text); text-align:left; font:400 14px/1.4 var(--mm-body); cursor:pointer; touch-action:manipulation; }
+.mm-ingredient-options button svg { width:20px; height:20px; flex:0 0 20px; color:var(--mm-brand); }
+.mm-ingredient-options button span { min-width:0; overflow-wrap:anywhere; }
+.mm-blank-table .mm-ingredient-options button[aria-selected="true"],.mm-blank-table .mm-ingredient-options button:hover { background:var(--mm-soft); }
+@media(min-width:641px) {
+ .recipe-row { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) 128px; }
+ .recipe-row.simple { grid-template-columns:minmax(0,1fr) 128px; }
+ .recipe-row.simple.mm-formula-mass-row { grid-template-columns:minmax(0,1fr) minmax(160px,210px); }
+ .recipe-input-page input[type="number"] { appearance:textfield; -moz-appearance:textfield; }
+ .recipe-input-page input[type="number"]::-webkit-inner-spin-button,.recipe-input-page input[type="number"]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+}

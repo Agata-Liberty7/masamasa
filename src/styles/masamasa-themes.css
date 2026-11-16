@@ -1,0 +1,66 @@
+/* MASAMASA_THEME_V1 — photos are displayed unchanged; only semantic colors switch. */
+:root[data-mm-theme="dark"] {
+  color-scheme:dark;
+  --mm-bg:#1C1A17; --mm-surface:#26231F; --mm-soft:#302F28;
+  --mm-border:#51493E; --mm-text:#F1EBDD; --mm-muted:#C3B9AA;
+  --mm-brand:#7FB59A; --mm-brand-hover:#9BCDB2; --mm-on-brand:#17271E;
+  --mm-danger:#F0A29A;
+}
+/* System fallback while JavaScript starts, or if it is unavailable. */
+@media screen and (prefers-color-scheme:dark) {
+  :root:not([data-mm-theme]) {
+    color-scheme:dark;
+    --mm-bg:#1C1A17; --mm-surface:#26231F; --mm-soft:#302F28;
+    --mm-border:#51493E; --mm-text:#F1EBDD; --mm-muted:#C3B9AA;
+    --mm-brand:#7FB59A; --mm-brand-hover:#9BCDB2; --mm-on-brand:#17271E;
+    --mm-danger:#F0A29A;
+  }
+}
+.mm-theme-switch {
+  display:inline-flex; width:fit-content; max-width:100%; flex-shrink:0; gap:2px; padding:3px;
+  background:var(--mm-soft); border:1px solid var(--mm-border); border-radius:14px;
+  font-family:var(--mm-body); box-sizing:border-box;
+}
+.mm-theme-switch button {
+  appearance:none; flex:1 1 auto; min-width:44px; min-height:44px; border:0; border-radius:10px;
+  padding:8px 10px; margin:0; font:600 13px/1.4 var(--mm-body);
+  color:var(--mm-text); background:transparent; cursor:pointer; white-space:nowrap;
+}
+.mm-theme-switch button[aria-pressed="true"] { color:var(--mm-on-brand); background:var(--mm-brand); }
+.mm-theme-switch button:hover:not([aria-pressed="true"]) { background:var(--mm-surface); }
+.mm-theme-switch button:focus-visible { outline:2px solid var(--mm-brand); outline-offset:2px; }
+.mm-header-controls { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:10px; min-width:0; }
+.start-topbar > .mm-header-controls { grid-column:2; grid-row:1; }
+.mm-header-controls > .start-language { position:static; }
+.mm-formula-topbar,.recipe-output-topbar { align-items:flex-start; gap:12px; }
+.mm-formula-topbar > .mm-header-controls,.recipe-output-topbar > .mm-header-controls { flex-direction:column; align-items:flex-end; }
+.recipe-output-back { color:var(--mm-brand); font:600 14px/1.4 var(--mm-body); }
+.start-empty { color:var(--mm-muted); border-color:var(--mm-border); }
+.start-search:focus { border-color:var(--mm-brand); box-shadow:none; }
+:is(.start-field,.recipe-card,.mm-blank-editor) :is(input,select,textarea):focus { border-color:var(--mm-brand); }
+/* Existing saved-card details use the same palette and typography. */
+.mm-custom-recipe { color:var(--mm-text); background:var(--mm-bg); font:400 16px/1.45 var(--mm-body); box-sizing:border-box; }
+.mm-custom-recipe > .mm-theme-switch { display:flex; margin:0 0 20px auto; }
+.mm-custom-recipe :is(h1,h2,h3) { color:var(--mm-text); font-family:var(--mm-heading); }
+.mm-custom-recipe h1 { font-size:28px; }
+.mm-custom-recipe h2 { font-size:22px; }
+.mm-custom-recipe table { font-variant-numeric:tabular-nums; }
+.mm-custom-recipe td { border-bottom:1px solid var(--mm-border); overflow-wrap:anywhere; }
+.mm-custom-recipe button:not(.mm-theme-switch button) { min-height:48px; border:1px solid var(--mm-border); border-radius:14px; padding:12px 16px; color:var(--mm-brand); background:var(--mm-surface); font:600 14px/1.4 var(--mm-body); cursor:pointer; }
+.mm-custom-recipe :is(button,a):focus-visible { outline:2px solid var(--mm-brand); outline-offset:2px; }
+/* A technical card is a white document; its export styles are not themed. */
+.tech-card-page { color-scheme:light; }
+@media (max-width:640px) {
+  .start-topbar > .mm-header-controls { display:contents; }
+  .start-topbar .mm-header-controls > .start-language { grid-column:2; grid-row:1; position:static; }
+  .start-topbar .mm-header-controls > .mm-theme-switch { grid-column:1/-1; grid-row:2; justify-self:end; }
+}
+@media print {
+  :root,:root[data-mm-theme="dark"] {
+    color-scheme:light;
+    --mm-bg:#F6F1E7; --mm-surface:#FFFDF8; --mm-soft:#EEF1EA;
+    --mm-border:#E3DACB; --mm-text:#2B2622; --mm-muted:#6B635A;
+    --mm-brand:#355F49; --mm-brand-hover:#2B4E3B; --mm-on-brand:#FFFFFF; --mm-danger:#9B3D3A;
+  }
+  .mm-theme-switch { display:none !important; }
+}

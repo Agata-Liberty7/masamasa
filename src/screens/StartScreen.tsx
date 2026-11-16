@@ -1,4 +1,8 @@
-import { getRecipeImage } from "../utils/recipeImages";
+import WorkspaceTabs, { type WorkspaceView } from "../components/WorkspaceTabs";
+import { readNotebookDraft } from "../logic/notebookDraft";
+import AppearanceControls from "../components/AppearanceControls";
+import UiIcon from "../components/UiIcon";
+import RecipeThumbnail from "../components/RecipeThumbnail";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./StartScreen.css";
@@ -9,6 +13,9 @@ export type Climate = "dry" | "moderate" | "humid";
 export type MixingMethod = "manual" | "planetary" | "spiral";
 
 type StartScreenProps = {
+  initialWorkspaceView?: WorkspaceView;
+  startEditorRequested?: boolean;
+  onWorkspaceChange?: (view:WorkspaceView)=>void;
   climate: Climate;
   mixing: MixingMethod;
   productionMode: ProductionMode;
@@ -46,6 +53,8 @@ const DOUGH_GROUP_ORDER = [
   "sponge",
   "cake_batter",
 ] as const;
+
+const doughIcons: Record<string,string> = {bread:"wheat",yeast_lean:"package",enriched:"croissant",laminated:"layers",shortcrust:"cookie",choux:"cooking-pot",unleavened:"chef-hat",sponge:"cake-slice",cake_batter:"cake"};
 
 const PROFILE_DOUGH_GROUP: Record<string, string> = {
   "bread": "bread",
@@ -91,6 +100,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
   onMyRecipesFocused,
   onOpenCustomRecipe,
   onDeleteCustomRecipe,
+  initialWorkspaceView="notebook",
+  startEditorRequested=false,
+  onWorkspaceChange,
 }) => {
   const { t, i18n } = useTranslation();
   // MASAMASA_BLANK_RECIPE_V1: independent storage, preserving legacy saved cards.
@@ -101,8 +113,16 @@ const StartScreen: React.FC<StartScreenProps> = ({
       return Array.isArray(value) ? value.filter((x): x is NotebookRecipe => x?.version === 1 && typeof x?.id === "string" && Array.isArray(x?.ingredients)) : [];
     } catch { return []; }
   });
-  const [editingNotebookId, setEditingNotebookId] = useState<string | null>(null);
-  const [notebookEditorOpen, setNotebookEditorOpen] = useState(false);
+  const [rememberedDraft] = useState(()=>{const draft=readNotebookDraft();return draft && (draft.recipeId===null || notebookRecipes.some(x=>x.id===draft.recipeId)) && (draft.title.trim()||draft.notes.trim()||draft.ingredients.some(x=>x.name.trim()||x.grams>0)) ? draft : null;});
+  const [editingNotebookId, setEditingNotebookId] = useState<string | null>(rememberedDraft?.recipeId ?? null);
+  const [notebookEditorOpen, setNotebookEditorOpen] = useState(Boolean(rememberedDraft)||startEditorRequested);
+  const [libraryOpen,setLibraryOpen]=useState(initialWorkspaceView==="library");
+  const selectWorkspace=(view:WorkspaceView)=>{
+    setLibraryOpen(view==="library");
+    if(view==="notebook"&&!notebookEditorOpen){setEditingNotebookId(null);setNotebookEditorOpen(true);}
+    onWorkspaceChange?.(view);
+    requestAnimationFrame(()=>document.querySelector(view==="library"?"#masamasa-library-title":"#masamasa-my-recipes")?.scrollIntoView({block:"start",behavior:"auto"}));
+  };
   const notebookLanguage = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
   const notebookText = {
     ru: { create: "Записать рецепт", personal: "С чистого листа", delete: "Удалить рецепт? Это действие нельзя отменить.", storage: "Не удалось сохранить изменения в этом браузере.", edit: "Изменить", remove: "Удалить" },
@@ -129,9 +149,12 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
   React.useEffect(() => {
     if (!focusMyRecipes) return;
+    setLibraryOpen(false);
     document.getElementById('masamasa-my-recipes')?.scrollIntoView({ behavior: 'auto', block: 'start' });
     onMyRecipesFocused?.();
   }, [focusMyRecipes, onMyRecipesFocused]);
+  React.useEffect(()=>{if(libraryOpen)document.getElementById("masamasa-library-title")?.focus();},[libraryOpen]);
+  const libraryText={ru:{title:"Базовые рецепты",open:"Подсмотреть базовый рецепт",back:"К моей записной книжке",empty:"Запишите свой рецепт: введите ингредиенты и количества, чтобы рассчитать пропорции или другую массу теста."},en:{title:"Base recipes",open:"Look up a base recipe",back:"Back to my notebook",empty:"Write your recipe: enter ingredients and amounts to calculate percentages or scale your dough."},es:{title:"Recetas base",open:"Consultar una receta base",back:"Volver a mi cuaderno",empty:"Anota tu receta: introduce los ingredientes y las cantidades para calcular porcentajes o ajustar la cantidad de masa."}}[notebookLanguage];
   const conditionsHelp = i18n.language.startsWith("es")
     ? "La temperatura, el tiempo de fermentación y el modo de producción ajustan la cantidad inicial de levadura. El clima y el amasado también pueden ajustar la receta. Son estimaciones: comprueba siempre la fermentación real."
     : i18n.language.startsWith("en")
@@ -290,6 +313,8 @@ const StartScreen: React.FC<StartScreenProps> = ({
   return (
     <div className="start-page">
       <div className="start-shell">
+        <AppearanceControls />
+        <WorkspaceTabs active={libraryOpen?"library":"notebook"} onChange={selectWorkspace}/>
         <div className="start-topbar">
           <div>
             <h1 className="start-title">
@@ -317,56 +342,14 @@ const StartScreen: React.FC<StartScreenProps> = ({
             </a>
           </div>
 
-          <div className="start-language">
-            <button
-              type="button"
-              className={
-                i18n.language.startsWith("ru")
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                i18n.changeLanguage("ru")
-              }
-            >
-              RU
-            </button>
 
-            <button
-              type="button"
-              className={
-                i18n.language.startsWith("en")
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                i18n.changeLanguage("en")
-              }
-            >
-              EN
-            </button>
-
-            <button
-              type="button"
-              className={
-                i18n.language.startsWith("es")
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                i18n.changeLanguage("es")
-              }
-            >
-              ES
-            </button>
-          </div>
         </div>
 
         {/* MASAMASA_NOTEBOOK_HOME_V1: personal recipes first; originals remain in localStorage. */}
-        <section id="masamasa-my-recipes" className="start-card mm-notebook-home">
+        <section id="masamasa-my-recipes" className="start-card mm-notebook-home" hidden={libraryOpen}>
           <div className="mm-notebook-heading">
             <div>
-              <h2 className="start-card-title">
+              <h2 className="start-card-title mm-heading-label"><UiIcon name="notebook-pen" />
                 {i18n.language.startsWith("es") ? "Mi cuaderno de panadería" : i18n.language.startsWith("en") ? "My baking notebook" : "Моя записная книжка пекаря"}
               </h2>
               <p className="mm-notebook-intro">
@@ -400,41 +383,36 @@ const StartScreen: React.FC<StartScreenProps> = ({
                     <strong>{recipe.title}</strong>
                     <span className="mm-notebook-kind">{notebookText.personal} · {recipe.ingredients.length} · {new Date(recipe.updatedAt).toLocaleDateString(locale)}</span>
                   </button>
-                  <button type="button" className="start-delete" title={notebookText.remove} aria-label={notebookText.remove} onClick={() => removeNotebook(recipe.id)}>×</button>
+                  <button type="button" className="start-delete" title={notebookText.remove} aria-label={notebookText.remove} onClick={() => removeNotebook(recipe.id)}><UiIcon name="x" /></button>
                 </div>
               ))}
             </div>
           )}
           {customRecipes.length === 0 && notebookRecipes.length === 0 ? (
-            <div className="mm-notebook-empty">
-              <p>{i18n.language.startsWith("es") ? "Tu cuaderno todavía está vacío. Elige una receta de la biblioteca, adáptala y guárdala aquí." : i18n.language.startsWith("en") ? "Your notebook is empty. Choose a recipe from the library, adapt it and save it here." : "Ваша записная книжка пока пуста. Выберите рецепт из библиотеки, адаптируйте его и сохраните здесь."}</p>
-              <a className="mm-notebook-library" href="#masamasa-recipe-library">
-                {i18n.language.startsWith("es") ? "Explorar recetas base" : i18n.language.startsWith("en") ? "Explore base recipes" : "Посмотреть базовые рецепты"}
-              </a>
-            </div>
+            <div className="mm-notebook-empty"><p>{libraryText.empty}</p></div>
           ) : (
             <div className="start-custom-grid">
               {customRecipes.map((recipe) => (
                 <div className="start-custom-card" key={recipe.id}>
                   <button type="button" className="start-custom-main" onClick={() => onOpenCustomRecipe(recipe.id)}>
                     <strong>{recipe.name}</strong>
-                    <small>{new Date(recipe.timestamp).toLocaleString(locale)}</small>
+                    <small>{new Date(recipe.timestamp).toLocaleString(locale, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"})}</small>
                   </button>
-                  <button type="button" className="start-delete" title={t("start.deleteRecipe")} onClick={() => onDeleteCustomRecipe(recipe.id)}>×</button>
+                  <button type="button" className="start-delete" title={t("start.deleteRecipe")} aria-label={t("start.deleteRecipe")} onClick={() => onDeleteCustomRecipe(recipe.id)}><UiIcon name="x" /></button>
                 </div>
               ))}
             </div>
           )}
-          {(customRecipes.length > 0 || notebookRecipes.length > 0) && (
-            <a className="mm-notebook-base-link" href="#masamasa-recipe-library">
-              {i18n.language.startsWith("es") ? "Explorar recetas base" : i18n.language.startsWith("en") ? "Explore base recipes" : "Посмотреть базовые рецепты"}
-            </a>
-          )}
-          <p className="mm-notebook-storage">
+          <p className="mm-notebook-storage"><UiIcon name="info" />
             {i18n.language.startsWith("es") ? "Por ahora, las recetas se guardan en este navegador." : i18n.language.startsWith("en") ? "For now, recipes are saved in this browser." : "Пока рецепты сохраняются в этом браузере."}
           </p>
         </section>
 
+        <div className="mm-library-view" hidden={!libraryOpen}>
+          <header className="mm-library-header">
+
+            <h2 id="masamasa-library-title" tabIndex={-1}>{libraryText.title}</h2>
+          </header>
         <section className="start-search-section">
           <h2 className="start-section-title">
             {i18n.language.startsWith("es") ? "Buscar por nombre de producto o receta" : i18n.language.startsWith("en") ? "Search by product or recipe name" : "Поиск по названию изделия или рецепта"}
@@ -461,9 +439,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                       openProfile(item.profile)
                     }
                   >
-                    {getRecipeImage(item.profile) && (
-                      <img className="start-recipe-thumb" src={getRecipeImage(item.profile)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                    )}
+                    <RecipeThumbnail profileId={item.profile} />
                     <span className="start-recipe-card-text">
                       <strong>{item.name}</strong>
                       <small>
@@ -485,7 +461,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
         {/* MASAMASA_NOTEBOOK_NAV_V3: production settings are optional on home. */}
         <details className="start-card mm-conditions-fold" id="masamasa-production-conditions">
-          <summary>{t("start.conditions")}</summary>
+          <summary><span className="mm-heading-label"><UiIcon name="thermometer" />{t("start.conditions")}</span><UiIcon name="chevron-down" className="mm-disclosure-icon" /></summary>
           <div className="mm-conditions-content">
 
           <div className="start-conditions-grid">
@@ -642,7 +618,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
             {recent.length > 0 && (
               <section className="start-section">
                 <h2 className="start-section-title">
-                  {t("start.recentProfiles")}
+                  <span className="mm-heading-label"><UiIcon name="clock" />{t("start.recentProfiles")}</span>
                 </h2>
 
                 <div className="start-profile-grid">
@@ -655,9 +631,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                         openProfile(id)
                       }
                     >
-                      {getRecipeImage(id) && (
-                        <img className="start-recipe-thumb" src={getRecipeImage(id)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                      )}
+                      <RecipeThumbnail profileId={id} />
                       <strong>
                         {getProfileNameById(id)}
                       </strong>
@@ -670,7 +644,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
             {favorites.length > 0 && (
               <section className="start-section">
                 <h2 className="start-section-title">
-                  {t("start.favorites")}
+                  <span className="mm-heading-label"><UiIcon name="star" />{t("start.favorites")}</span>
                 </h2>
 
                 <div className="start-profile-grid">
@@ -686,9 +660,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                           openProfile(id)
                         }
                       >
-                        {getRecipeImage(id) && (
-                          <img className="start-recipe-thumb" src={getRecipeImage(id)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                        )}
+                        <RecipeThumbnail profileId={id} />
                         <strong>
                           {getProfileNameById(id)}
                         </strong>
@@ -697,6 +669,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                       <button
                         type="button"
                         className="start-star active"
+                        aria-label={t("start.removeFavorite")} aria-pressed={true}
                         title={t(
                           "start.removeFavorite"
                         )}
@@ -704,7 +677,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                           toggleFavorite(id)
                         }
                       >
-                        ★
+                        <UiIcon name="star" filled />
                       </button>
                     </div>
                   ))}
@@ -756,9 +729,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
                         )
                       }
                     >
-                      <strong>{getCategoryName(category)}</strong>
+                      <span className="mm-category-label"><UiIcon name={doughIcons[category] ?? "utensils"} /><strong>{getCategoryName(category)}</strong></span>
                       <small className="start-category-status">
-                        {Object.keys(indexData.categories[category].subtypes).length || t("start.comingSoon")}
+                        {Object.keys(indexData.categories[category].subtypes).length || (notebookLanguage === "ru" ? "Скоро" : notebookLanguage === "es" ? "Próximamente" : "Coming soon")}
                       </small>
                     </button>
                   ))}
@@ -781,9 +754,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                           openProfile(item.profile)
                         }
                       >
-                        {getRecipeImage(item.profile) && (
-                          <img className="start-recipe-thumb" src={getRecipeImage(item.profile)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                        )}
+                        <RecipeThumbnail profileId={item.profile} />
                         <strong>
                           {getProfileNameById(
                             item.profile
@@ -800,6 +771,8 @@ const StartScreen: React.FC<StartScreenProps> = ({
                             ? "active"
                             : ""
                         }`}
+                        aria-label={favorites.includes(item.profile) ? t("start.removeFavorite") : t("start.addFavorite")}
+                        aria-pressed={favorites.includes(item.profile)}
                         title={
                           favorites.includes(
                             item.profile
@@ -817,11 +790,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                           )
                         }
                       >
-                        {favorites.includes(
-                          item.profile
-                        )
-                          ? "★"
-                          : "☆"}
+                        <UiIcon name="star" filled={favorites.includes(item.profile)} />
                       </button>
                     </div>
                   ))}
@@ -831,6 +800,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
           </>
         )}
+        </div>
       {/* MASAMASA_DISCOVERY_V1 */}
       <footer className="start-info-footer" aria-label="About MasaMasa">
         <span>MasaMasa:</span>

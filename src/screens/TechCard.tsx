@@ -1,3 +1,5 @@
+import WorkspaceTabs, { type WorkspaceView } from "../components/WorkspaceTabs";
+import AppearanceControls from "../components/AppearanceControls";
 import React from "react";
 import { makeTechnologyPdf } from "../utils/technologyPdf";
 import { technologyProtocolFor } from "../logic/technologyProtocols";
@@ -16,6 +18,7 @@ type Conditions = {
 };
 
 type Props = {
+  onWorkspaceChange?: (view:WorkspaceView)=>void;
   profile: any;
   recipe: any;
   conditions: Conditions;
@@ -305,7 +308,7 @@ const pdfExportText = {
   es: { create: "Crear PDF", busy: "Generando PDF…", ready: "PDF listo", download: "Descargar PDF", share: "Compartir", failed: "No se pudo generar el PDF. Inténtalo de nuevo." },
 } as const;
 
-const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initialDurationEdits, onSave, savedCard, savedTitle, saveNotice, onStageEdit }) => {
+const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initialDurationEdits, onSave, savedCard, savedTitle, saveNotice, onStageEdit, onWorkspaceChange }) => {
   const { t, i18n } = useTranslation();
   const lang: Locale = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
   const m = messages[lang];
@@ -460,6 +463,8 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
 
   return (
     <main className="tech-card-page">
+      <div className="mm-tech-card-settings"><AppearanceControls /></div>
+      {onWorkspaceChange && <WorkspaceTabs active={savedCard?"notebook":"library"} onChange={onWorkspaceChange}/>}
       <div className="tech-card-actions">{/* MASAMASA_PDF_TOOLBAR_LAYOUT_V1 */}
         <div className="tech-card-actions-main">
           <button type="button" onClick={onBack}>{m.back}</button>

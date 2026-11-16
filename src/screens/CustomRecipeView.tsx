@@ -1,7 +1,10 @@
+import WorkspaceTabs, { type WorkspaceView } from "../components/WorkspaceTabs";
+import AppearanceControls from "../components/AppearanceControls";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 type Props = {
+  onWorkspaceChange?: (view:WorkspaceView)=>void;
   name: string;
   recipe: any;
   profile: any;
@@ -41,6 +44,7 @@ const CustomRecipeView: React.FC<Props> = ({
   conditions,
   onBack,
   onOpenTechCard,
+  onWorkspaceChange,
 }) => {
   const { i18n } = useTranslation();
   const techCardLabel = i18n.language.startsWith("es")
@@ -48,7 +52,9 @@ const CustomRecipeView: React.FC<Props> = ({
     : i18n.language.startsWith("en") ? "Open process card" : "Открыть техкарту";
   if (!recipe) {
     return (
-      <div style={{ padding: 24 }}>
+      <div className="mm-custom-recipe" style={{ padding: 24 }}>
+        <AppearanceControls />
+        {onWorkspaceChange && <WorkspaceTabs active="notebook" onChange={onWorkspaceChange}/>}
         <h1>{name}</h1>
         <p>Ошибка: рецепт повреждён или пуст.</p>
         <button onClick={onBack}>← Назад</button>
@@ -71,7 +77,9 @@ const CustomRecipeView: React.FC<Props> = ({
       : null;
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
+    <div className="mm-custom-recipe" style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
+      <AppearanceControls />
+        {onWorkspaceChange && <WorkspaceTabs active="notebook" onChange={onWorkspaceChange}/>}
       <h1 style={{ marginBottom: "24px" }}>{name}</h1>
 
       <Section title="Условия производства">

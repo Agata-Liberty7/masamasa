@@ -1,0 +1,12 @@
+/* MASAMASA_WORKSPACE_V1: persistent access to the recipe while browsing the library. */
+.mm-workspace-tabs { position:sticky; top:0; z-index:10; width:100%; max-width:100%; margin:0 0 18px; padding:8px 0; background:var(--mm-bg); font-family:var(--mm-body); box-sizing:border-box; }
+.mm-workspace-tab-buttons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:4px; border:1px solid var(--mm-border); border-radius:15px; background:var(--mm-soft); }
+.mm-workspace-tab-buttons button { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-width:0; min-height:44px; margin:0; padding:10px 8px; border:0; border-radius:11px; background:transparent; color:var(--mm-text); font:600 14px/1.4 var(--mm-body); cursor:pointer; touch-action:manipulation; }
+.mm-workspace-tab-buttons button > svg { width:18px; height:18px; flex:0 0 18px; }
+.mm-workspace-tab-buttons button[aria-current="page"] { background:var(--mm-brand); color:var(--mm-on-brand); }
+.mm-workspace-tab-buttons button:hover:not([aria-current="page"]) { background:var(--mm-surface); }
+.mm-workspace-tab-buttons button:focus-visible { outline:2px solid var(--mm-brand); outline-offset:2px; }
+.tech-card-page > .mm-workspace-tabs { max-width:850px; margin-left:auto; margin-right:auto; }
+.mm-workspace-tab-buttons span { min-width:0; overflow-wrap:anywhere; }
+@media print { .mm-workspace-tabs { display:none !important; } }
+#masamasa-library-title,#masamasa-my-recipes { scroll-margin-top:82px; }

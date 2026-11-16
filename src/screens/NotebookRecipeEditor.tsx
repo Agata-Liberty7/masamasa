@@ -1,5 +1,8 @@
+import UiIcon from "../components/UiIcon";
+import IngredientNameInput from "../components/IngredientNameInput";
+import { readNotebookDraft, writeNotebookDraft, clearNotebookDraft } from "../logic/notebookDraft";
 // MASAMASA_INGREDIENT_SUGGESTIONS_V1
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./NotebookRecipeEditor.css";
 import { notebookIngredients } from "../logic/notebookIngredients";
 
@@ -29,7 +32,7 @@ const translations = {
     required: "Введите название рецепта и хотя бы один ингредиент с положительным количеством.",
     duplicate: "У ингредиентов с положительным количеством должны быть заполнены названия.",
     helper: "Технологический помощник", flourInfo: "Сумма ингредиентов основы принята за 100%. Состав основы можно изменить под таблицей.",
-    totalFlour: "Основа расчёта", total: "Всего ингредиентов", noFlour: "Основа не выбрана: проценты не рассчитываются.",
+    totalFlour: "Мучная основа", total: "Масса теста", noFlour: "Основа не выбрана: проценты не рассчитываются.",
     noStandards: "Это арифметические пекарские проценты, не оценка правильности рецептуры. Рекомендации по технологии добавим отдельно.",
     remove: "Удалить ингредиент", error: "Не удалось сохранить рецепт в браузере. Данные не изменены.",
   },
@@ -40,7 +43,7 @@ const translations = {
     required: "Enter a recipe name and at least one ingredient with a positive amount.",
     duplicate: "Every ingredient with a positive amount must have a name.",
     helper: "Technology helper", flourInfo: "Percentages are based on the combined flour weight selected under Percentage basis. Without flour, percentages are not calculated.",
-    totalFlour: "Calculation basis", total: "Total ingredients", noFlour: "No basis selected: percentages are not calculated.",
+    totalFlour: "Flour basis", total: "Dough weight", noFlour: "No basis selected: percentages are not calculated.",
     noStandards: "These are mathematical baker's percentages, not a judgment of your recipe. Technology suggestions will be added separately.",
     remove: "Remove ingredient", error: "Could not save this recipe in your browser. No data was changed.",
   },
@@ -51,7 +54,7 @@ const translations = {
     required: "Introduce el nombre y al menos un ingrediente con una cantidad positiva.",
     duplicate: "Cada ingrediente con cantidad positiva necesita un nombre.",
     helper: "Asistente tecnológico", flourInfo: "Los porcentajes se calculan sobre el peso de la harina seleccionada en Base de los porcentajes. Sin harina, no se calculan.",
-    totalFlour: "Base de cálculo", total: "Ingredientes totales", noFlour: "Sin base seleccionada: no se calculan porcentajes.",
+    totalFlour: "Base de harina", total: "Peso de la masa", noFlour: "Sin base seleccionada: no se calculan porcentajes.",
     noStandards: "Son porcentajes matemáticos, no una evaluación de tu receta. Las sugerencias tecnológicas se añadirán después.",
     remove: "Eliminar ingrediente", error: "No se ha podido guardar la receta en este navegador. No se han modificado los datos.",
   },
@@ -76,12 +79,13 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
   onCancel: () => void;
 }) {
   const t = translations[lang];
-  const [title, setTitle] = useState(recipe?.title ?? "");
-  const [notes, setNotes] = useState(recipe?.notes ?? "");
-  const [ingredients, setIngredients] = useState<NotebookIngredient[]>(() => recipe?.ingredients.map(x => ({...x})) ?? [
+  const [draft] = useState(()=>{const saved=readNotebookDraft();return saved?.recipeId === (recipe?.id ?? null) && saved?.recipeUpdatedAt === (recipe?.updatedAt ?? null) ? saved : null;});
+  const [title, setTitle] = useState(draft?.title ?? recipe?.title ?? "");
+  const [notes, setNotes] = useState(draft?.notes ?? recipe?.notes ?? "");
+  const [ingredients, setIngredients] = useState<NotebookIngredient[]>(() => draft?.ingredients.map(x=>({...x})) ?? recipe?.ingredients.map(x => ({...x})) ?? [
     createIngredient(), createIngredient(), createIngredient(),
   ]);
-  const [helperVisible, setHelperVisible] = useState(true);
+  useEffect(()=>{writeNotebookDraft({recipeId:recipe?.id ?? null,recipeUpdatedAt:recipe?.updatedAt ?? null,title,notes,ingredients});},[title,notes,ingredients,recipe?.id,recipe?.updatedAt]);
   const [remembered, setRemembered] = useState<Array<{name:string;isFlour:boolean}>>(() => {
     try {const v=JSON.parse(localStorage.getItem("masamasa.notebook.ingredients.v1") ?? "[]");return Array.isArray(v)?v.filter(x=>typeof x?.name==="string" && typeof x?.isFlour==="boolean"):[];} catch {return [];}
   });
@@ -93,7 +97,7 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
 
   const [basisVisible, setBasisVisible] = useState(false);
   const basisText = lang === "ru" ? "Основа процентов" : lang === "es" ? "Base de los porcentajes" : "Percentage basis";
-  const changeText = lang === "ru" ? "Изменить" : lang === "es" ? "Cambiar" : "Change";
+  const changeText = lang === "ru" ? "Выбрать основу" : lang === "es" ? "Elegir la base" : "Select basis";
   const emptyBasis = lang === "ru" ? "не выбрана" : lang === "es" ? "sin seleccionar" : "not selected";
   const basisHelp = lang === "ru" ? "Мука и крахмалы предлагаются как основа. Отметьте все ингредиенты, суммарную массу которых нужно принять за 100%." : lang === "es" ? "Las harinas y los almidones se proponen como base. Selecciona los ingredientes cuya suma debe equivaler al 100%." : "Flours and starches are suggested as the basis. Select all ingredients whose combined weight should equal 100%.";
   const [error, setError] = useState("");
@@ -105,7 +109,7 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
   const [scaleError, setScaleError] = useState("");
   const [beforeScale, setBeforeScale] = useState<NotebookIngredient[] | null>(null);
   const scaleText = {
-    ru: { title: "Пересчитать на другую массу", mass: "Нужная масса теста, г", apply: "Пересчитать", undo: "Отменить пересчёт", help: "Все количества изменятся пропорционально. Для записи результата нажмите «Сохранить рецепт».", invalid: "Введите положительную массу и заполните количества ингредиентов.", applied: "Количества пересчитаны." },
+    ru: { title: "Пересчитать рецепт", mass: "Требуемая масса теста, г", apply: "Рассчитать", undo: "Отменить пересчёт", help: "Все количества изменятся пропорционально. Для записи результата нажмите «Сохранить рецепт».", invalid: "Введите положительную массу и заполните количества ингредиентов.", applied: "Количества пересчитаны." },
     en: { title: "Scale the recipe", mass: "Target dough weight, g", apply: "Scale", undo: "Undo scaling", help: "All quantities will change proportionally. Choose Save recipe to store the result.", invalid: "Enter a positive target weight and ingredient quantities.", applied: "Quantities updated." },
     es: { title: "Recalcular la receta", mass: "Peso deseado de la masa, g", apply: "Recalcular", undo: "Deshacer el cálculo", help: "Todas las cantidades cambiarán proporcionalmente. Pulsa Guardar receta para guardar el resultado.", invalid: "Introduce un peso positivo y las cantidades de los ingredientes.", applied: "Cantidades recalculadas." },
   }[lang];
@@ -132,6 +136,7 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
       createdAt: recipe?.createdAt ?? now, updatedAt: now,
     };
     if (!onSave(candidate)) {setError(t.error);return;}
+    clearNotebookDraft();
     try {
       const previous=JSON.parse(localStorage.getItem("masamasa.notebook.ingredients.v1") ?? "[]");
       const entries=[...(Array.isArray(previous)?previous.filter(x=>typeof x?.name==="string" && typeof x?.isFlour==="boolean"):[]),...valid.map(x=>({name:x.name.trim(),isFlour:x.isFlour}))];
@@ -143,16 +148,16 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
     <section className="mm-blank-editor" aria-label={recipe ? t.edit : t.heading}>
       <h3>{recipe ? t.edit : t.heading}</h3>
       <label className="mm-blank-field"><span>{t.name}</span><input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder={t.nameHint} maxLength={160} /></label>
-      <div className="mm-blank-table-wrap"><table className="mm-blank-table"><thead><tr><th>{t.ingredient}</th><th title={t.grams}>{lang === "ru" ? "г" : "g"}</th><th title={t.percent}>%</th><th /></tr></thead><tbody>
+      <div className="mm-blank-table-wrap"><table className="mm-blank-table"><thead><tr><th>{t.ingredient}</th><th title={t.grams}>{lang === "ru" ? "г" : "g"}</th><th title={t.percent} aria-label={t.percent}>%</th><th /></tr></thead><tbody>
         {ingredients.map(item => <tr key={item.id}>
-          <td><input type="text" list="mm-notebook-ingredients" autoComplete="off" aria-label={t.ingredient} value={item.name} onChange={e => update(item.id, {name:e.target.value, isFlour:detectBasis(e.target.value)})} /></td>
+          <td><IngredientNameInput value={item.name} suggestions={suggestions} label={t.ingredient} lang={lang} onChange={name=>update(item.id,{name,isFlour:detectBasis(name)})}/></td>
           <td><input type="number" min="0" step="any" aria-label={t.grams} value={item.grams === 0 ? "" : Number(item.grams.toPrecision(6))} onChange={e => update(item.id, {grams:Math.max(0, Number(e.target.value) || 0)})} /></td>
-          <td>{flourGrams > 0 ? `${format(item.grams / flourGrams * 100,lang)}%` : "—"}</td>
-          <td><button type="button" className="mm-blank-remove" title={t.remove} aria-label={t.remove} onClick={() => setIngredients(prev => prev.filter(x => x.id !== item.id))}>×</button></td>
+          <td><output className="mm-percent-output" aria-label={t.percent}>{flourGrams > 0 ? `${format(item.grams / flourGrams * 100,lang)}%` : "—"}</output></td>
+          <td><button type="button" className="mm-blank-remove" title={t.remove} aria-label={t.remove} onClick={() => setIngredients(prev => prev.filter(x => x.id !== item.id))}><UiIcon name="x" /></button></td>
         </tr>)}
       </tbody></table></div>
       <div className="mm-blank-basis">
-        <span>{basisText}: <strong>{ingredients.filter(x => x.isFlour && x.name.trim()).map(x => x.name).join(", ") || emptyBasis}</strong></span>{" "}
+        <span>{basisText}{flourGrams > 0 ? " · 100%" : ""}: <strong>{ingredients.filter(x => x.isFlour && x.name.trim()).map(x => x.name).join(", ") || emptyBasis}</strong></span>{" "}
         <button type="button" onClick={() => setBasisVisible(v => !v)} aria-expanded={basisVisible}>{changeText}</button>
         {basisVisible && <div className="mm-blank-basis-options">
           <p>{basisHelp}</p>
@@ -162,11 +167,10 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
           </label>)}
         </div>}
       </div>
-      <datalist id="mm-notebook-ingredients">{suggestions.map(x=><option key={normalizeIngredient(x.name)} value={x.name} />)}</datalist>
-      <button className="mm-blank-add" type="button" onClick={() => setIngredients(prev => [...prev, createIngredient()])}>{t.add}</button>
+      <button className="mm-blank-add" type="button" onClick={() => setIngredients(prev => [...prev, createIngredient()])}><UiIcon name="plus" />{t.add.replace(/^\+\s*/, "")}</button>
       <div className="mm-blank-totals"><span>{t.total}: <strong>{format(totalGrams,lang)} {lang === "ru" ? "г" : "g"}</strong></span><span>{t.totalFlour}: <strong>{format(flourGrams,lang)} {lang === "ru" ? "г" : "g"}</strong></span></div>
-      <div className="mm-blank-helper">
-        <strong>{scaleText.title}</strong>
+      <details className="mm-scale-panel">
+        <summary><span className="mm-heading-label"><UiIcon name="scale" />{scaleText.title}</span><UiIcon name="chevron-down" className="mm-disclosure-icon" /></summary>
         <label className="mm-blank-field"><span>{scaleText.mass}</span>
           <input type="text" inputMode="decimal" value={targetMass} onChange={e => {setTargetMass(e.target.value);setScaleError("");}} />
         </label>
@@ -181,13 +185,10 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
         <p>{scaleText.help}</p>
         {beforeScale && <p role="status">{scaleText.applied}</p>}
         {scaleError && <p className="mm-blank-error" role="alert">{scaleError}</p>}
-      </div>
-      <label className="mm-blank-field"><span>{t.notes}</span><textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder={t.notesHint} /></label>
-      <div className="mm-blank-helper"><button type="button" onClick={() => setHelperVisible(prev => !prev)} aria-expanded={helperVisible}>💡 {t.helper} {helperVisible ? "−" : "+"}</button>
-        {helperVisible && <p>{flourGrams > 0 ? t.flourInfo : t.noFlour} {t.noStandards}</p>}
-      </div>
+      </details>
+      <label className="mm-blank-field"><span className="mm-heading-label"><UiIcon name="sticky-note" />{t.notes}</span><textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder={t.notesHint} /></label>
       {error && <p className="mm-blank-error" role="alert">{error}</p>}
-      <div className="mm-blank-actions"><button type="button" className="mm-blank-save" onClick={save}>{t.save}</button><button type="button" className="mm-blank-cancel" onClick={onCancel}>{t.cancel}</button></div>
+      <div className="mm-blank-actions mm-editor-footer"><button type="button" className="mm-blank-save" onClick={save}>{t.save}</button><button type="button" className="mm-blank-cancel" onClick={()=>{clearNotebookDraft();onCancel();}}>{t.cancel}</button></div>
     </section>
   );
 }

@@ -1,3 +1,4 @@
+import type { WorkspaceView } from "./components/WorkspaceTabs";
 // MASAMASA_UNIQUE_SAVES_NOTICE_V1
 // MASAMASA_BACK_TO_MY_RECIPES_V1
 // MASAMASA_SAVED_CARD_DIRECT_OPEN_V1
@@ -74,6 +75,9 @@ function App() {
     technology?: { version: 1; durationEdits: StageTimeEdits };
     timestamp: number;
   };
+
+  const [homeWorkspaceView,setHomeWorkspaceView]=useState<WorkspaceView>("notebook");
+  const [startEditorRequested,setStartEditorRequested]=useState(false);
 
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any | null>(null);
@@ -343,6 +347,12 @@ function App() {
   // ------------------------------------------------------------
   // 6. Техкарта
   // ------------------------------------------------------------
+  const handleWorkspaceSelect=(view:WorkspaceView)=>{
+    setHomeWorkspaceView(view);
+    setStartEditorRequested(view==="notebook");
+    handleRestart();
+  };
+
   const handleShowTechCard = (recipe: any) => {
     setTechData(recipe);
     setShowTechCard(true);
@@ -438,6 +448,7 @@ function App() {
   if (showTechCard && techData && profileData) {
     return (
       <TechCard
+        onWorkspaceChange={handleWorkspaceSelect}
         profile={profileData}
         recipe={techData}
         onSave={handleSaveEditedTechCard}
@@ -459,6 +470,7 @@ function App() {
   if (selectedProfile && profileData && recipeData?._calculated) {
     return (
       <RecipeOutput
+        onWorkspaceChange={handleWorkspaceSelect}
         profileId={selectedProfile}
         profile={profileData}
         data={recipeData}
@@ -481,6 +493,7 @@ function App() {
     if (showSavedTechCard) {
       return (
         <TechCard
+        onWorkspaceChange={handleWorkspaceSelect}
           profile={recipeObj.profile}
           recipe={recipeObj.recipe}
           conditions={recipeObj.conditions}
@@ -501,6 +514,7 @@ function App() {
 
     return (
       <CustomRecipeView
+        onWorkspaceChange={handleWorkspaceSelect}
         name={recipeObj.name}
         recipe={recipeObj.recipe}
         profile={recipeObj.profile}
@@ -514,6 +528,7 @@ function App() {
   if (selectedProfile && profileData && recipeData) {
     return (
       <RecipeInput
+        onWorkspaceChange={handleWorkspaceSelect}
         profileId={selectedProfile}
         onBack={handleRestart}
         onCalculate={handleCalculate}
@@ -525,6 +540,9 @@ function App() {
 
   return (
     <StartScreen
+      initialWorkspaceView={homeWorkspaceView}
+      startEditorRequested={startEditorRequested}
+      onWorkspaceChange={handleWorkspaceSelect}
       climate={climate}
       mixing={mixing}
       productionMode={productionMode}
