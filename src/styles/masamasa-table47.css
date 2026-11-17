@@ -1,0 +1,156 @@
+/* Patch 47. Editable two-line ingredient names, without the patch44 text overlay. */
+.mm-blank-editor .mm-blank-table-wrap { width:100%; overflow-x:visible; }
+.mm-blank-editor .mm-blank-table { width:100%; min-width:0; table-layout:fixed; border-collapse:collapse; }
+.mm-blank-editor .mm-blank-table th,
+.mm-blank-editor .mm-blank-table td { box-sizing:border-box; padding:3px 2px; border-bottom:1px solid var(--mm-border); vertical-align:middle; }
+.mm-blank-editor .mm-blank-table th:first-child,
+.mm-blank-editor .mm-blank-table td:first-child { width:auto; text-align:left; }
+.mm-blank-editor .mm-blank-table th:nth-child(2),
+.mm-blank-editor .mm-blank-table td:nth-child(2) { width:64px; }
+.mm-blank-editor .mm-blank-table th:nth-child(3),
+.mm-blank-editor .mm-blank-table td:nth-child(3) { width:50px; text-align:right; }
+.mm-blank-editor .mm-blank-table th:nth-child(4),
+.mm-blank-editor .mm-blank-table td:nth-child(4) { width:27px; text-align:center; }
+.mm-blank-editor .mm-ingredient-combobox { display:block; position:relative; min-width:0; }
+.mm-blank-editor .mm-blank-table .mm-ingredient-combobox textarea {
+  position:relative; display:block; box-sizing:border-box; width:100%; min-width:0;
+  min-height:38px; height:auto; max-height:none; resize:none; overflow:hidden;
+  white-space:pre-wrap; overflow-wrap:break-word;
+  border:0; border-radius:0; background:transparent; box-shadow:none;
+  padding:8px 2px 6px 23px; margin:0;
+  color:var(--mm-text); -webkit-text-fill-color:currentColor;
+  font:400 16px/20px var(--mm-body); opacity:1;
+}
+.mm-blank-editor .mm-blank-table .mm-ingredient-combobox textarea:focus {
+  outline:1px solid var(--mm-brand); outline-offset:-1px; background:var(--mm-surface);
+}
+.mm-blank-editor .mm-blank-table .mm-ingredient-symbol {
+  position:absolute; z-index:1; top:9px; left:3px; pointer-events:none;
+}
+.mm-blank-editor .mm-blank-table .mm-ingredient-symbol svg { width:16px; height:16px; }
+.mm-blank-editor .mm-blank-table input[type="number"] {
+  box-sizing:border-box; width:100%; min-width:0; min-height:38px;
+  border:0; border-radius:0; padding:6px 1px; margin:0;
+  background:transparent; box-shadow:none; text-align:right;
+  font:400 14px/20px var(--mm-body); font-variant-numeric:tabular-nums;
+}
+.mm-blank-editor .mm-blank-table input[type="number"]:focus {
+  outline:1px solid var(--mm-brand); outline-offset:-1px; background:var(--mm-surface);
+}
+.mm-blank-editor .mm-blank-table .mm-percent-output {
+  box-sizing:border-box; display:block; width:100%; min-width:0;
+  padding:6px 0; margin:0; border:0; background:transparent;
+  font:400 13px/20px var(--mm-body); font-variant-numeric:tabular-nums;
+  white-space:nowrap; text-align:right;
+}
+.mm-blank-editor .mm-blank-table .mm-blank-remove {
+  box-sizing:border-box; display:inline-flex; align-items:center; justify-content:center;
+  width:24px; min-width:0; min-height:38px; padding:0; margin:0;
+  background:transparent; border:0;
+}
+.mm-blank-editor .mm-blank-table .mm-blank-remove svg { width:15px; height:15px; }
+@media (max-width:640px) {
+  .mm-blank-editor .mm-blank-table th:nth-child(2),
+  .mm-blank-editor .mm-blank-table td:nth-child(2) { width:60px; }
+  .mm-blank-editor .mm-blank-table th:nth-child(3),
+  .mm-blank-editor .mm-blank-table td:nth-child(3) { width:46px; }
+  .mm-blank-editor .mm-blank-table th:nth-child(4),
+  .mm-blank-editor .mm-blank-table td:nth-child(4) { width:24px; }
+  .mm-blank-editor .mm-blank-table .mm-ingredient-symbol { display:none; }
+  .mm-blank-editor .mm-blank-table .mm-ingredient-combobox textarea { padding-left:2px; }
+}
+
+/* Patch 49: aligned tabular numbers; Safari focus size prevents input zoom. */
+.mm-blank-editor .mm-blank-table .mm-gram-cell {
+  border:0; border-radius:0; min-width:0; width:100%; padding:6px 1px;
+  text-align:right; font-variant-numeric:tabular-nums; font-feature-settings:"tnum";
+  font-size:14px; background:transparent; box-shadow:none;
+}
+.mm-blank-editor .mm-blank-table .mm-gram-cell:focus { font-size:16px; }
+.mm-blank-editor .mm-blank-table .mm-percent-output {
+  text-align:right; font-variant-numeric:tabular-nums; font-feature-settings:"tnum";
+}
+
+/* MASAMASA_PATCH50_TABLE_ALIGNMENT: consistent baseline, type size and column gaps. */
+.mm-blank-editor .mm-blank-table tbody td {
+  vertical-align:middle;
+}
+/* Give numeric columns room for 1 decimal, and visible separation from each other and X. */
+.mm-blank-editor .mm-blank-table th:nth-child(2),
+.mm-blank-editor .mm-blank-table td:nth-child(2) {
+  width:70px;
+  padding-left:3px;
+  padding-right:7px;
+  text-align:right;
+}
+.mm-blank-editor .mm-blank-table th:nth-child(3),
+.mm-blank-editor .mm-blank-table td:nth-child(3) {
+  width:59px;
+  padding-left:4px;
+  padding-right:6px;
+  text-align:right;
+}
+.mm-blank-editor .mm-blank-table th:nth-child(4),
+.mm-blank-editor .mm-blank-table td:nth-child(4) {
+  width:29px;
+  padding-left:3px;
+  padding-right:0;
+  text-align:center;
+}
+.mm-blank-editor .mm-blank-table .mm-gram-cell,
+.mm-blank-editor .mm-blank-table .mm-percent-output {
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  height:42px;
+  min-height:42px;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--mm-text);
+  font:400 16px/22px var(--mm-body);
+  font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:"tnum","lnum";
+  text-align:right;
+}
+.mm-blank-editor .mm-blank-table .mm-gram-cell {
+  display:block;
+  -webkit-appearance:none;
+  appearance:none;
+  box-shadow:none;
+}
+.mm-blank-editor .mm-blank-table .mm-percent-output {
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  white-space:nowrap;
+}
+.mm-blank-editor .mm-blank-table .mm-gram-cell:focus {
+  font-size:16px;
+  outline:1px solid var(--mm-brand);
+  outline-offset:-1px;
+  background:var(--mm-surface);
+}
+.mm-blank-editor .mm-blank-table .mm-blank-remove {
+  width:24px;
+  min-width:24px;
+  min-height:42px;
+  vertical-align:middle;
+}
+.mm-blank-editor .mm-blank-table .mm-ingredient-combobox textarea {
+  font-size:16px;
+  line-height:22px;
+  min-height:42px;
+  padding-top:10px;
+  padding-bottom:10px;
+}
+@media (max-width:640px) {
+  .mm-blank-editor .mm-blank-table th:nth-child(2),
+  .mm-blank-editor .mm-blank-table td:nth-child(2) { width:65px; }
+  .mm-blank-editor .mm-blank-table th:nth-child(3),
+  .mm-blank-editor .mm-blank-table td:nth-child(3) { width:55px; }
+  .mm-blank-editor .mm-blank-table th:nth-child(4),
+  .mm-blank-editor .mm-blank-table td:nth-child(4) { width:27px; }
+}

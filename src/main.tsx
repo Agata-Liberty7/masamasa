@@ -11,6 +11,7 @@ import "./styles/masamasa-refinements.css";
 import "./styles/masamasa-feedback.css";
 import "./styles/masamasa-workspace.css";
 import "./styles/masamasa-own-editor.css";
+import "./styles/masamasa-table47.css";
 import "./theme/theme";
 
 

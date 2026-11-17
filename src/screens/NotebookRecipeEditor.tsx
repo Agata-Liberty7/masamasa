@@ -6,6 +6,25 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import "./NotebookRecipeEditor.css";
 import { notebookIngredients } from "../logic/notebookIngredients";
 
+function GramCell({ grams, lang, label, onChange }: { grams: number; lang: Lang; label: string; onChange: (grams: number) => void }) {
+  const [focused, setFocused] = useState(false);
+  const [draft, setDraft] = useState("");
+  const formatted = Number.isFinite(grams) && grams !== 0
+    ? grams.toLocaleString(lang === "ru" ? "ru-RU" : lang === "es" ? "es-ES" : "en-GB", { maximumFractionDigits: 1 })
+    : "";
+  return <input type="text" className="mm-gram-cell" inputMode="decimal" aria-label={label}
+    value={focused ? draft : formatted}
+    onFocus={() => { setDraft(grams === 0 ? "" : String(grams)); setFocused(true); }}
+    onBlur={() => setFocused(false)}
+    onChange={event => {
+      const value = event.target.value;
+      setDraft(value);
+      const parsed = Number(value.replace(",", "."));
+      if (value.trim() === "") { onChange(0); return; }
+      if (Number.isFinite(parsed) && parsed >= 0) onChange(parsed);
+    }} />;
+}
+
 export type NotebookIngredient = {
   id: string;
   name: string;
@@ -162,8 +181,8 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel, o
       <div className="mm-blank-table-wrap"><table className="mm-blank-table"><thead><tr><th>{t.ingredient}</th><th title={t.grams}>{lang === "ru" ? "г" : "g"}</th><th title={t.percent} aria-label={t.percent}>%</th><th /></tr></thead><tbody>
         {ingredients.map(item => <tr key={item.id}>
           <td><IngredientNameInput value={item.name} suggestions={suggestions} label={t.ingredient} lang={lang} onChange={name=>update(item.id,{name,isFlour:detectBasis(name)})}/></td>
-          <td><input type="number" min="0" step="any" aria-label={t.grams} value={item.grams === 0 ? "" : Number(item.grams.toPrecision(6))} onChange={e => update(item.id, {grams:Math.max(0, Number(e.target.value) || 0)})} /></td>
-          <td><output className="mm-percent-output" aria-label={t.percent}>{flourGrams > 0 ? `${format(item.grams / flourGrams * 100,lang)}%` : "—"}</output></td>
+          <td><GramCell grams={item.grams} lang={lang} label={t.grams} onChange={grams => update(item.id, {grams})} /></td>
+          <td><output className="mm-percent-output" aria-label={t.percent}>{flourGrams > 0 ? (item.grams / flourGrams * 100).toLocaleString(lang === "ru" ? "ru-RU" : lang === "es" ? "es-ES" : "en-GB", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "—"}</output></td>
           <td><button type="button" className="mm-blank-remove" title={t.remove} aria-label={t.remove} onClick={() => setIngredients(prev => prev.filter(x => x.id !== item.id))}><UiIcon name="x" /></button></td>
         </tr>)}
       </tbody></table></div>
