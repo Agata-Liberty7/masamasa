@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import "./RecipeOutput.css";
 
 type RecipeOutputProps = {
+  savedRecipeTitle?: string;
+  saveLabel?: string;
   onWorkspaceChange?: (view:WorkspaceView)=>void;
   profileId: string;
   profile: any;
@@ -31,6 +33,8 @@ const safeText = (value: any, fallback = "none") => {
 
 const RecipeOutput: React.FC<RecipeOutputProps> = ({
   profileId,
+  savedRecipeTitle,
+  saveLabel,
   profile,
   data,
   onBack,
@@ -138,7 +142,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
   const formatGr = (value: number) =>
     `${formatNumber(value)} ${t("units.g")}`;
 
-  const profileName = t(`profiles.${profileId}`, {
+  const profileName = savedRecipeTitle || t(`profiles.${profileId}`, {
     defaultValue: profile?.name ?? profileId,
   });
 
@@ -146,7 +150,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
     <div className="recipe-output-page">
       <div className="recipe-output-shell">
         <AppearanceControls />
-        {onWorkspaceChange && <WorkspaceTabs active="library" onChange={onWorkspaceChange}/>}
+        {onWorkspaceChange && <WorkspaceTabs active={savedRecipeTitle ? "notebook" : "library"} onChange={onWorkspaceChange}/>}
         <div className="recipe-output-topbar">
           <button
             type="button"
@@ -530,7 +534,7 @@ const RecipeOutput: React.FC<RecipeOutputProps> = ({
             className="recipe-output-secondary"
             onClick={() => onSaveAsCustom(data)}
           >
-            {t("common.save")}
+            {saveLabel || t("common.save")}
           </button>
 
           <button

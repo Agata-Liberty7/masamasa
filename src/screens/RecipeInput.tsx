@@ -21,6 +21,7 @@ import type {
 } from "../logic/fermentationModel";
 
 type RecipeInputProps = {
+  savedRecipeTitle?: string;
   onWorkspaceChange?: (view:WorkspaceView)=>void;
   profileId: string;
   profile: any;
@@ -64,6 +65,7 @@ const IngredientIcon = ({ name }: { name: string }) => <UiIcon name={name} class
 
 const RecipeInput: React.FC<RecipeInputProps> = ({
   profileId,
+  savedRecipeTitle,
   profile,
   initialValues,
   onBack,
@@ -397,7 +399,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
     <div className="recipe-input-page">
       <div className="recipe-input-shell">
         <AppearanceControls />
-        {onWorkspaceChange && <WorkspaceTabs active="library" onChange={onWorkspaceChange}/>}
+        {onWorkspaceChange && <WorkspaceTabs active={savedRecipeTitle ? "notebook" : "library"} onChange={onWorkspaceChange}/>}
         <div className="mm-formula-topbar">
         <button type="button" onClick={onBack} className="recipe-back">
           {t("common.back")}
@@ -409,7 +411,7 @@ const RecipeInput: React.FC<RecipeInputProps> = ({
         <header className="recipe-header">
           <RecipeThumbnail profileId={profileId} className="recipe-photo" />
           <h1 className="recipe-title">
-            {t(`profiles.${profileId}`, {
+            {savedRecipeTitle || t(`profiles.${profileId}`, {
               defaultValue: profile?.name ?? profileId,
             })}
           </h1>

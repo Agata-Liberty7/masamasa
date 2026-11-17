@@ -10,7 +10,8 @@ import StartScreen from "./screens/StartScreen";
 import RecipeInput from "./screens/RecipeInput";
 import RecipeOutput from "./screens/RecipeOutput";
 import TechCard from "./screens/TechCard";
-import CustomRecipeView from "./screens/CustomRecipeView";
+import SavedFormulaEditor from "./screens/SavedFormulaEditor";
+import { readNotebookDraft } from "./logic/notebookDraft";
 
 import { loadProfile } from "./logic/profileLoader";
 import { calculateRecipe } from "./logic/calculateRecipe";
@@ -94,7 +95,38 @@ function App() {
   const [focusMyRecipes, setFocusMyRecipes] = useState(false);
   const [showSavedTechCard, setShowSavedTechCard] = useState(false);
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
-
+  // MASAMASA_UNIFIED_OWN_RECIPE_EDITOR_V1: both saved formats use NotebookRecipeEditor.
+  const [editingFormulaId, setEditingFormulaId] = useState<string | null>(() => {
+    const draft = readNotebookDraft();
+    const id = draft?.recipeId?.startsWith("formula:") ? draft.recipeId.slice(8) : null;
+    return id && customRecipes.some(entry => entry.id === id) ? id : null;
+  });
+  const [formulaPendingTimes, setFormulaPendingTimes] = useState<StageTimeEdits | null>(null);
+  const [formulaPreview, setFormulaPreview] = useState<{ entry: CustomRecipe; expectedTimestamp: number } | null>(null);
+  const formulaText = {
+    ru: { conflict: "Этот рецепт изменён в другой вкладке. Откройте его заново, чтобы не перезаписать новые данные." },
+    en: { conflict: "This recipe changed in another tab. Reopen it to avoid overwriting newer data." },
+    es: { conflict: "Esta receta ha cambiado en otra pestaña. Vuelve a abrirla para no sobrescribir los datos nuevos." },
+  }[saveLanguage];
+  const persistFormula = (candidate: CustomRecipe, expectedTimestamp: number): boolean | string => {
+    const stored = loadStoredRecipes();
+    if (!stored) return saveText.error;
+    const current = stored.find(entry => entry.id === candidate.id);
+    if (!current) return saveText.missing;
+    if (current.timestamp !== expectedTimestamp) return formulaText.conflict;
+    const updated = stored.map(entry => entry.id === candidate.id ? { ...candidate, id: current.id, timestamp: Date.now() } : entry);
+    try { localStorage.setItem("customRecipes", JSON.stringify(updated)); }
+    catch { return saveText.error; }
+    setCustomRecipes(updated);
+    setFormulaPreview(null);
+    setEditingFormulaId(null);
+    setFormulaPendingTimes(null);
+    setStartEditorRequested(false);
+    setSelectedCustomRecipeId(null);
+    setShowSavedTechCard(false);
+    setFocusMyRecipes(true);
+    return true;
+  };
   const n = (value: unknown, fallback = 0) => {
     const num = Number(value);
     return Number.isFinite(num) ? num : fallback;
@@ -104,10 +136,23 @@ function App() {
   // 1. Открытие кастомного рецепта
   // ------------------------------------------------------------
   const handleOpenCustomRecipe = (id: string) => {
+    const latest = loadStoredRecipes();
+    if (!latest) return;
+    if (!latest.some(entry => entry.id === id)) { window.alert(saveText.missing); return; }
+    setCustomRecipes(latest);
     setSaveNotice(null);
-    // Open the production card, not the old plain-text recipe preview.
-    setShowSavedTechCard(true);
-    setSelectedCustomRecipeId(id);
+    setSelectedProfile(null);
+    setProfileData(null);
+    setRecipeData(null);
+    setTechData(null);
+    setShowTechCard(false);
+    setShowSavedTechCard(false);
+    setSelectedCustomRecipeId(null);
+    setFormulaPreview(null);
+    setFormulaPendingTimes(null);
+    setEditingFormulaId(id);
+    setHomeWorkspaceView("notebook");
+    setStartEditorRequested(false);
   };
 
   const handleDeleteCustomRecipe = (id: string) => {
@@ -336,6 +381,8 @@ function App() {
   // 5. Полный сброс
   // ------------------------------------------------------------
   const handleRestart = () => {
+    setFormulaPreview(null);
+    setTechData(null);
     setSelectedProfile(null);
     setProfileData(null);
     setRecipeData(null);
@@ -349,7 +396,7 @@ function App() {
   // ------------------------------------------------------------
   const handleWorkspaceSelect=(view:WorkspaceView)=>{
     setHomeWorkspaceView(view);
-    setStartEditorRequested(view==="notebook");
+    setStartEditorRequested(view==="notebook" && !editingFormulaId);
     handleRestart();
   };
 
@@ -445,6 +492,24 @@ function App() {
   // ------------------------------------------------------------
   // ЭКРАНЫ
   // ------------------------------------------------------------
+  if (formulaPreview) {
+    return <TechCard
+      onWorkspaceChange={handleWorkspaceSelect}
+      profile={formulaPreview.entry.profile}
+      recipe={formulaPreview.entry.recipe}
+      conditions={formulaPreview.entry.conditions}
+      initialDurationEdits={formulaPreview.entry.technology?.durationEdits ?? {}}
+      savedCard
+      savedTitle={formulaPreview.entry.name}
+      onBack={edits => { if (edits) setFormulaPendingTimes(edits); setFormulaPreview(null); }}
+      onSave={edits => {
+        const result = persistFormula({ ...formulaPreview.entry, technology: { version: 1, durationEdits: edits } }, formulaPreview.expectedTimestamp);
+        if (result !== true) setSaveNotice(typeof result === "string" ? result : saveText.error);
+      }}
+      saveNotice={saveNotice}
+      onStageEdit={() => setSaveNotice(null)}
+    />;
+  }
   if (showTechCard && techData && profileData) {
     return (
       <TechCard
@@ -482,7 +547,7 @@ function App() {
     );
   }
 
-  if (selectedCustomRecipeId) {
+  if (selectedCustomRecipeId && showSavedTechCard) {
     const recipeObj = customRecipes.find((r) => r.id === selectedCustomRecipeId);
 
     if (!recipeObj) {
@@ -503,6 +568,14 @@ function App() {
           onStageEdit={() => setSaveNotice(null)}
           savedCard
           savedTitle={recipeObj.name}
+          onEditRecipe={(edits) => {
+            setFormulaPendingTimes(edits);
+            setEditingFormulaId(recipeObj.id);
+            setShowSavedTechCard(false);
+            setSelectedCustomRecipeId(null);
+            setHomeWorkspaceView("notebook");
+            setStartEditorRequested(false);
+          }}
           onBack={() => {
             setShowSavedTechCard(false);
             setSelectedCustomRecipeId(null);
@@ -512,17 +585,7 @@ function App() {
       );
     }
 
-    return (
-      <CustomRecipeView
-        onWorkspaceChange={handleWorkspaceSelect}
-        name={recipeObj.name}
-        recipe={recipeObj.recipe}
-        profile={recipeObj.profile}
-        conditions={recipeObj.conditions}
-        onOpenTechCard={() => setShowSavedTechCard(true)}
-        onBack={() => setSelectedCustomRecipeId(null)}
-      />
-    );
+
   }
 
   if (selectedProfile && profileData && recipeData) {
@@ -538,9 +601,19 @@ function App() {
     );
   }
 
+  const formulaSource = customRecipes.find(entry => entry.id === editingFormulaId);
   return (
     <StartScreen
       initialWorkspaceView={homeWorkspaceView}
+      editingCustomRecipeId={formulaSource?.id}
+      onCloseFormulaEditor={() => { setEditingFormulaId(null); setFormulaPendingTimes(null); }}
+      formulaEditor={formulaSource ? <SavedFormulaEditor
+        key={`formula:${formulaSource.id}:${formulaSource.timestamp}`}
+        entry={formulaPendingTimes ? { ...formulaSource, technology: { version: 1, durationEdits: formulaPendingTimes } } : formulaSource}
+        onSave={persistFormula}
+        onCancel={() => { setEditingFormulaId(null); setFormulaPendingTimes(null); setFocusMyRecipes(true); }}
+        onPreview={(entry, expectedTimestamp) => { setSaveNotice(null); setFormulaPreview({ entry, expectedTimestamp }); }}
+      /> : undefined}
       startEditorRequested={startEditorRequested}
       onWorkspaceChange={handleWorkspaceSelect}
       climate={climate}

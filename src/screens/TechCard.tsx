@@ -1,3 +1,4 @@
+import { formulaDisplayRows } from "../logic/savedFormulaNotebook";
 import WorkspaceTabs, { type WorkspaceView } from "../components/WorkspaceTabs";
 import AppearanceControls from "../components/AppearanceControls";
 import React from "react";
@@ -22,7 +23,8 @@ type Props = {
   profile: any;
   recipe: any;
   conditions: Conditions;
-  onBack: () => void;
+  onBack: (edits?: StageTimeEdits) => void;
+  onEditRecipe?: (durationEdits: StageTimeEdits) => void;
   initialDurationEdits?: StageTimeEdits;
   onSave?: (durationEdits: StageTimeEdits) => void;
   savedCard?: boolean;
@@ -308,7 +310,7 @@ const pdfExportText = {
   es: { create: "Crear PDF", busy: "Generando PDF…", ready: "PDF listo", download: "Descargar PDF", share: "Compartir", failed: "No se pudo generar el PDF. Inténtalo de nuevo." },
 } as const;
 
-const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initialDurationEdits, onSave, savedCard, savedTitle, saveNotice, onStageEdit, onWorkspaceChange }) => {
+const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, onEditRecipe, initialDurationEdits, onSave, savedCard, savedTitle, saveNotice, onStageEdit, onWorkspaceChange }) => {
   const { t, i18n } = useTranslation();
   const lang: Locale = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
   const m = messages[lang];
@@ -322,7 +324,8 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
   const pref = recipe?.preferment ?? {};
   const processFatGr = safe(recipe?.processFat?.grams);
   const processFatIngredient = recipe?.processFat?.ingredient || "lard";
-  const spreadingLabel = `${m.spreading} · ${t(`processFat.ingredients.${processFatIngredient}`, {defaultValue: processFatIngredient})}`;
+  const manualSpreadingNames = Array.isArray(recipe.formulaIngredients) ? recipe.formulaIngredients.filter((item: any) => item.formula?.role === "processFat").map((item: any) => String(item.name)) : [];
+  const spreadingLabel = manualSpreadingNames.length ? manualSpreadingNames.join(", ") : `${m.spreading} · ${t(`processFat.ingredients.${processFatIngredient}`, {defaultValue: processFatIngredient})}`;
   const hasPref = safe(pref.flour) > 0;
   const hasFermentation = safe(recipe?.yeast) > 0 || ["levain", "poolish", "biga", "yeasted_sponge"].includes(pref.type);
   const schedule = profile?.schedule ?? {};
@@ -457,9 +460,15 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
   ];
 
   // MASAMASA_TECHCARD_DEDUP_V1: when there is no preferment, process fat is grouped in the single formula table.
+  const manualRows = formulaDisplayRows(recipe);
+  if (manualRows) {
+    totalRows.splice(0, totalRows.length, ...manualRows);
+    finalRows.splice(0, finalRows.length, ...(formulaDisplayRows(recipe, true) ?? []));
+  } else {
+    totalRows.push(...additiveRows);
+    finalRows.push(...additiveRows);
+  }
   if (hasPref && processFatGr > 0) totalRows.push([spreadingLabel, processFatGr, "processFat"]);
-  totalRows.push(...additiveRows);
-  finalRows.push(...additiveRows);
 
   return (
     <main className="tech-card-page">
@@ -467,7 +476,10 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
       {onWorkspaceChange && <WorkspaceTabs active={savedCard?"notebook":"library"} onChange={onWorkspaceChange}/>}
       <div className="tech-card-actions">{/* MASAMASA_PDF_TOOLBAR_LAYOUT_V1 */}
         <div className="tech-card-actions-main">
-          <button type="button" onClick={onBack}>{m.back}</button>
+          <button type="button" onClick={() => onBack(durationEdits)}>{onEditRecipe ? ({ ru: "К моим рецептам", en: "My recipes", es: "Mis recetas" }[lang]) : m.back}</button>
+          {onEditRecipe && <button type="button" onClick={() => onEditRecipe(durationEdits)}>
+            {({ ru: "Редактировать и пересчитать", en: "Edit and scale", es: "Editar y recalcular" }[lang])}
+          </button>}
           {onSave && (
             <button type="button" className="tech-card-save" onClick={() => onSave(durationEdits)}>
               {savedCard ? saveLabels.update : saveLabels.save}
@@ -545,7 +557,7 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
           {!hasPref && processFatGr > 0 && (
             <p className="tech-card-note">{m.baseDoughWeight}: {grams(safe(recipe.totalDough) - processFatGr)}</p>
           )}
-          {(safe(recipe.extraFlour1Gr) > 0 || safe(recipe.extraFlour2Gr) > 0) && (
+          {!manualRows && (safe(recipe.extraFlour1Gr) > 0 || safe(recipe.extraFlour2Gr) > 0) && (
             <div className="tech-card-flours"><strong>{m.flourTypes}</strong>
               <p>{term("flour", recipe.mainFlour ?? "normal")}: {grams(recipe.mainFlourGr)}</p>
               {safe(recipe.extraFlour1Gr) > 0 && <p>{term("flour", recipe.extraFlour1 ?? "normal")}: {grams(recipe.extraFlour1Gr)}</p>}
@@ -553,6 +565,11 @@ const TechCard: React.FC<Props> = ({ profile, recipe, conditions, onBack, initia
             </div>
           )}
         </section>
+
+        {typeof recipe.notes === "string" && recipe.notes.trim() && <section className="tech-card-section">
+          <h2>{{ru:"Мои заметки",en:"My notes",es:"Mis notas"}[lang]}</h2>
+          <p style={{whiteSpace:"pre-wrap"}}>{recipe.notes}</p>
+        </section>}
 
         {hasPref && <section className="tech-card-section">
           <h2>{m.preferment}: {term("preferment", pref.type ?? "none")}</h2>

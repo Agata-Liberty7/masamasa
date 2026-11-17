@@ -24,3 +24,6 @@
  .recipe-input-page input[type="number"] { appearance:textfield; -moz-appearance:textfield; }
  .recipe-input-page input[type="number"]::-webkit-inner-spin-button,.recipe-input-page input[type="number"]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
 }
+
+/* MASAMASA_TOUCH_SELECTION_V1: allow native vertical scrolling in suggestions. */
+.mm-ingredient-options,.mm-blank-table .mm-ingredient-options button { touch-action:pan-y; }

@@ -1,0 +1,23 @@
+/* MASAMASA_OWN_EDITOR_V1: one editable gram table for both saved formats. */
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+.mm-blank-editor :is(input:not([type="checkbox"]),textarea) {
+  -webkit-appearance:none;
+  appearance:none;
+  box-sizing:border-box;
+  font-size:16px;
+  color:var(--mm-text);
+  -webkit-text-fill-color:currentColor;
+}
+.mm-blank-editor .mm-formula-card-link { display:inline-flex; align-items:center; gap:8px; margin:0 0 16px; }
+.mm-formula-card-link > svg { width:20px; height:20px; flex:0 0 20px; }
+.mm-blank-editor .mm-blank-table td:nth-child(2),.mm-blank-editor .mm-blank-table th:nth-child(2) { width:88px; }
+.mm-blank-editor .mm-blank-table td:nth-child(3),.mm-blank-editor .mm-blank-table th:nth-child(3) { width:68px; }
+@media (max-width:640px) {
+  .mm-blank-editor .mm-blank-table td:nth-child(2),.mm-blank-editor .mm-blank-table th:nth-child(2) { width:80px; }
+  .mm-blank-editor .mm-blank-table td:nth-child(3),.mm-blank-editor .mm-blank-table th:nth-child(3) { width:60px; }
+  .mm-blank-editor .mm-blank-table td:nth-child(4),.mm-blank-editor .mm-blank-table th:nth-child(4),.mm-blank-editor .mm-blank-table .mm-blank-remove { width:36px; min-width:36px; }
+}
+.mm-saved-settings-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; }
+.mm-saved-settings-grid .mm-blank-field { min-width:0; }
+.mm-saved-settings-grid select { box-sizing:border-box; width:100%; min-width:0; min-height:48px; padding:10px; border:1px solid var(--mm-border); border-radius:var(--mm-field-radius); background:var(--mm-surface); color:var(--mm-text); font:400 16px/1.4 var(--mm-body); }
+@media(max-width:640px) { .mm-saved-settings-grid { grid-template-columns:minmax(0,1fr); } }

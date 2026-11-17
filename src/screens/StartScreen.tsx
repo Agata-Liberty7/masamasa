@@ -13,6 +13,9 @@ export type Climate = "dry" | "moderate" | "humid";
 export type MixingMethod = "manual" | "planetary" | "spiral";
 
 type StartScreenProps = {
+  formulaEditor?: React.ReactNode;
+  editingCustomRecipeId?: string;
+  onCloseFormulaEditor?: () => void;
   initialWorkspaceView?: WorkspaceView;
   startEditorRequested?: boolean;
   onWorkspaceChange?: (view:WorkspaceView)=>void;
@@ -100,6 +103,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
   onMyRecipesFocused,
   onOpenCustomRecipe,
   onDeleteCustomRecipe,
+  formulaEditor,
+  editingCustomRecipeId,
+  onCloseFormulaEditor,
   initialWorkspaceView="notebook",
   startEditorRequested=false,
   onWorkspaceChange,
@@ -119,10 +125,11 @@ const StartScreen: React.FC<StartScreenProps> = ({
   const [libraryOpen,setLibraryOpen]=useState(initialWorkspaceView==="library");
   const selectWorkspace=(view:WorkspaceView)=>{
     setLibraryOpen(view==="library");
-    if(view==="notebook"&&!notebookEditorOpen){setEditingNotebookId(null);setNotebookEditorOpen(true);}
+    if(view==="notebook"&&!notebookEditorOpen&&!formulaEditor){setEditingNotebookId(null);setNotebookEditorOpen(true);}
     onWorkspaceChange?.(view);
     requestAnimationFrame(()=>document.querySelector(view==="library"?"#masamasa-library-title":"#masamasa-my-recipes")?.scrollIntoView({block:"start",behavior:"auto"}));
   };
+  React.useEffect(()=>{setLibraryOpen(initialWorkspaceView==="library");},[initialWorkspaceView]);
   const notebookLanguage = i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("en") ? "en" : "ru";
   const notebookText = {
     ru: { create: "Записать рецепт", personal: "С чистого листа", delete: "Удалить рецепт? Это действие нельзя отменить.", storage: "Не удалось сохранить изменения в этом браузере.", edit: "Изменить", remove: "Удалить" },
@@ -357,7 +364,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
               </p>
             </div>
             <div className="mm-notebook-heading-actions">
-              {!notebookEditorOpen && (
+              {!notebookEditorOpen && !formulaEditor && (
               <button type="button" className="mm-blank-new" onClick={() => { setEditingNotebookId(null); setNotebookEditorOpen(true); }}>
                 {notebookText.create}
               </button>
@@ -365,7 +372,8 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
             </div>
           </div>
-          {notebookEditorOpen && (
+          {formulaEditor}
+          {!formulaEditor && notebookEditorOpen && (
             <NotebookRecipeEditor
               key={editingNotebookId ?? "new"}
               lang={notebookLanguage}
@@ -379,7 +387,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
               {/* MASAMASA_NOTEBOOK_EDITOR_VIEW_V2: hide only the recipe currently being edited. */}
               {notebookRecipes.filter(recipe => !notebookEditorOpen || recipe.id !== editingNotebookId).map(recipe => (
                 <div className="start-custom-card" key={recipe.id}>
-                  <button type="button" className="start-custom-main" onClick={() => { setEditingNotebookId(recipe.id); setNotebookEditorOpen(true); }}>
+                  <button type="button" className="start-custom-main" onClick={() => { onCloseFormulaEditor?.(); setEditingNotebookId(recipe.id); setNotebookEditorOpen(true); }}>
                     <strong>{recipe.title}</strong>
                     <span className="mm-notebook-kind">{notebookText.personal} · {recipe.ingredients.length} · {new Date(recipe.updatedAt).toLocaleDateString(locale)}</span>
                   </button>
@@ -392,9 +400,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
             <div className="mm-notebook-empty"><p>{libraryText.empty}</p></div>
           ) : (
             <div className="start-custom-grid">
-              {customRecipes.map((recipe) => (
+              {customRecipes.filter(recipe => recipe.id !== editingCustomRecipeId).map((recipe) => (
                 <div className="start-custom-card" key={recipe.id}>
-                  <button type="button" className="start-custom-main" onClick={() => onOpenCustomRecipe(recipe.id)}>
+                  <button type="button" className="start-custom-main" onClick={() => { setNotebookEditorOpen(false); setEditingNotebookId(null); onOpenCustomRecipe(recipe.id); }}>
                     <strong>{recipe.name}</strong>
                     <small>{new Date(recipe.timestamp).toLocaleString(locale, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"})}</small>
                   </button>

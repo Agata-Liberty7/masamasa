@@ -2,7 +2,7 @@ import UiIcon from "../components/UiIcon";
 import IngredientNameInput from "../components/IngredientNameInput";
 import { readNotebookDraft, writeNotebookDraft, clearNotebookDraft } from "../logic/notebookDraft";
 // MASAMASA_INGREDIENT_SUGGESTIONS_V1
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import "./NotebookRecipeEditor.css";
 import { notebookIngredients } from "../logic/notebookIngredients";
 
@@ -72,14 +72,18 @@ const detectFlour = (name: string): boolean => {
 const createIngredient = (): NotebookIngredient => ({ id: crypto.randomUUID(), name: "", grams: 0, isFlour: false });
 const format = (value: number, lang: Lang) => value.toLocaleString(lang === "ru" ? "ru-RU" : lang === "es" ? "es-ES" : "en-GB", { maximumFractionDigits: 2 });
 
-export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }: {
+export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel, onPreview, previewLabel, saveLabel, extraContent }: {
   lang: Lang;
   recipe: NotebookRecipe | null;
-  onSave: (recipe: NotebookRecipe) => boolean;
+  onSave: (recipe: NotebookRecipe) => boolean | string;
+  onPreview?: (recipe: NotebookRecipe) => boolean | string;
+  previewLabel?: string;
+  saveLabel?: string;
+  extraContent?: ReactNode;
   onCancel: () => void;
 }) {
   const t = translations[lang];
-  const [draft] = useState(()=>{const saved=readNotebookDraft();return saved?.recipeId === (recipe?.id ?? null) && saved?.recipeUpdatedAt === (recipe?.updatedAt ?? null) ? saved : null;});
+  const [draft] = useState(()=>{const saved=readNotebookDraft(recipe?.id ?? null);return saved?.recipeId === (recipe?.id ?? null) && saved?.recipeUpdatedAt === (recipe?.updatedAt ?? null) ? saved : null;});
   const [title, setTitle] = useState(draft?.title ?? recipe?.title ?? "");
   const [notes, setNotes] = useState(draft?.notes ?? recipe?.notes ?? "");
   const [ingredients, setIngredients] = useState<NotebookIngredient[]>(() => draft?.ingredients.map(x=>({...x})) ?? recipe?.ingredients.map(x => ({...x})) ?? [
@@ -125,18 +129,25 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
     setScaleError("");
     setError("");
   };
-  const save = () => {
+  const candidate = (): NotebookRecipe | null => {
     const valid = ingredients.filter(x => x.grams > 0);
-    if (!title.trim() || valid.length === 0) { setError(t.required); return; }
-    if (valid.some(x => !x.name.trim())) { setError(t.duplicate); return; }
+    if (!title.trim() || valid.length === 0) { setError(t.required); return null; }
+    if (valid.some(x => !x.name.trim())) { setError(t.duplicate); return null; }
+    if (ingredients.some(item => !Number.isFinite(item.grams) || item.grams < 0)) { setError(t.required); return null; }
     const now = Date.now();
-    const candidate: NotebookRecipe = {
+    return {
       version: 1, id: recipe?.id ?? crypto.randomUUID(), title: title.trim(),
       ingredients: valid.map(x => ({ ...x, name: x.name.trim() })), notes,
       createdAt: recipe?.createdAt ?? now, updatedAt: now,
     };
-    if (!onSave(candidate)) {setError(t.error);return;}
-    clearNotebookDraft();
+  };
+  const save = () => {
+    const next = candidate();
+    if (!next) return;
+    const result = onSave(next);
+    if (result !== true) { setError(typeof result === "string" ? result : t.error); return; }
+    clearNotebookDraft(recipe?.id ?? null);
+    const valid = next.ingredients;
     try {
       const previous=JSON.parse(localStorage.getItem("masamasa.notebook.ingredients.v1") ?? "[]");
       const entries=[...(Array.isArray(previous)?previous.filter(x=>typeof x?.name==="string" && typeof x?.isFlour==="boolean"):[]),...valid.map(x=>({name:x.name.trim(),isFlour:x.isFlour}))];
@@ -186,9 +197,16 @@ export default function NotebookRecipeEditor({ lang, recipe, onSave, onCancel }:
         {beforeScale && <p role="status">{scaleText.applied}</p>}
         {scaleError && <p className="mm-blank-error" role="alert">{scaleError}</p>}
       </details>
+      {extraContent}
       <label className="mm-blank-field"><span className="mm-heading-label"><UiIcon name="sticky-note" />{t.notes}</span><textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder={t.notesHint} /></label>
+      {onPreview && <button type="button" className="mm-blank-cancel mm-formula-card-link" onClick={() => {
+        const next = candidate();
+        if (!next) return;
+        const result = onPreview(next);
+        if (result !== true) setError(typeof result === "string" ? result : t.error);
+      }}><UiIcon name="sticky-note" />{previewLabel}</button>}
       {error && <p className="mm-blank-error" role="alert">{error}</p>}
-      <div className="mm-blank-actions mm-editor-footer"><button type="button" className="mm-blank-save" onClick={save}>{t.save}</button><button type="button" className="mm-blank-cancel" onClick={()=>{clearNotebookDraft();onCancel();}}>{t.cancel}</button></div>
+      <div className="mm-blank-actions mm-editor-footer"><button type="button" className="mm-blank-save" onClick={save}>{saveLabel ?? (recipe ? {ru:"Сохранить изменения",en:"Save changes",es:"Guardar cambios"}[lang] : t.save)}</button><button type="button" className="mm-blank-cancel" onClick={()=>{clearNotebookDraft(recipe?.id ?? null);onCancel();}}>{t.cancel}</button></div>
     </section>
   );
 }

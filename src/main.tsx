@@ -10,6 +10,7 @@ import "./styles/masamasa-themes.css";
 import "./styles/masamasa-refinements.css";
 import "./styles/masamasa-feedback.css";
 import "./styles/masamasa-workspace.css";
+import "./styles/masamasa-own-editor.css";
 import "./theme/theme";
 
 
