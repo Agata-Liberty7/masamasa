@@ -12,6 +12,7 @@ import "./styles/masamasa-feedback.css";
 import "./styles/masamasa-workspace.css";
 import "./styles/masamasa-own-editor.css";
 import "./styles/masamasa-table47.css";
+import "./styles/masamasa-typography51.css";
 import "./theme/theme";
 
 

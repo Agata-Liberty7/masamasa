@@ -1,0 +1,64 @@
+/* MASAMASA_TYPOGRAPHY_STAGE1_V1
+   Scope: home, library and the *surrounding* recipe editors.
+   Do not change .mm-blank-table / .mm-ingredient-combobox,
+   the approved patch-50 numeric alignment, tech card or PDF/print.
+   A six-step scale: 12, 14, 16, 18, 22, 28px.
+*/
+@media screen {
+  :root {
+    --mm-type-note: 12px;
+    --mm-type-label: 14px;
+    --mm-type-body: 16px;
+    --mm-type-subheading: 18px;
+    --mm-type-section: 22px;
+    --mm-type-page: 28px;
+  }
+
+  /* Main page and library hierarchy. */
+  .start-page .start-title,
+  .recipe-input-page .recipe-title {
+    font-size: var(--mm-type-page);
+  }
+  .start-page .start-section-title,
+  .start-page .start-card-title,
+  .recipe-input-page .recipe-card-title {
+    font-size: var(--mm-type-section);
+  }
+  .start-page .start-search-section .start-section-title,
+  .start-page .start-section > .start-section-title {
+    font-size: var(--mm-type-subheading);
+  }
+  .start-page :is(.start-subtitle,.mm-notebook-intro),
+  .recipe-input-page .recipe-subtitle {
+    font-size: var(--mm-type-label);
+  }
+  .start-page :is(.start-custom-main strong,.start-category-card strong,.start-profile-card strong),
+  .mm-blank-editor .mm-blank-totals,
+  .mm-blank-editor .mm-blank-field > textarea {
+    font-size: var(--mm-type-body);
+  }
+  .start-page :is(.start-custom-main small,.mm-notebook-kind,.mm-notebook-storage,.start-profile-card small,.start-category-status),
+  .mm-blank-editor .mm-blank-error {
+    font-size: var(--mm-type-note);
+  }
+
+  /* Recipe editor typography outside the ingredient table. */
+  .mm-blank-editor > h3 {
+    font-size: var(--mm-type-subheading);
+  }
+  .mm-blank-editor .mm-blank-field > span,
+  .mm-blank-editor .mm-blank-basis,
+  .mm-blank-editor .mm-blank-basis > button,
+  .mm-blank-editor .mm-scale-panel p,
+  .recipe-input-page .recipe-label,
+  .start-page .start-field > span {
+    font-size: var(--mm-type-label);
+  }
+  .mm-blank-editor .mm-blank-field > input,
+  .mm-blank-editor .mm-scale-panel input,
+  .recipe-input-page :is(input,select,textarea) {
+    font-size: var(--mm-type-body);
+  }
+
+  /* No rule here targets the table, its cells or embedded controls. */
+}
